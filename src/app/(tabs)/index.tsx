@@ -35,37 +35,37 @@ const EXPERIENCES = [
     title: 'Heated Glass Pool',
     category: 'WELLNESS · 8TH FLOOR',
     image: '/images/resort/aerial-rooftop-pool.jpg',
-    tag: 'Year-Round Heated',
+    desc: 'Indoor temperature-controlled infinity pool overlooking 360° cloud valleys.',
   },
   {
     title: 'Panoramic Dining',
     category: 'RESTAURANT & TERRACE',
     image: '/images/dining/rooftop-dining-glass.jpg',
-    tag: 'Cloud-Level Cuisine',
+    desc: 'Cloud-level cuisine featuring Pakistani heritage recipes and international dishes.',
   },
   {
     title: 'Private Ski Slope',
     category: 'WINTER SPORTS · SLOPE G2',
     image: '/images/activities/ski-slope-aerial.jpg',
-    tag: 'Winter Adventure',
+    desc: "Pakistan's first private ski slope and snow tubing run beside PAF Airbase.",
   },
   {
     title: 'Sunset Sky Lounge',
     category: 'LOUNGE & HIGH TEA',
     image: '/images/dining/sky-lounge.jpg',
-    tag: 'Alpine Sunsets',
+    desc: 'Artisanal high tea and evening drinks facing sunset vistas over the pines.',
   },
   {
     title: 'Pine Forest Trails',
     category: 'OUTDOOR EXPLORATION',
     image: '/images/activities/winter-trails.jpg',
-    tag: 'Private Trailhead',
+    desc: 'Private gated trailhead leading directly into the historic Nathia Gali forest.',
   },
   {
     title: 'Cedarwood Sauna & Spa',
     category: 'SPA & HYDROTHERAPY',
     image: '/images/resort/glass-roof-pool.jpg',
-    tag: 'Thermal Sanctuary',
+    desc: 'Alpine steam room, cedarwood sauna, and restorative cold-plunge recovery.',
   },
 ];
 
@@ -76,7 +76,7 @@ export default function Discover() {
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const resW = Math.min(300, Math.round(width * 0.76));
+  const resW = Math.min(312, Math.round(width * 0.78));
 
   useFocusEffect(
     useCallback(() => {
@@ -113,7 +113,7 @@ export default function Discover() {
 
           <View style={{ flex: 1 }} />
 
-          {/* Clean Editorial Content Inside Hero (No Pills, No AI Icons) */}
+          {/* Clean Editorial Content Inside Hero */}
           <View style={styles.heroBottom}>
             <Text style={styles.heroKicker}>BESPOKE ALPINE RESIDENCES · NATHIA GALI</Text>
             <Text style={styles.heroTitle}>
@@ -193,13 +193,13 @@ export default function Discover() {
               title={item.title}
               category={item.category}
               image={item.image}
-              tag={item.tag}
+              desc={item.desc}
               onPress={() => router.push('/amenities')}
             />
           )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={192}
+          snapToInterval={228}
           initialNumToRender={3}
           windowSize={3}
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 12 }}
@@ -322,19 +322,22 @@ const ResidenceCard = memo(function ResidenceCard({
 }) {
   const [fav, setFav] = useState(false);
   const tag = t.outdoorSpace.toLowerCase().includes('terrace')
-    ? 'Private terrace'
+    ? 'Private Terrace'
     : t.slug.includes('corner')
-      ? 'Corner suite'
-      : 'Valley views';
+      ? 'Corner Suite'
+      : 'Valley Views';
 
   return (
     <PressableScale onPress={onPress} scaleTo={0.97} style={[styles.resCard, { width: w }]}>
       <View style={styles.resImgWrap}>
         <Photo src={t.images[0]} style={styles.resImg} />
+        <Scrim bottom={0.4} />
+
         {/* Top-left tag */}
         <View style={styles.resTag}>
-          <Text style={styles.resTagText}>{tag}</Text>
+          <Text style={styles.resTagText}>{tag.toUpperCase()}</Text>
         </View>
+
         {/* Top-right favorite button */}
         <Pressable
           onPress={() => setFav((v) => !v)}
@@ -347,30 +350,41 @@ const ResidenceCard = memo(function ResidenceCard({
             color={fav ? '#E11D48' : C.pine}
           />
         </Pressable>
+
+        {/* Bottom-left photo meta */}
+        <View style={styles.resPhotoMeta}>
+          <Text style={styles.resPhotoMetaText}>{t.images.length} PHOTOS · G1–8TH FL</Text>
+        </View>
       </View>
 
-      <View style={{ paddingHorizontal: 6, paddingTop: 12 }}>
+      <View style={{ paddingHorizontal: 6, paddingTop: 14 }}>
         <Text numberOfLines={1} style={styles.resName}>{t.name}</Text>
-        <Text style={styles.resMeta}>⭐ 4.9 (128 reviews) · 7,906 ft</Text>
+        <Text numberOfLines={1} style={styles.resTagline}>{t.tagline}</Text>
 
-        <View style={styles.specChipsRow}>
-          <View style={styles.specMiniChip}>
-            <Text style={styles.specMiniText}>📐 {areaRangeOf(t.slug)}</Text>
+        {/* Clean Spec Row with vector icons */}
+        <View style={styles.specRow}>
+          <View style={styles.specItem}>
+            <Ionicons name="expand-outline" size={13} color={C.gold} style={{ marginRight: 4 }} />
+            <Text style={styles.specText}>{areaRangeOf(t.slug)}</Text>
           </View>
-          <View style={styles.specMiniChip}>
-            <Text style={styles.specMiniText}>👤 {t.maxOccupancy} guests</Text>
+          <View style={styles.specDot} />
+          <View style={styles.specItem}>
+            <Ionicons name="people-outline" size={13} color={C.gold} style={{ marginRight: 4 }} />
+            <Text style={styles.specText}>Up to {t.maxOccupancy} guests</Text>
           </View>
         </View>
 
         <View style={styles.resFoot}>
           <View>
             <Text style={styles.resFrom}>STARTING FROM</Text>
-            <Text style={styles.resPrice}>
-              {money(t.baseRate)} <Text style={styles.resNight}>/ night</Text>
-            </Text>
+            <View style={styles.priceRow}>
+              <Text style={styles.resPrice}>{money(t.baseRate)}</Text>
+              <Text style={styles.resNight}> / night</Text>
+            </View>
           </View>
-          <View style={styles.resArrow}>
-            <Ionicons name="arrow-forward" size={13} color={C.cream} />
+          <View style={styles.resCta}>
+            <Text style={styles.resCtaText}>View Suite</Text>
+            <Ionicons name="arrow-forward" size={12} color={C.cream} />
           </View>
         </View>
       </View>
@@ -382,27 +396,37 @@ const ExperienceCard = memo(function ExperienceCard({
   title,
   category,
   image,
-  tag,
+  desc,
   onPress,
 }: {
   title: string;
   category: string;
   image: string;
-  tag: string;
+  desc: string;
   onPress?: () => void;
 }) {
   return (
     <PressableScale onPress={onPress} scaleTo={0.97} style={styles.expCard}>
       <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim bottom={0.82} />
+      <Scrim top={0.25} bottom={0.88} />
+      
+      {/* Top category badge */}
       <View style={styles.expTag}>
         <Text style={styles.expTagText}>{category}</Text>
       </View>
+
       <View style={{ flex: 1 }} />
-      <View style={styles.expMiniPill}>
-        <Text style={styles.expMiniPillText}>{tag}</Text>
+
+      {/* Bottom editorial content */}
+      <View style={styles.expInfo}>
+        <Text numberOfLines={1} style={styles.expTitle}>{title}</Text>
+        <Text numberOfLines={2} style={styles.expDesc}>{desc}</Text>
+        
+        <View style={styles.expActionRow}>
+          <Text style={styles.expActionText}>Explore facility</Text>
+          <Ionicons name="arrow-forward" size={12} color={C.gold} />
+        </View>
       </View>
-      <Text numberOfLines={2} style={styles.expTitle}>{title}</Text>
     </PressableScale>
   );
 });
@@ -516,7 +540,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: S.gutter,
-    marginTop: 32,
+    marginTop: 34,
     marginBottom: 14,
   },
   sectionTitle: {
@@ -547,13 +571,13 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 10,
     borderWidth: 1,
-    borderColor: C.line,
-    ...shadow.card,
+    borderColor: 'rgba(200, 164, 106, 0.22)',
+    ...shadow.cardHover,
   },
   resImgWrap: {
     position: 'relative',
     width: '100%',
-    aspectRatio: 16 / 11,
+    aspectRatio: 16 / 10.5,
     borderRadius: 18,
     overflow: 'hidden',
     backgroundColor: C.snow,
@@ -570,10 +594,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4.5,
     borderRadius: 999,
     backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
   },
   resTagText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 9.5,
+    fontSize: 9,
+    letterSpacing: 0.8,
     color: C.pine,
   },
   resHeart: {
@@ -588,32 +615,53 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...shadow.pill,
   },
-  resName: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 16,
-    color: C.ink,
-  },
-  resMeta: {
-    fontFamily: FONTS.ui,
-    fontSize: 11.5,
-    color: C.ink55,
-    marginTop: 3,
-  },
-  specChipsRow: {
-    flexDirection: 'row',
-    gap: 6,
-    marginTop: 7,
-  },
-  specMiniChip: {
-    paddingHorizontal: 8,
+  resPhotoMeta: {
+    position: 'absolute',
+    bottom: 8,
+    left: 10,
+    paddingHorizontal: 7,
     paddingVertical: 3,
-    borderRadius: 7,
-    backgroundColor: C.snow,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
   },
-  specMiniText: {
+  resPhotoMetaText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8.5,
+    letterSpacing: 0.8,
+    color: '#FFFFFF',
+  },
+  resName: {
+    fontFamily: FONTS.display,
+    fontSize: 21,
+    lineHeight: 25,
+    color: C.pine,
+  },
+  resTagline: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+    marginTop: 2,
+  },
+  specRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  specItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  specText: {
     fontFamily: FONTS.uiMedium,
-    fontSize: 10.5,
+    fontSize: 11,
     color: C.ink70,
+  },
+  specDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: C.lineStrong,
+    marginHorizontal: 8,
   },
   resFoot: {
     flexDirection: 'row',
@@ -630,70 +678,89 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     color: C.gold,
   },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: 1,
+  },
   resPrice: {
     fontFamily: FONTS.uiBold,
-    fontSize: 16,
+    fontSize: 17,
     color: C.ink,
     fontVariant: ['tabular-nums'],
-    marginTop: 1,
   },
   resNight: {
     fontFamily: FONTS.ui,
     fontSize: 11.5,
     color: C.ink55,
   },
-  resArrow: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: C.pine,
+  resCta: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+    backgroundColor: C.pine,
+    ...shadow.pill,
+  },
+  resCtaText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 11.5,
+    color: C.cream,
   },
   expCard: {
-    width: 180,
-    height: 230,
-    borderRadius: 22,
+    width: 216,
+    height: 275,
+    borderRadius: 24,
     overflow: 'hidden',
     padding: 14,
     backgroundColor: C.pine,
     borderWidth: 1,
-    borderColor: C.line,
-    ...shadow.card,
+    borderColor: 'rgba(200, 164, 106, 0.24)',
+    ...shadow.cardHover,
   },
   expTag: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
     borderRadius: 999,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(18, 53, 36, 0.75)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.22)',
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   expTagText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 8,
-    letterSpacing: 1.1,
+    fontSize: 8.5,
+    letterSpacing: 1.2,
     color: C.gold,
   },
-  expMiniPill: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    marginBottom: 5,
-  },
-  expMiniPillText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 9.5,
-    color: '#FFFFFF',
+  expInfo: {
+    paddingTop: 8,
   },
   expTitle: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 14.5,
-    lineHeight: 18,
+    fontFamily: FONTS.display,
+    fontSize: 20,
+    lineHeight: 24,
     color: '#FFFFFF',
+  },
+  expDesc: {
+    fontFamily: FONTS.ui,
+    fontSize: 11.5,
+    lineHeight: 16,
+    color: 'rgba(236, 238, 237, 0.88)',
+    marginTop: 4,
+  },
+  expActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  expActionText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 11,
+    color: C.gold,
   },
   storyCard: {
     marginHorizontal: S.gutter,
