@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: '#EAECEF',
+    borderColor: C.line,
     marginBottom: 16,
     ...shadow.card,
   },

@@ -177,6 +177,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 36,
     backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: C.goldLine,
     width: '100%',
     ...shadow.dock,
   },

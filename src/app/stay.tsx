@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { memo, useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/Text';
@@ -14,7 +14,8 @@ const HISTOGRAM_DATA = [
   20, 28, 35, 48, 62, 78, 85, 92, 98, 86, 75, 68, 55, 48, 60, 72, 80, 70, 58, 42, 34, 26, 20, 16,
 ];
 
-const STAY_TYPES = ['All types', 'Deluxe', 'Executive', 'Presidential', 'Penthouse'];
+// The authentic 5 Serene Heights apartment types from serene-booking-web
+const STAY_TYPES = ['All types', 'Classic', 'Premier', 'Grand', 'Corner Suite', 'Terrace'];
 
 export default function StayModal() {
   const params = useLocalSearchParams<{ tab?: 'dates' | 'guests'; type?: string; next?: string }>();
@@ -27,8 +28,8 @@ export default function StayModal() {
   const [showCalendar, setShowCalendar] = useState(true);
   const [picking, setPicking] = useState<'in' | 'out'>('in');
   const [selectedType, setSelectedType] = useState('All types');
-  const [minPrice, setMinPrice] = useState(20000);
-  const [maxPrice, setMaxPrice] = useState(55000);
+  const [minPrice, setMinPrice] = useState(18000);
+  const [maxPrice, setMaxPrice] = useState(34000);
 
   const nights = nightsBetween(draft.checkIn, draft.checkOut);
   const valid = nights >= 1;
@@ -76,7 +77,7 @@ export default function StayModal() {
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Search places</Text>
+        <Text style={styles.headerTitle}>Plan your stay</Text>
         <Pressable
           onPress={() => router.back()}
           hitSlop={8}
@@ -91,30 +92,32 @@ export default function StayModal() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 110 + insets.bottom }}
       >
-        {/* Headline */}
+        {/* Serene Headline */}
         <View style={styles.heroText}>
-          <Text style={styles.heroTitle}>Your stay is just a tap away</Text>
-          <Text style={styles.heroSub}>Set your travel preferences to see tailored stays</Text>
+          <Text style={styles.heroTitle}>Your mountain stay is just a tap away</Text>
+          <Text style={styles.heroSub}>
+            Serene Heights · 7,906 ft · 2 hours from Islamabad
+          </Text>
         </View>
 
         {/* Location Input Pill */}
         <View style={styles.section}>
           <View style={styles.locationPill}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.locationLabel}>Location</Text>
+              <Text style={styles.locationLabel}>Resort location</Text>
               <Text style={styles.locationValue} numberOfLines={1}>
-                Nathia Gali, Abbottabad, Pakistan
+                1.5 KM, Kala Bagh Air Base Road, Nathia Gali
               </Text>
             </View>
             <View style={styles.locationIcon}>
-              <Ionicons name="search-outline" size={18} color={C.ink} />
+              <Ionicons name="location" size={17} color={C.gold} />
             </View>
           </View>
         </View>
 
         {/* Date Selector Pills */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Dates</Text>
+          <Text style={styles.sectionLabel}>Stay dates</Text>
           <View style={styles.dateRow}>
             {/* Check-in Pill */}
             <Pressable
@@ -178,7 +181,7 @@ export default function StayModal() {
 
         {/* Guests Counters */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Guests</Text>
+          <Text style={styles.sectionLabel}>Guests & apartments</Text>
           <View style={styles.stepperRow}>
             {/* Adults Counter */}
             <View style={styles.counterBox}>
@@ -230,15 +233,14 @@ export default function StayModal() {
           </View>
         </View>
 
-        {/* Shakuro Price Range Section with Histogram */}
+        {/* Serene Rate Histogram (PKR Rates) */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Price range</Text>
+          <Text style={styles.sectionLabel}>Nightly rate range</Text>
 
           {/* Histogram Frequency Chart */}
           <View style={styles.histogramContainer}>
             <View style={styles.histogramBars}>
               {HISTOGRAM_DATA.map((val, idx) => {
-                // Active bars inside selected middle range
                 const isInRange = idx >= 4 && idx <= 18;
                 return (
                   <View key={idx} style={styles.barCol}>
@@ -247,7 +249,7 @@ export default function StayModal() {
                         styles.barFill,
                         {
                           height: `${val}%`,
-                          backgroundColor: isInRange ? C.pine : '#E5E7EB',
+                          backgroundColor: isInRange ? C.pine : C.line,
                         },
                       ]}
                     />
@@ -257,23 +259,23 @@ export default function StayModal() {
             </View>
           </View>
 
-          {/* Min & Max Price Pills */}
+          {/* Min & Max Price Pills in PKR */}
           <View style={styles.priceRow}>
             <View style={styles.pricePill}>
-              <Text style={styles.pricePillLabel}>Minimum</Text>
+              <Text style={styles.pricePillLabel}>Base rate</Text>
               <Text style={styles.pricePillValue}>PKR {minPrice.toLocaleString()}</Text>
             </View>
             <View style={styles.priceDivLine} />
             <View style={styles.pricePill}>
-              <Text style={styles.pricePillLabel}>Maximum</Text>
+              <Text style={styles.pricePillLabel}>Suite rate</Text>
               <Text style={styles.pricePillValue}>PKR {maxPrice.toLocaleString()}</Text>
             </View>
           </View>
         </View>
 
-        {/* Shakuro Stay Types Pills */}
+        {/* Serene Apartment Types Pills */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Stay types</Text>
+          <Text style={styles.sectionLabel}>Apartment layouts</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeScroll}>
             {STAY_TYPES.map((st) => {
               const isSel = selectedType === st;
@@ -310,7 +312,7 @@ export default function StayModal() {
           onPress={apply}
           style={[styles.searchActionBtn, !valid && { opacity: 0.5 }]}
         >
-          <Ionicons name="search" size={16} color={C.pureWhite} style={{ marginRight: 6 }} />
+          <Ionicons name="search" size={16} color={C.cream} style={{ marginRight: 6 }} />
           <Text style={styles.searchActionText}>
             {valid ? `Search · ${plural(nights, 'night')}` : 'Choose check-out'}
           </Text>
@@ -413,7 +415,7 @@ const Month = memo(function Month({
                   style={[
                     styles.dayText,
                     past && { color: C.ink40, textDecorationLine: 'line-through' },
-                    edge && { color: C.pureWhite, fontFamily: FONTS.uiBold },
+                    edge && { color: C.sand, fontFamily: FONTS.uiBold },
                   ]}
                 >
                   {fromISO(iso).getDate()}
@@ -431,7 +433,7 @@ const Month = memo(function Month({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: C.pureWhite,
+    backgroundColor: C.white,
   },
   handleWrap: {
     alignItems: 'center',
@@ -442,7 +444,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 4.5,
     borderRadius: 3,
-    backgroundColor: '#D1D5DB',
+    backgroundColor: C.lineStrong,
   },
   header: {
     flexDirection: 'row',
@@ -452,15 +454,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   headerTitle: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 18,
+    fontFamily: FONTS.display,
+    fontSize: 21,
     color: C.ink,
   },
   closeBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: C.fill,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: C.sand,
+    borderWidth: 1,
+    borderColor: C.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -469,9 +473,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   heroTitle: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 22,
-    lineHeight: 28,
+    fontFamily: FONTS.display,
+    fontSize: 24,
+    lineHeight: 29,
     letterSpacing: -0.3,
     color: C.ink,
   },
@@ -487,7 +491,7 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontFamily: FONTS.uiBold,
-    fontSize: 15,
+    fontSize: 14.5,
     color: C.ink,
     marginBottom: 10,
   },
@@ -497,20 +501,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 18,
-    backgroundColor: C.fill,
+    backgroundColor: C.sand,
     borderWidth: 1,
-    borderColor: '#E8EAEB',
+    borderColor: C.line,
   },
   locationLabel: {
     fontFamily: FONTS.uiSemi,
     fontSize: 11,
     color: C.ink55,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   locationValue: {
     fontFamily: FONTS.uiBold,
-    fontSize: 14,
+    fontSize: 13.5,
     color: C.ink,
     marginTop: 2,
   },
@@ -519,6 +523,8 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: C.line,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.pill,
@@ -541,8 +547,8 @@ const styles = StyleSheet.create({
     backgroundColor: C.pureWhite,
   },
   datePillInactive: {
-    borderColor: '#E8EAEB',
-    backgroundColor: C.fill,
+    borderColor: C.line,
+    backgroundColor: C.sand,
   },
   dateSubLabel: {
     fontFamily: FONTS.ui,
@@ -560,16 +566,16 @@ const styles = StyleSheet.create({
     marginTop: 14,
     padding: 14,
     borderRadius: 20,
-    backgroundColor: C.canvas,
+    backgroundColor: C.sand,
     borderWidth: 1,
-    borderColor: '#ECEEF0',
+    borderColor: C.line,
   },
   calContainer: {},
   weekRow: {
     flexDirection: 'row',
     paddingBottom: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: C.line,
   },
   weekDay: {
     flex: 1,
@@ -579,8 +585,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.uiSemi,
   },
   monthTitle: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 14.5,
+    fontFamily: FONTS.display,
+    fontSize: 16,
     color: C.ink,
     marginBottom: 6,
   },
@@ -595,7 +601,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   inRange: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: C.snow,
   },
   day: {
     width: 32,
@@ -625,9 +631,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
     borderRadius: 16,
-    backgroundColor: C.fill,
+    backgroundColor: C.sand,
     borderWidth: 1,
-    borderColor: '#E8EAEB',
+    borderColor: C.line,
   },
   counterTitle: {
     fontFamily: FONTS.uiBold,
@@ -650,7 +656,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: C.line,
   },
   stepBtn: {
     width: 28,
@@ -698,14 +704,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 14,
-    backgroundColor: C.fill,
+    backgroundColor: C.sand,
     borderWidth: 1,
-    borderColor: '#E8EAEB',
+    borderColor: C.line,
   },
   priceDivLine: {
     width: 10,
     height: 1.5,
-    backgroundColor: '#CBD5E1',
+    backgroundColor: C.lineStrong,
   },
   pricePillLabel: {
     fontFamily: FONTS.ui,
@@ -732,14 +738,14 @@ const styles = StyleSheet.create({
   typePillInactive: {
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: C.line,
   },
   typeText: {
     fontFamily: FONTS.uiSemi,
     fontSize: 13,
   },
   typeTextActive: {
-    color: C.pureWhite,
+    color: C.sand,
   },
   typeTextInactive: {
     color: C.ink,
@@ -756,7 +762,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     backgroundColor: C.pureWhite,
     borderTopWidth: 1,
-    borderTopColor: '#ECEEF0',
+    borderTopColor: C.line,
     ...shadow.dock,
   },
   resetBtn: {
@@ -765,7 +771,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: C.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -787,6 +793,6 @@ const styles = StyleSheet.create({
   searchActionText: {
     fontFamily: FONTS.uiBold,
     fontSize: 14.5,
-    color: C.pureWhite,
+    color: C.cream,
   },
 });

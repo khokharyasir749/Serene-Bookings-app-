@@ -15,19 +15,19 @@ import { useBooking } from '@/state/booking';
 import { C, FONTS, S, shadow } from '@/theme';
 
 const POPULAR_FACILITIES: { icon: IconName; label: string }[] = [
-  { icon: 'water-outline', label: 'Heated pool' },
-  { icon: 'restaurant-outline', label: 'Rooftop dining' },
-  { icon: 'barbell-outline', label: 'Gym & spa' },
-  { icon: 'wifi-outline', label: 'Fast Wi-Fi' },
-  { icon: 'business-outline', label: '24/7 concierge' },
-  { icon: 'car-outline', label: 'Valet parking' },
+  { icon: 'water-outline', label: 'Glass-roof heated pool' },
+  { icon: 'restaurant-outline', label: 'Rooftop restaurant' },
+  { icon: 'flower-outline', label: 'Sauna, jacuzzi & spa' },
+  { icon: 'snow-outline', label: 'Snow & ski slope' },
+  { icon: 'business-outline', label: '24/7 front desk' },
+  { icon: 'flame-outline', label: 'Heated floors & heating' },
 ];
 
 const RATING_BREAKDOWN = [
   { label: 'Cleanliness', score: 4.9 },
-  { label: 'Communication', score: 5.0 },
-  { label: 'Location', score: 4.9 },
-  { label: 'Value', score: 4.8 },
+  { label: 'Location & views', score: 5.0 },
+  { label: 'Staff & service', score: 4.9 },
+  { label: 'Comfort & warmth', score: 4.8 },
 ];
 
 export default function RoomDetail() {
@@ -124,7 +124,7 @@ export default function RoomDetail() {
               <View style={styles.locRow}>
                 <Ionicons name="location-outline" size={14} color={C.ink55} />
                 <Text style={styles.locText} numberOfLines={1}>
-                  Nathia Gali, Pakistan · 7,906 ft
+                  1.5 KM Kala Bagh Air Base Rd, Nathia Gali · 7,906 ft
                 </Text>
               </View>
             </View>
@@ -384,9 +384,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 22,
-    lineHeight: 27,
+    fontFamily: FONTS.display,
+    fontSize: 25,
+    lineHeight: 29,
     letterSpacing: -0.3,
     color: C.ink,
   },

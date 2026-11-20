@@ -1,38 +1,63 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { memo, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BrandHeader from '@/components/BrandHeader';
-import { Rating, SectionTitle } from '@/components/kit';
+import { Rating } from '@/components/kit';
 import LuxuryFooter from '@/components/LuxuryFooter';
 import RoomCard from '@/components/RoomCard';
 import Scrim from '@/components/Scrim';
 import { useScrollTop } from '@/components/ScrollTop';
 import { Text } from '@/components/Text';
 import { Photo, PressableScale } from '@/components/ui';
-import { PROPERTY, ROOM_TYPES, type RoomType } from '@/data/catalog';
-import { fmtShort, type Stay } from '@/lib/stay';
+import { FACTS, PROPERTY, ROOM_TYPES, type RoomType } from '@/data/catalog';
+import { fmtShort } from '@/lib/stay';
 import { useBooking } from '@/state/booking';
 import { C, FONTS, S, shadow, T, tabBarSpace } from '@/theme';
 
-const RECENT_EXPLORED = [
-  { id: '1', title: 'Nathia Gali', date: '20 Sep–29 Sep', badge: 'Want to visit', image: '/images/resort/hero-tower-mist.jpg' },
-  { id: '2', title: 'Murree Hills', date: '15 Oct–22 Oct', badge: 'Popular', image: '/images/resort/aerial-snow-resort.jpg' },
-  { id: '3', title: 'Miranjani Peak', date: '01 Nov–08 Nov', badge: 'Scenic stay', image: '/images/resort/terrace-mist.jpg' },
-  { id: '4', title: 'Mukshpuri Top', date: '10 Dec–18 Dec', badge: 'Mountain view', image: '/images/resort/tower-sunset-forest.jpg' },
+// Authentic Serene Heights seasons & resort features from serene-booking-web
+const RESORT_HIGHLIGHTS = [
+  {
+    id: '1',
+    title: 'Nathia Gali Pines',
+    sub: '7,906 ft · 2 hrs from Islamabad',
+    badge: 'Mountain resort',
+    image: '/images/resort/hero-tower-mist.jpg',
+  },
+  {
+    id: '2',
+    title: 'Winter Snow Slopes',
+    sub: 'Dec – Feb · Ski slope & heated pool',
+    badge: 'Snow season',
+    image: '/images/resort/aerial-snow-resort.jpg',
+  },
+  {
+    id: '3',
+    title: 'Summer Mountain Air',
+    sub: 'Jun – Sep · Misty greens & cool air',
+    badge: 'Summer peak',
+    image: '/images/resort/tower-sunset-forest.jpg',
+  },
+  {
+    id: '4',
+    title: 'Top-Floor Terraces',
+    sub: '8th floor · Private outdoor living',
+    badge: 'Stargazing',
+    image: '/images/resort/rooftop-crown.jpg',
+  },
 ];
 
 const FILTER_PILLS = [
-  { key: 'location', label: 'Location', active: true, chevron: true },
-  { key: 'price', label: 'Price', active: false, chevron: true },
-  { key: 'rating', label: 'Rating', active: false, chevron: true },
-  { key: 'reviews', label: 'Reviews', active: false, chevron: false },
-  { key: 'amenities', label: 'Amenities', active: false, chevron: false },
+  { key: 'all', label: 'All apartments', active: true, chevron: true },
+  { key: 'terrace', label: 'Private terrace', active: false, chevron: false },
+  { key: 'corner', label: 'Corner views', active: false, chevron: false },
+  { key: 'pool', label: 'Heated pool', active: false, chevron: false },
+  { key: 'dining', label: 'Rooftop dining', active: false, chevron: false },
 ];
 
-const EXPERIENCES = PROPERTY.experiences.slice(0, 6);
+const EXPERIENCES = PROPERTY.experiences.slice(0, 8);
 
 export default function Discover() {
   const router = useRouter();
@@ -41,7 +66,7 @@ export default function Discover() {
   const { stay, user } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [selectedFilter, setSelectedFilter] = useState('location');
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
   useFocusEffect(
     useCallback(() => {
@@ -53,7 +78,7 @@ export default function Discover() {
     router.push({ pathname: '/stay', params: { tab: tab ?? 'dates', next: 'apartments' } });
   };
 
-  const userName = user?.firstName ?? 'Guest';
+  const userName = user?.firstName ? `${user.firstName}` : 'Guest';
 
   return (
     <View style={styles.root}>
@@ -74,42 +99,32 @@ export default function Discover() {
         {/* Serene Brand Lockup */}
         <BrandHeader />
 
-        {/* Shakuro Header: Greeting & Notification Bell */}
+        {/* Header: Greeting & Serene Tagline (Notification Bell removed as requested) */}
         <View style={styles.headerRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.greetingTitle}>Hey, {userName}!</Text>
-            <Text style={styles.greetingSub}>Explore new hotels for your next stay!</Text>
-          </View>
-          <Pressable
-            onPress={() => router.push('/menu')}
-            accessibilityLabel="Notifications"
-            style={({ pressed }) => [styles.bellBtn, pressed && { opacity: 0.85 }]}
-          >
-            <Ionicons name="notifications-outline" size={20} color={C.ink} />
-            <View style={styles.bellBadge}>
-              <Text style={styles.bellBadgeText}>3</Text>
-            </View>
-          </Pressable>
+          <Text style={styles.greetingTitle}>Welcome, {userName}</Text>
+          <Text style={styles.greetingSub}>
+            Pakistan's first & largest winter resort · 7,906 ft above Islamabad
+          </Text>
         </View>
 
-        {/* Shakuro Search Bar Pill */}
+        {/* Serene Pill Search Bar */}
         <View style={styles.searchWrap}>
           <PressableScale onPress={() => openFilter('dates')} scaleTo={0.99} style={styles.searchBar}>
-            <Ionicons name="search-outline" size={20} color="#8E95A2" style={{ marginLeft: 4 }} />
+            <Ionicons name="search-outline" size={20} color={C.gold} style={{ marginLeft: 4 }} />
             <View style={styles.searchTextWrap}>
               <Text style={styles.searchPlaceholder} numberOfLines={1}>
                 {stay.checkIn && stay.checkOut
                   ? `Nathia Gali · ${fmtShort(stay.checkIn)} – ${fmtShort(stay.checkOut)}`
-                  : 'Search hotels, destinations...'}
+                  : 'Serene Heights · Search dates & residences...'}
               </Text>
             </View>
             <View style={styles.filterBtn}>
-              <Ionicons name="options-outline" size={17} color={C.ink} />
+              <Ionicons name="options-outline" size={17} color={C.pine} />
             </View>
           </PressableScale>
         </View>
 
-        {/* Shakuro Filter Chips Row */}
+        {/* Filter Chips Row */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -123,10 +138,12 @@ export default function Discover() {
                 key={pill.key}
                 onPress={() => {
                   setSelectedFilter(pill.key);
-                  if (pill.key === 'location' || pill.key === 'price') {
+                  if (pill.key === 'all') {
                     openFilter('dates');
-                  } else if (pill.key === 'amenities') {
+                  } else if (pill.key === 'pool' || pill.key === 'dining') {
                     router.push('/amenities');
+                  } else {
+                    router.navigate('/apartments');
                   }
                 }}
                 style={({ pressed }) => [
@@ -142,7 +159,7 @@ export default function Discover() {
                   <Ionicons
                     name="chevron-down"
                     size={13}
-                    color={isActive ? C.pureWhite : C.ink}
+                    color={isActive ? C.sand : C.ink}
                     style={{ marginLeft: 3 }}
                   />
                 )}
@@ -151,9 +168,12 @@ export default function Discover() {
           })}
         </ScrollView>
 
-        {/* Shakuro "Recently explored" Section */}
+        {/* Mountain Highlights / Seasons Carousel */}
         <View style={styles.sectionHeadRow}>
-          <Text style={styles.sectionHeadTitle}>Recently explored</Text>
+          <View>
+            <Text style={styles.sectionHeadTitle}>Resort highlights</Text>
+            <Text style={styles.sectionHeadSub}>Experience 7,906 ft across all seasons</Text>
+          </View>
           <Pressable onPress={() => router.navigate('/apartments')} hitSlop={8}>
             <Text style={styles.sectionHeadAction}>See all</Text>
           </Pressable>
@@ -165,7 +185,7 @@ export default function Discover() {
           nestedScrollEnabled
           contentContainerStyle={styles.recentScroll}
         >
-          {RECENT_EXPLORED.map((item) => (
+          {RESORT_HIGHLIGHTS.map((item) => (
             <PressableScale
               key={item.id}
               onPress={() => router.navigate('/apartments')}
@@ -182,21 +202,44 @@ export default function Discover() {
               {/* Bottom titles */}
               <View style={styles.recentBottom}>
                 <Text style={styles.recentTitle}>{item.title}</Text>
-                <Text style={styles.recentDate}>{item.date}</Text>
+                <Text style={styles.recentDate}>{item.sub}</Text>
               </View>
             </PressableScale>
           ))}
         </ScrollView>
 
-        {/* Shakuro "Popular hotels" (Popular apartments) Section */}
+        {/* Serene Resort Glance Bar */}
+        <View style={styles.glance}>
+          <View style={styles.glanceItem}>
+            <Text style={styles.glanceNum}>7,906 ft</Text>
+            <Text style={styles.glanceLabel}>Altitude</Text>
+          </View>
+          <View style={[styles.glanceItem, styles.glanceDiv]}>
+            <Text style={styles.glanceNum}>50+</Text>
+            <Text style={styles.glanceLabel}>Facilities</Text>
+          </View>
+          <View style={[styles.glanceItem, styles.glanceDiv]}>
+            <Text style={styles.glanceNum}>24/7</Text>
+            <Text style={styles.glanceLabel}>Concierge</Text>
+          </View>
+          <View style={[styles.glanceItem, styles.glanceDiv]}>
+            <Text style={styles.glanceNum}>2 hrs</Text>
+            <Text style={styles.glanceLabel}>Islamabad</Text>
+          </View>
+        </View>
+
+        {/* Popular Residences (All 5 Serene Apartment Types) */}
         <View style={[styles.sectionHeadRow, { marginTop: 28 }]}>
-          <Text style={styles.sectionHeadTitle}>Popular hotels</Text>
+          <View>
+            <Text style={styles.sectionHeadTitle}>Popular residences</Text>
+            <Text style={styles.sectionHeadSub}>Furnished hotel-apartments with private balconies</Text>
+          </View>
           <Pressable onPress={() => router.navigate('/apartments')} hitSlop={8}>
-            <Text style={styles.sectionHeadAction}>See all</Text>
+            <Text style={styles.sectionHeadAction}>All stays</Text>
           </Pressable>
         </View>
 
-        {/* Vertical list of Shakuro Room Cards */}
+        {/* Vertical list of Serene Room Cards */}
         <View style={styles.roomsList}>
           {ROOM_TYPES.map((type) => (
             <RoomCard key={type.slug} type={type} stay={stay} />
@@ -204,8 +247,11 @@ export default function Discover() {
         </View>
 
         {/* Resort facilities / Experiences carousel */}
-        <View style={[styles.sectionHeadRow, { marginTop: 24 }]}>
-          <Text style={styles.sectionHeadTitle}>Resort experiences</Text>
+        <View style={[styles.sectionHeadRow, { marginTop: 20 }]}>
+          <View>
+            <Text style={styles.sectionHeadTitle}>Resort facilities</Text>
+            <Text style={styles.sectionHeadSub}>Heated pool, dining & wellness at 7,906 ft</Text>
+          </View>
           <Pressable onPress={() => router.push('/amenities')} hitSlop={8}>
             <Text style={styles.sectionHeadAction}>50+ facilities</Text>
           </Pressable>
@@ -242,64 +288,33 @@ const styles = StyleSheet.create({
     backgroundColor: C.canvas,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: S.gutter,
-    marginTop: 22,
+    marginTop: 20,
   },
   greetingTitle: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 22,
-    lineHeight: 27,
+    fontFamily: FONTS.display,
+    fontSize: 27,
+    lineHeight: 31,
     letterSpacing: -0.3,
     color: C.ink,
   },
   greetingSub: {
     fontFamily: FONTS.ui,
     fontSize: 13.5,
-    color: C.ink55,
-    marginTop: 3,
-  },
-  bellBtn: {
-    position: 'relative',
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: C.pureWhite,
-    borderWidth: 1,
-    borderColor: '#E8EAEB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow.pill,
-  },
-  bellBadge: {
-    position: 'absolute',
-    top: 3,
-    right: 3,
-    minWidth: 17,
-    height: 17,
-    borderRadius: 8.5,
-    backgroundColor: C.coral,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  bellBadgeText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 10,
-    color: C.pureWhite,
+    lineHeight: 19,
+    color: C.ink70,
+    marginTop: 4,
   },
   searchWrap: {
     paddingHorizontal: S.gutter,
     marginTop: 18,
   },
   searchBar: {
-    height: 52,
-    borderRadius: 26,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: '#E8EAEB',
+    borderColor: C.line,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -311,14 +326,16 @@ const styles = StyleSheet.create({
   },
   searchPlaceholder: {
     fontFamily: FONTS.uiMedium,
-    fontSize: 14,
-    color: '#8E95A2',
+    fontSize: 13.5,
+    color: C.ink70,
   },
   filterBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: C.fill,
+    backgroundColor: C.warmSand,
+    borderWidth: 1,
+    borderColor: C.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -340,21 +357,21 @@ const styles = StyleSheet.create({
   chipInactive: {
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: C.line,
   },
   chipText: {
     fontFamily: FONTS.uiSemi,
     fontSize: 13,
   },
   chipTextActive: {
-    color: C.pureWhite,
+    color: C.sand,
   },
   chipTextInactive: {
     color: C.ink,
   },
   sectionHeadRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
     paddingHorizontal: S.gutter,
     marginTop: 26,
@@ -366,21 +383,29 @@ const styles = StyleSheet.create({
     color: C.ink,
     letterSpacing: -0.2,
   },
+  sectionHeadSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+    marginTop: 2,
+  },
   sectionHeadAction: {
     fontFamily: FONTS.uiSemi,
     fontSize: 13,
-    color: C.ink55,
+    color: C.gold,
   },
   recentScroll: {
     paddingHorizontal: S.gutter,
     gap: 12,
   },
   recentCard: {
-    width: 165,
-    height: 195,
+    width: 170,
+    height: 200,
     borderRadius: 22,
     overflow: 'hidden',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: C.snow,
+    borderWidth: 1,
+    borderColor: C.line,
   },
   recentBadge: {
     position: 'absolute',
@@ -389,26 +414,58 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.line,
     ...shadow.pill,
   },
   recentBadgeText: {
     fontFamily: FONTS.uiSemi,
     fontSize: 11,
-    color: C.ink,
+    color: C.pine,
   },
   recentBottom: {
     padding: 12,
   },
   recentTitle: {
     fontFamily: FONTS.uiBold,
-    fontSize: 16.5,
+    fontSize: 15.5,
     color: C.pureWhite,
   },
   recentDate: {
     fontFamily: FONTS.ui,
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11.5,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginTop: 2,
+  },
+  glance: {
+    flexDirection: 'row',
+    marginHorizontal: S.gutter,
+    marginTop: 22,
+    paddingVertical: 16,
+    backgroundColor: C.pine,
+    borderRadius: S.card,
+    borderWidth: 1,
+    borderColor: C.goldLine,
+  },
+  glanceItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  glanceDiv: {
+    borderLeftWidth: StyleSheet.hairlineWidth,
+    borderLeftColor: C.goldLine,
+  },
+  glanceNum: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 17,
+    color: C.sand,
+    fontVariant: ['tabular-nums'],
+  },
+  glanceLabel: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11,
+    color: C.gold,
     marginTop: 2,
   },
   roomsList: {
@@ -425,6 +482,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: 12,
     backgroundColor: C.fill,
+    borderWidth: 1,
+    borderColor: C.line,
   },
   expTitle: {
     fontFamily: FONTS.uiBold,
