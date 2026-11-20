@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ChevronRight } from '@/components/icons';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Text } from '@/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,22 +22,13 @@ const SEASONS = {
   summer: '/images/resort/hero-tower-mist.jpg',
   winter: '/images/resort/aerial-snow-resort.jpg',
 } as const;
-type Season = keyof typeof SEASONS;
 
 const GLANCE = [
   { value: '7,906 ft', label: 'Altitude', icon: 'trail-sign-outline' as const },
-  { value: '50+', label: 'Facilities', icon: 'sparkles-outline' as const },
+  { value: '50+', label: 'Facilities', icon: 'business-outline' as const },
   { value: '24/7', label: 'Concierge', icon: 'key-outline' as const },
   { value: '2 hrs', label: 'Islamabad', icon: 'car-outline' as const },
 ];
-
-const FILTER_PILLS = [
-  { key: 'all', label: 'All residences', icon: 'sparkles-outline' as const },
-  { key: 'terrace', label: 'Private terrace', icon: 'sunny-outline' as const },
-  { key: 'corner', label: 'Corner suites', icon: 'grid-outline' as const },
-  { key: 'family', label: 'Sleeps 4+', icon: 'people-outline' as const },
-  { key: 'pool', label: 'Heated pool', icon: 'water-outline' as const },
-] as const;
 
 const EXPERIENCES = [
   {
@@ -84,8 +75,6 @@ export default function Discover() {
   const { width } = useWindowDimensions();
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
-  const [season, setSeason] = useState<Season>('summer');
-  const [selectedFilter, setSelectedFilter] = useState('all');
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const resW = Math.min(300, Math.round(width * 0.76));
 
@@ -96,19 +85,6 @@ export default function Discover() {
   );
 
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
-
-  const filteredRooms = useMemo(() => {
-    if (selectedFilter === 'terrace') {
-      return ROOM_TYPES.filter((r) => r.outdoorSpace.toLowerCase().includes('terrace'));
-    }
-    if (selectedFilter === 'corner') {
-      return ROOM_TYPES.filter((r) => r.slug.includes('corner'));
-    }
-    if (selectedFilter === 'family') {
-      return ROOM_TYPES.filter((r) => r.maxOccupancy >= 4);
-    }
-    return ROOM_TYPES;
-  }, [selectedFilter]);
 
   const featuredReview = REVIEWS[0];
 
@@ -128,71 +104,24 @@ export default function Discover() {
       >
         {/* Full-Bleed Panoramic Mountain Hero Stage */}
         <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
-          <Photo src={SEASONS[season]} style={StyleSheet.absoluteFill} />
+          <Photo src={SEASONS.summer} style={StyleSheet.absoluteFill} />
           {/* Dual scrim: top scrim for brand header, bottom deep pine scrim for editorial copy */}
-          <Scrim top={0.42} bottom={0.94} />
+          <Scrim top={0.35} bottom={0.92} />
 
           {/* Integrated Luxury Brand Header */}
           <BrandHeader variant="overPhoto" />
 
-          {/* Ambient Mountain Vital Info & Season Switcher */}
-          <View style={styles.heroTopRow}>
-            <View style={styles.heroBadge}>
-              <View style={styles.livePulse} />
-              <Text style={styles.heroBadgeText}>7,906 FT · PAF AIRBASE ROAD</Text>
-            </View>
-
-            <View style={styles.seasonSwitch}>
-              <Pressable
-                onPress={() => setSeason('summer')}
-                hitSlop={6}
-                style={[styles.seasonBtn, season === 'summer' && styles.seasonBtnOn]}
-                accessibilityLabel="Summer season">
-                <Text style={[styles.seasonBtnText, season === 'summer' && styles.seasonBtnTextOn]}>
-                  ☀️ Summer 18°C
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setSeason('winter')}
-                hitSlop={6}
-                style={[styles.seasonBtn, season === 'winter' && styles.seasonBtnOn]}
-                accessibilityLabel="Winter season">
-                <Text style={[styles.seasonBtnText, season === 'winter' && styles.seasonBtnTextOn]}>
-                  ❄️ Winter -2°C
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
           <View style={{ flex: 1 }} />
 
-          {/* Bottom editorial content inside hero */}
+          {/* Clean Editorial Content Inside Hero (No Pills, No AI Icons) */}
           <View style={styles.heroBottom}>
-            <View style={styles.heroKickerRow}>
-              <Text style={styles.heroKicker}>✦ BESPOKE ALPINE RESIDENCES · NATHIA GALI</Text>
-            </View>
+            <Text style={styles.heroKicker}>BESPOKE ALPINE RESIDENCES · NATHIA GALI</Text>
             <Text style={styles.heroTitle}>
               Where clouds meet <Text style={styles.heroTitleItalic}>luxury</Text>
             </Text>
             <Text style={styles.heroSub}>
-              Pakistan's premier 5-star mountain sanctuary with private ski slope & year-round heated rooftop glass pool.
+              Pakistan's premier 5-star mountain sanctuary beside PAF Airbase Nathia Gali.
             </Text>
-
-            {/* Micro feature pills inside hero */}
-            <View style={styles.heroFeaturesRow}>
-              <View style={styles.heroFeaturePill}>
-                <Ionicons name="eye-outline" size={12} color={C.gold} style={{ marginRight: 4 }} />
-                <Text style={styles.heroFeatureText}>360° Valley Views</Text>
-              </View>
-              <View style={styles.heroFeaturePill}>
-                <Ionicons name="snow-outline" size={12} color={C.gold} style={{ marginRight: 4 }} />
-                <Text style={styles.heroFeatureText}>Private Ski Slope</Text>
-              </View>
-              <View style={styles.heroFeaturePill}>
-                <Ionicons name="flame-outline" size={12} color={C.gold} style={{ marginRight: 4 }} />
-                <Text style={styles.heroFeatureText}>Heated Living</Text>
-              </View>
-            </View>
           </View>
         </View>
 
@@ -209,47 +138,12 @@ export default function Discover() {
           />
         </View>
 
-        {/* Interactive Category Filter Chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.chipsScroll}
-        >
-          {FILTER_PILLS.map((pill) => {
-            const isActive = selectedFilter === pill.key;
-            return (
-              <Pressable
-                key={pill.key}
-                onPress={() => {
-                  if (pill.key === 'pool') {
-                    router.push('/amenities');
-                  } else {
-                    setSelectedFilter(pill.key);
-                  }
-                }}
-                style={[styles.chip, isActive && styles.chipActive]}
-              >
-                <Ionicons
-                  name={pill.icon}
-                  size={14}
-                  color={isActive ? C.gold : C.pine}
-                  style={{ marginRight: 6 }}
-                />
-                <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
-                  {pill.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-
         {/* At a glance metric bar */}
         <View style={styles.glance}>
           {GLANCE.map((g, i) => (
             <View key={g.label} style={[styles.glanceItem, i > 0 && styles.glanceDiv]}>
               <View style={styles.glanceIconRow}>
-                <Ionicons name={g.icon} size={12} color={C.gold} style={{ marginRight: 3 }} />
+                <Ionicons name={g.icon} size={13} color={C.gold} style={{ marginRight: 4 }} />
                 <Text style={styles.glanceNum}>{g.value}</Text>
               </View>
               <Text style={styles.glanceLabel}>{g.label.toUpperCase()}</Text>
@@ -266,7 +160,7 @@ export default function Discover() {
         <FlatList
           horizontal
           nestedScrollEnabled
-          data={filteredRooms}
+          data={ROOM_TYPES}
           keyExtractor={(t) => t.slug}
           renderItem={({ item }) => (
             <ResidenceCard
@@ -439,7 +333,7 @@ const ResidenceCard = memo(function ResidenceCard({
         <Photo src={t.images[0]} style={styles.resImg} />
         {/* Top-left tag */}
         <View style={styles.resTag}>
-          <Text style={styles.resTagText}>✦ {tag}</Text>
+          <Text style={styles.resTagText}>{tag}</Text>
         </View>
         {/* Top-right favorite button */}
         <Pressable
@@ -475,9 +369,8 @@ const ResidenceCard = memo(function ResidenceCard({
               {money(t.baseRate)} <Text style={styles.resNight}>/ night</Text>
             </Text>
           </View>
-          <View style={styles.resCtaPill}>
-            <Text style={styles.resCtaText}>View</Text>
-            <Ionicons name="arrow-forward" size={12} color={C.cream} />
+          <View style={styles.resArrow}>
+            <Ionicons name="arrow-forward" size={13} color={C.cream} />
           </View>
         </View>
       </View>
@@ -542,74 +435,16 @@ function SectionHead({
 const styles = StyleSheet.create({
   hero: {
     width: '100%',
-    height: 485,
+    height: 420,
     borderBottomLeftRadius: 36,
     borderBottomRightRadius: 36,
     overflow: 'hidden',
     backgroundColor: C.pine,
     ...shadow.cardHover,
   },
-  heroTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: S.gutter,
-    marginTop: 14,
-  },
-  livePulse: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#4ADE80',
-    marginRight: 6,
-  },
-  heroBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5.5,
-    borderRadius: 999,
-    backgroundColor: 'rgba(18, 53, 36, 0.75)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.28)',
-  },
-  heroBadgeText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 9.5,
-    letterSpacing: 1.2,
-    color: '#FFFFFF',
-  },
-  seasonSwitch: {
-    flexDirection: 'row',
-    padding: 3,
-    borderRadius: 999,
-    backgroundColor: 'rgba(18, 53, 36, 0.75)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.22)',
-  },
-  seasonBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-  },
-  seasonBtnOn: {
-    backgroundColor: C.gold,
-  },
-  seasonBtnText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.88)',
-  },
-  seasonBtnTextOn: {
-    color: C.pine,
-  },
   heroBottom: {
-    paddingHorizontal: 20,
-    paddingBottom: 58,
-  },
-  heroKickerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: S.gutter,
+    paddingBottom: 48,
   },
   heroKicker: {
     fontFamily: FONTS.uiBold,
@@ -623,7 +458,7 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     letterSpacing: -0.3,
     color: '#FFFFFF',
-    marginTop: 5,
+    marginTop: 6,
   },
   heroTitleItalic: {
     fontFamily: FONTS.displayItalic,
@@ -631,69 +466,20 @@ const styles = StyleSheet.create({
   },
   heroSub: {
     fontFamily: FONTS.ui,
-    fontSize: 12.5,
-    lineHeight: 18,
+    fontSize: 13,
+    lineHeight: 19,
     color: 'rgba(236, 238, 237, 0.92)',
     marginTop: 6,
   },
-  heroFeaturesRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 14,
-  },
-  heroFeaturePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
-    borderRadius: 999,
-    backgroundColor: 'rgba(0, 0, 0, 0.38)',
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.32)',
-  },
-  heroFeatureText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 10,
-    color: '#ECEEED',
-  },
   searchCardWrap: {
     paddingHorizontal: S.gutter,
-    marginTop: -38,
+    marginTop: -32,
     zIndex: 10,
-  },
-  chipsScroll: {
-    paddingHorizontal: S.gutter,
-    gap: 8,
-    marginTop: 20,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    height: 38,
-    borderRadius: 999,
-    backgroundColor: C.pureWhite,
-    borderWidth: 1,
-    borderColor: C.line,
-    ...shadow.pill,
-  },
-  chipActive: {
-    backgroundColor: C.pine,
-    borderColor: C.pine,
-  },
-  chipText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 12.5,
-    color: C.ink,
-  },
-  chipTextActive: {
-    color: C.cream,
   },
   glance: {
     flexDirection: 'row',
     marginHorizontal: S.gutter,
-    marginTop: 18,
+    marginTop: 20,
     paddingVertical: 16,
     backgroundColor: C.pine,
     borderRadius: 22,
@@ -730,7 +516,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: S.gutter,
-    marginTop: 34,
+    marginTop: 32,
     marginBottom: 14,
   },
   sectionTitle: {
@@ -856,20 +642,13 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: C.ink55,
   },
-  resCtaPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 11,
-    paddingVertical: 6,
-    borderRadius: 999,
+  resArrow: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: C.pine,
-    ...shadow.pill,
-  },
-  resCtaText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 11.5,
-    color: C.cream,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   expCard: {
     width: 180,
