@@ -35,37 +35,37 @@ const EXPERIENCES = [
     title: 'Heated Glass Pool',
     category: 'WELLNESS · 8TH FLOOR',
     image: '/images/resort/aerial-rooftop-pool.jpg',
-    desc: 'Indoor heated infinity pool with 360° cloud & pine valley views.',
+    pill: '360° Cloud Views',
   },
   {
     title: 'Panoramic Dining',
     category: 'FINE DINING · ROOFTOP',
     image: '/images/dining/rooftop-dining-glass.jpg',
-    desc: 'Cloud-level dining featuring Pakistani heritage & global cuisine.',
+    pill: 'Cloud-Level Cuisine',
   },
   {
     title: 'Private Ski Slope',
     category: 'WINTER SPORTS · SLOPE G2',
     image: '/images/activities/ski-slope-aerial.jpg',
-    desc: "Pakistan's first private ski slope and snow tubing track.",
+    pill: 'Winter Snow Slope',
   },
   {
     title: 'Sunset Sky Lounge',
     category: 'LOUNGE & HIGH TEA',
     image: '/images/dining/sky-lounge.jpg',
-    desc: 'Artisanal high tea and evening mocktails facing sunset vistas.',
+    pill: 'High Tea & Sunsets',
   },
   {
     title: 'Pine Forest Trails',
     category: 'OUTDOOR EXPLORATION',
     image: '/images/activities/winter-trails.jpg',
-    desc: 'Private gated trailhead leading directly into the historic forest.',
+    pill: 'Private Trailhead',
   },
   {
     title: 'Cedarwood Sauna & Spa',
     category: 'SPA & HYDROTHERAPY',
     image: '/images/resort/glass-roof-pool.jpg',
-    desc: 'Alpine steam room, cedarwood sauna, and cold plunge recovery.',
+    pill: 'Steam & Cold Plunge',
   },
 ];
 
@@ -193,7 +193,7 @@ export default function Discover() {
               title={item.title}
               category={item.category}
               image={item.image}
-              desc={item.desc}
+              pill={item.pill}
               onPress={() => router.push('/amenities')}
             />
           )}
@@ -331,38 +331,59 @@ const ResidenceCard = memo(function ResidenceCard({
     <PressableScale onPress={onPress} scaleTo={0.975} style={[styles.resCard, { width: w }]}>
       {/* Full-bleed portrait interior photography */}
       <Photo src={t.images[0]} style={StyleSheet.absoluteFill} />
-      <Scrim top={0.25} bottom={0.9} />
+      <Scrim top={0.25} bottom={0.88} />
 
-      {/* Top-left frosted tag */}
-      <View style={styles.resTag}>
-        <Text style={styles.resTagText}>{tag.toUpperCase()}</Text>
+      {/* Top pills row on picture */}
+      <View style={styles.cardTopRow}>
+        <View style={styles.topTagPill}>
+          <Text style={styles.topTagPillText}>{tag.toUpperCase()}</Text>
+        </View>
+
+        <Pressable
+          onPress={() => setFav((v) => !v)}
+          hitSlop={8}
+          style={styles.favPill}
+          accessibilityLabel="Favorite">
+          <Ionicons
+            name={fav ? 'heart' : 'heart-outline'}
+            size={16}
+            color={fav ? '#E11D48' : '#FFFFFF'}
+          />
+        </Pressable>
       </View>
-
-      {/* Top-right favorite button */}
-      <Pressable
-        onPress={() => setFav((v) => !v)}
-        hitSlop={8}
-        style={styles.resHeart}
-        accessibilityLabel="Favorite">
-        <Ionicons
-          name={fav ? 'heart' : 'heart-outline'}
-          size={16}
-          color={fav ? '#E11D48' : '#FFFFFF'}
-        />
-      </Pressable>
 
       <View style={{ flex: 1 }} />
 
-      {/* Bottom editorial content right on the picture */}
-      <View style={styles.resOverlay}>
-        <Text numberOfLines={2} style={styles.resName}>{t.name}</Text>
-        <Text style={styles.resPrice}>
-          From <Text style={styles.resPriceBold}>{money(t.baseRate)}</Text>
-          <Text style={styles.resNight}> / night</Text>
-        </Text>
-        <View style={styles.resActionRow}>
-          <Text style={styles.resActionText}>View suite details</Text>
-          <Ionicons name="arrow-forward" size={13} color={C.gold} />
+      {/* Bottom overlay with limited text and pills directly on picture */}
+      <View style={styles.cardBottomOverlay}>
+        {/* Spec pills on picture */}
+        <View style={styles.specPillsRow}>
+          <View style={styles.frostedPill}>
+            <Ionicons name="expand-outline" size={11.5} color={C.gold} style={{ marginRight: 4 }} />
+            <Text style={styles.frostedPillText}>{areaRangeOf(t.slug)}</Text>
+          </View>
+          <View style={styles.frostedPill}>
+            <Ionicons name="people-outline" size={11.5} color={C.gold} style={{ marginRight: 4 }} />
+            <Text style={styles.frostedPillText}>{t.maxOccupancy} Guests</Text>
+          </View>
+        </View>
+
+        {/* Limited suite name */}
+        <Text numberOfLines={1} style={styles.resName}>{t.name}</Text>
+
+        {/* Price & Action Pill row on picture */}
+        <View style={styles.cardFootOnPic}>
+          <View>
+            <Text style={styles.fromLabel}>STARTING FROM</Text>
+            <Text style={styles.priceOnPic}>
+              {money(t.baseRate)} <Text style={styles.nightOnPic}>/ night</Text>
+            </Text>
+          </View>
+
+          <View style={styles.actionPill}>
+            <Text style={styles.actionPillText}>View Suite</Text>
+            <Ionicons name="arrow-forward" size={12} color={C.cream} />
+          </View>
         </View>
       </View>
     </PressableScale>
@@ -373,35 +394,40 @@ const ExperienceCard = memo(function ExperienceCard({
   title,
   category,
   image,
-  desc,
+  pill,
   onPress,
 }: {
   title: string;
   category: string;
   image: string;
-  desc: string;
+  pill: string;
   onPress?: () => void;
 }) {
   return (
     <PressableScale onPress={onPress} scaleTo={0.975} style={styles.expCard}>
       <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim top={0.25} bottom={0.9} />
+      <Scrim top={0.25} bottom={0.88} />
 
-      {/* Top category badge */}
-      <View style={styles.expTag}>
-        <Text style={styles.expTagText}>{category}</Text>
+      {/* Top category pill on picture */}
+      <View style={styles.topTagPill}>
+        <Text style={styles.topTagPillText}>{category}</Text>
       </View>
 
       <View style={{ flex: 1 }} />
 
-      {/* Bottom editorial content */}
-      <View style={styles.expInfo}>
-        <Text numberOfLines={1} style={styles.expTitle}>{title}</Text>
-        <Text numberOfLines={2} style={styles.expDesc}>{desc}</Text>
+      {/* Bottom overlay with limited text and pills on picture */}
+      <View style={styles.cardBottomOverlay}>
+        <View style={styles.frostedPill}>
+          <Text style={styles.frostedPillText}>{pill}</Text>
+        </View>
 
-        <View style={styles.expActionRow}>
-          <Text style={styles.expActionText}>Explore facility</Text>
-          <Ionicons name="arrow-forward" size={12} color={C.gold} />
+        <Text numberOfLines={1} style={styles.expTitle}>{title}</Text>
+
+        <View style={styles.cardFootOnPic}>
+          <View style={styles.actionPill}>
+            <Text style={styles.actionPillText}>Explore</Text>
+            <Ionicons name="arrow-forward" size={12} color={C.cream} />
+          </View>
         </View>
       </View>
     </PressableScale>
@@ -550,87 +576,26 @@ const styles = StyleSheet.create({
     backgroundColor: C.pine,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.35)',
-    padding: 16,
+    padding: 14,
     ...shadow.cardHover,
-  },
-  resTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    backgroundColor: 'rgba(18, 53, 36, 0.78)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-  },
-  resTagText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 9,
-    letterSpacing: 1.1,
-    color: C.gold,
-  },
-  resHeart: {
-    position: 'absolute',
-    top: 14,
-    right: 14,
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow.pill,
-  },
-  resOverlay: {
-    paddingTop: 8,
-  },
-  resName: {
-    fontFamily: FONTS.display,
-    fontSize: 24,
-    lineHeight: 28,
-    color: '#FFFFFF',
-  },
-  resPrice: {
-    fontFamily: FONTS.ui,
-    fontSize: 13,
-    color: 'rgba(236, 238, 237, 0.92)',
-    marginTop: 6,
-  },
-  resPriceBold: {
-    fontFamily: FONTS.uiBold,
-    color: C.gold,
-    fontSize: 16,
-    fontVariant: ['tabular-nums'],
-  },
-  resNight: {
-    fontSize: 12,
-    color: 'rgba(236, 238, 237, 0.75)',
-  },
-  resActionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    marginTop: 10,
-  },
-  resActionText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 12,
-    color: C.gold,
-    letterSpacing: 0.3,
   },
   expCard: {
     width: 228,
     height: 310,
     borderRadius: 26,
     overflow: 'hidden',
-    padding: 16,
+    padding: 14,
     backgroundColor: C.pine,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.25)',
+    borderColor: 'rgba(200, 164, 106, 0.3)',
     ...shadow.cardHover,
   },
-  expTag: {
+  cardTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  topTagPill: {
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -639,38 +604,105 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.25)',
   },
-  expTagText: {
+  topTagPillText: {
     fontFamily: FONTS.uiBold,
     fontSize: 8.5,
-    letterSpacing: 1.3,
+    letterSpacing: 1.2,
     color: C.gold,
   },
-  expInfo: {
+  favPill: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.pill,
+  },
+  cardBottomOverlay: {
     paddingTop: 8,
+  },
+  specPillsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 8,
+  },
+  frostedPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0, 0, 0, 0.48)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.22)',
+  },
+  frostedPillText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 10.5,
+    color: '#ECEEED',
+  },
+  resName: {
+    fontFamily: FONTS.display,
+    fontSize: 23,
+    lineHeight: 27,
+    color: '#FFFFFF',
   },
   expTitle: {
     fontFamily: FONTS.display,
     fontSize: 22,
     lineHeight: 26,
     color: '#FFFFFF',
+    marginTop: 6,
   },
-  expDesc: {
-    fontFamily: FONTS.ui,
-    fontSize: 12,
-    lineHeight: 17,
-    color: 'rgba(236, 238, 237, 0.92)',
-    marginTop: 5,
-  },
-  expActionRow: {
+  cardFootOnPic: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'space-between',
     marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
   },
-  expActionText: {
+  fromLabel: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8.5,
+    letterSpacing: 1.1,
+    color: C.gold,
+  },
+  priceOnPic: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 17,
+    color: '#FFFFFF',
+    fontVariant: ['tabular-nums'],
+    marginTop: 1,
+  },
+  nightOnPic: {
+    fontFamily: FONTS.ui,
+    fontSize: 11.5,
+    color: 'rgba(236, 238, 237, 0.78)',
+  },
+  actionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
+    borderRadius: 999,
+    backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.4)',
+    ...shadow.pill,
+  },
+  actionPillText: {
     fontFamily: FONTS.uiBold,
     fontSize: 11.5,
-    color: C.gold,
+    color: C.cream,
   },
   storyCard: {
     marginHorizontal: S.gutter,
