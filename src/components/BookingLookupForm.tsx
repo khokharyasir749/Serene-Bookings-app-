@@ -37,7 +37,7 @@ export default function BookingLookupForm({ onFound, tone = 'light', onFocusFiel
     <View style={{ gap: 12 }}>
       {!hideNote && <Text style={[styles.note, dark && { color: C.cream70 }]}>No account needed — use your booking reference and the email you booked with.</Text>}
       <View>
-        <Text style={[styles.label, dark && { color: C.cream45 }]}>Booking reference</Text>
+        <Text style={[styles.label, dark && { color: C.cream45 }]}>BOOKING REFERENCE</Text>
         <TextInput
           value={reference}
           onChangeText={(v) => setReference(v.toUpperCase())}
@@ -55,7 +55,7 @@ export default function BookingLookupForm({ onFound, tone = 'light', onFocusFiel
         />
       </View>
       <View>
-        <Text style={[styles.label, dark && { color: C.cream45 }]}>Email address</Text>
+        <Text style={[styles.label, dark && { color: C.cream45 }]}>EMAIL ADDRESS</Text>
         <TextInput
           value={email}
           onChangeText={setEmail}
@@ -81,7 +81,7 @@ export default function BookingLookupForm({ onFound, tone = 'light', onFocusFiel
         </View>
       )}
       <Pressable onPress={submit} accessibilityRole="button" style={({ pressed }) => [styles.btn, dark && styles.btnDark, pressed && { opacity: 0.85 }]}>
-        <Text style={[styles.btnText, dark && { color: C.pine }]}>Find booking</Text>
+        <Text style={[styles.btnText, dark && { color: C.pine }]}>FIND BOOKING</Text>
         <Ionicons name="arrow-forward-outline" size={16} color={dark ? C.pine : C.cream} />
       </Pressable>
       <View style={styles.demo}>
@@ -97,17 +97,17 @@ export default function BookingLookupForm({ onFound, tone = 'light', onFocusFiel
 
 const styles = StyleSheet.create({
   note: { fontFamily: FONTS.ui, fontSize: 13, lineHeight: 18, color: C.ink55 },
-  label: { fontFamily: FONTS.uiSemi, fontSize: 13, color: C.ink, marginBottom: 8 },
-  input: { height: 52, paddingHorizontal: 16, borderRadius: 14, backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line, fontFamily: FONTS.uiMedium, fontSize: 15.5, color: C.ink },
+  label: { fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 1.3, color: C.ink55, marginBottom: 6 },
+  input: { height: 50, paddingHorizontal: 14, borderRadius: 14, backgroundColor: C.sand, borderWidth: 1.5, borderColor: 'transparent', fontFamily: FONTS.uiMedium, fontSize: 15.5, color: C.ink },
   inputDark: { backgroundColor: 'rgba(236, 238, 237, 0.08)', color: C.cream },
-  focus: { borderColor: C.pine, borderWidth: 1.5 },
+  focus: { borderColor: C.pine, backgroundColor: C.pureWhite },
   focusDark: { borderColor: C.gold, backgroundColor: 'rgba(236, 238, 237, 0.12)' },
   error: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, padding: 10, borderRadius: 10, backgroundColor: 'rgba(180, 35, 24, 0.07)' },
   errorDark: { backgroundColor: 'rgba(255, 180, 168, 0.1)' },
   errorText: { flex: 1, fontFamily: FONTS.uiMedium, fontSize: 12.5, color: C.danger },
-  btn: { height: 52, borderRadius: 999, backgroundColor: C.pine, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  btn: { height: 52, borderRadius: 14, backgroundColor: C.pine, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
   btnDark: { backgroundColor: C.cream },
-  btnText: { fontFamily: FONTS.uiBold, fontSize: 15, color: C.cream },
+  btnText: { fontFamily: FONTS.uiBold, fontSize: 12, letterSpacing: 2, color: C.cream },
   hint: { flexShrink: 1, fontFamily: FONTS.ui, fontSize: 11.5, color: C.ink55 },
   demo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 2 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, height: 28, borderRadius: 999, backgroundColor: C.snow },

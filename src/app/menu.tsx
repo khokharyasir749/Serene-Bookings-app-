@@ -10,7 +10,7 @@ import { Text } from '@/components/Text';
 import { CONTACT } from '@/data/contact';
 import { C, FONTS, S } from '@/theme';
 
-type Item = { n: string; label: string; sub: string; go: () => void };
+type Item = { n: string; label: string; go: () => void };
 
 // Full-screen navigation overlay on Deep Forest Pine: numbered serif destinations, the way the web's menu reads.
 export default function Menu() {
@@ -71,14 +71,14 @@ export default function Menu() {
     });
 
   const items: Item[] = [
-    { n: '01', label: 'Home', sub: 'Discover Serene Heights', go: toTab('/') },
-    { n: '02', label: 'Apartments', sub: 'Five one-bedroom layouts', go: toTab('/apartments') },
-    { n: '03', label: 'Amenities', sub: '50+ resort facilities', go: () => router.push('/amenities') },
-    { n: '04', label: 'Floor plans', sub: 'Find your apartment', go: () => router.push('/floor-plans') },
-    { n: '05', label: 'Location & contact', sub: 'Getting here, call or WhatsApp', go: () => router.push('/location') },
+    { n: '01', label: 'Home', go: toTab('/') },
+    { n: '02', label: 'Apartments', go: toTab('/apartments') },
+    { n: '03', label: 'Amenities', go: () => router.push('/amenities') },
+    { n: '04', label: 'Floor plans', go: () => router.push('/floor-plans') },
+    { n: '05', label: 'Location & contact', go: () => router.push('/location') },
     {
       n: '06',
-      label: 'Find a booking', sub: 'No account needed',
+      label: 'Find a booking',
       go: () => {
         Keyboard.dismiss();
         router.push('/find-booking');
@@ -94,9 +94,9 @@ export default function Menu() {
       <Animated.View style={[styles.curtain, curtain]}>
       <Animated.View style={[styles.root, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 16 }, inner]}>
       <View style={styles.top}>
-        <Text style={styles.place}>Serene Heights · Nathia Gali</Text>
+        <Text style={styles.place}>NATHIA GALI</Text>
         <Pressable onPress={() => closeThen()} hitSlop={14} style={styles.close} accessibilityRole="button" accessibilityLabel="Close menu">
-          <Text style={styles.closeText}>Close</Text>
+          <Text style={styles.closeText}>CLOSE</Text>
           <Ionicons name="close-outline" size={18} color={C.cream} />
         </Pressable>
       </View>
@@ -114,15 +114,10 @@ export default function Menu() {
                 accessibilityLabel={it.label}
                 style={styles.item}>
                 <Text style={[styles.num, on && { color: C.cream }]}>{it.n}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.label, on && { color: C.gold }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
-                    {it.label}
-                  </Text>
-                  <Text style={styles.sub} numberOfLines={1}>{it.sub}</Text>
-                </View>
-                <View style={[styles.go, on && styles.goOn]}>
-                  <Ionicons name="arrow-forward-outline" size={16} color={on ? C.pine : C.cream} />
-                </View>
+                <Text style={[styles.label, on && { color: C.gold }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
+                  {it.label.toUpperCase()}
+                </Text>
+                <Ionicons name="arrow-forward-outline" size={20} color={C.gold} style={{ opacity: on ? 1 : 0 }} />
               </Pressable>
             </Animated.View>
           );
@@ -132,10 +127,10 @@ export default function Menu() {
       <View style={styles.foot}>
         {quick.map((q) => (
           <Pressable key={q.label} onPress={() => void Linking.openURL(q.href).catch(() => {})} style={({ pressed }) => [styles.quick, pressed && { opacity: 0.7 }]} accessibilityRole="link" accessibilityLabel={`${q.label}: ${q.value}`}>
-            <Ionicons name={q.icon as never} size={17} color={C.gold} />
-            <View style={{ flexShrink: 1 }}>
-              <Text style={styles.quickLabel}>{q.label}</Text>
-              <Text style={styles.quickValue} numberOfLines={1}>{q.value}</Text>
+            <Ionicons name={q.icon as never} size={16} color={C.gold} />
+            <View>
+              <Text style={styles.quickLabel}>{q.label.toUpperCase()}</Text>
+              <Text style={styles.quickValue}>{q.value}</Text>
             </View>
           </Pressable>
         ))}
@@ -152,18 +147,15 @@ const styles = StyleSheet.create({
   curtain: { flex: 1, overflow: 'hidden', backgroundColor: C.pine },
   root: { flex: 1, backgroundColor: C.pine, paddingHorizontal: S.gutter + 2 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.goldLine },
-  place: { color: C.cream70, fontFamily: FONTS.uiSemi, fontSize: 13 },
-  close: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingLeft: 14, paddingRight: 10, borderRadius: 999, borderWidth: 1, borderColor: 'rgba(236, 238, 237, 0.3)' },
-  closeText: { color: C.cream, fontFamily: FONTS.uiSemi, fontSize: 13 },
-  item: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(236, 238, 237, 0.14)' },
-  num: { width: 24, color: C.gold, fontFamily: FONTS.uiBold, fontSize: 12, fontVariant: ['tabular-nums'] },
-  label: { color: C.cream, fontFamily: FONTS.display, fontSize: 32, lineHeight: 36 },
-  sub: { color: C.cream45, fontFamily: FONTS.ui, fontSize: 12.5, marginTop: 1 },
-  go: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: 'rgba(236, 238, 237, 0.25)', alignItems: 'center', justifyContent: 'center' },
-  goOn: { backgroundColor: C.gold, borderColor: C.gold },
-  foot: { flexDirection: 'row', gap: 10, paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.goldLine },
-  quick: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, height: 56, paddingHorizontal: 14, borderRadius: 18, backgroundColor: 'rgba(236, 238, 237, 0.07)', borderWidth: 1, borderColor: 'rgba(236, 238, 237, 0.14)' },
-  quickLabel: { color: C.cream45, fontFamily: FONTS.uiSemi, fontSize: 11 },
+  place: { color: C.cream70, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 2.4 },
+  close: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4 },
+  closeText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 2 },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 17, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(236, 238, 237, 0.14)' },
+  num: { width: 26, color: C.gold, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.4, fontVariant: ['tabular-nums'] },
+  label: { flex: 1, color: C.cream, fontFamily: FONTS.display, fontSize: 36, lineHeight: 40, letterSpacing: 0.8 },
+  foot: { flexDirection: 'row', gap: 12, paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.goldLine },
+  quick: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  quickLabel: { color: C.cream45, fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.3 },
   quickValue: { color: C.cream, fontFamily: FONTS.uiSemi, fontSize: 13, marginTop: 1, fontVariant: ['tabular-nums'] },
   small: { color: C.cream45, fontFamily: FONTS.ui, fontSize: 11, marginTop: 14 },
 });

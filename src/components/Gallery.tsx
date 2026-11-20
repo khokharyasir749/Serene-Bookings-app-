@@ -14,7 +14,7 @@ export function HeroGallery({ photos, height }: { photos: string[]; height: numb
   const [page, setPage] = useState(0);
 
   return (
-    <View style={{ height, overflow: 'hidden', backgroundColor: C.snow }}>
+    <View style={{ height, overflow: 'hidden', backgroundColor: C.snow, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 }}>
       <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / width))}>
         {photos.map((src, i) => (
           <Pressable key={src} onPress={() => setOpen(i)}>
@@ -66,7 +66,7 @@ export function Lightbox({ photos, index, onClose }: { photos: string[]; index: 
 }
 
 const styles = StyleSheet.create({
-  counter: { position: 'absolute', right: 16, bottom: 42, backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 11, paddingVertical: 6, borderRadius: 999 },
+  counter: { position: 'absolute', right: 16, bottom: 16, backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 11, paddingVertical: 6, borderRadius: 999 },
   lbBar: { position: 'absolute', left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   lbClose: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: C.cream45, alignItems: 'center', justifyContent: 'center' },
 });

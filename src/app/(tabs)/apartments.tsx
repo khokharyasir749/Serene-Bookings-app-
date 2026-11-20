@@ -5,7 +5,6 @@ import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BrandHeader from '@/components/BrandHeader';
-import { Chip, SectionTitle } from '@/components/kit';
 import RoomCard from '@/components/RoomCard';
 import { useScrollTop } from '@/components/ScrollTop';
 import StayBar from '@/components/StayBar';
@@ -98,7 +97,7 @@ export default function Apartments() {
         <Text style={T.eyebrow}>
           {fmtShort(stay.checkIn)} – {fmtShort(stay.checkOut)} · {guestsLabel(stay.adults, stay.children)}
         </Text>
-        <Text style={[T.h1, { marginTop: 4 }]}>{plural(nights, 'night')} in the clouds</Text>
+        <Text style={[T.h1, { marginTop: 4 }]}>{nights}-Night Stays</Text>
         <Text style={[T.small, { marginTop: 4 }]}>Serene Heights, Nathia Gali · taxes included</Text>
         <View style={{ marginTop: 16 }}>
           <StayBar stay={stay} onPress={() => router.push('/stay')} />
@@ -106,18 +105,27 @@ export default function Apartments() {
       </View>
 
       <ScrollView horizontal nestedScrollEnabled keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-        <Chip label={sortLabel} icon={SORT_ICON[sort]} active chevron onPress={() => setSortOpen(true)} />
         {FILTERS.map((f) => (
-          <Chip key={f.key} label={f.label} icon={filters.includes(f.key) ? 'checkmark' : undefined} active={filters.includes(f.key)} onPress={() => toggle(f.key)} />
+          <Chip key={f.key} label={f.label} on={filters.includes(f.key)} onPress={() => toggle(f.key)} />
         ))}
       </ScrollView>
-      <SectionTitle
-        title={types.length === ROOM_TYPES.length ? 'All apartments' : 'Matching apartments'}
-        sub={`${types.length} of ${ROOM_TYPES.length} stays · prices for ${plural(nights, 'night')}`}
-        action={changed ? 'Reset' : undefined}
-        onAction={reset}
-        style={{ paddingHorizontal: S.gutter, marginTop: 24, marginBottom: 14 }}
-      />
+      <View style={styles.summary}>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
+          <Text style={styles.count}>
+            {types.length} <Text style={styles.countOf}>of {ROOM_TYPES.length} stays</Text>
+          </Text>
+          {changed && (
+            <Pressable onPress={reset} hitSlop={8}>
+              <Text style={styles.reset}>Reset</Text>
+            </Pressable>
+          )}
+        </View>
+        <Pressable onPress={() => setSortOpen(true)} hitSlop={6} style={styles.sortPill} accessibilityRole="button" accessibilityLabel={`Sort: ${sortLabel}`}>
+          <Ionicons name="swap-vertical-outline" size={14} color={C.pine} />
+          <Text style={styles.sortPillText} numberOfLines={1}>{sortLabel}</Text>
+          <Ionicons name="chevron-down-outline" size={13} color={C.ink55} />
+        </Pressable>
+      </View>
     </View>
   );
 
@@ -175,11 +183,29 @@ export default function Apartments() {
   );
 }
 
-const Gap = () => null;
+const Gap = () => <View style={{ height: 32 }} />;
+
+function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={4} style={[styles.chip, on && styles.chipOn]} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
+      {on && <Ionicons name="checkmark-outline" size={14} color={C.cream} />}
+      <Text style={[styles.chipText, on && { color: C.cream }]}>{label}</Text>
+    </Pressable>
+  );
+}
 
 const styles = StyleSheet.create({
   chipRow: { paddingHorizontal: S.gutter, gap: 8, marginTop: 16 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, height: 38, borderRadius: 999, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
+  chipOn: { backgroundColor: C.pine, borderColor: C.pine },
+  chipText: { fontSize: 13, fontFamily: FONTS.uiSemi, color: C.ink },
+  sortPill: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingHorizontal: 12, borderRadius: 999, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong, maxWidth: 200 },
+  sortPillText: { flexShrink: 1, fontSize: 12.5, fontFamily: FONTS.uiSemi, color: C.ink },
+  count: { fontSize: 15, fontFamily: FONTS.uiBold, color: C.ink, fontVariant: ['tabular-nums'] },
+  countOf: { fontSize: 13, fontFamily: FONTS.ui, color: C.ink55 },
   option: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
   optionText: { flex: 1, fontSize: 15, fontFamily: FONTS.uiMedium, color: C.ink },
+  summary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: S.gutter, marginTop: 16, marginBottom: 16 },
+  reset: { fontSize: 13, fontFamily: FONTS.uiBold, color: C.pine, textDecorationLine: 'underline' },
   empty: { marginHorizontal: S.gutter, padding: 24, borderRadius: S.card, backgroundColor: C.pureWhite, alignItems: 'center' },
 });

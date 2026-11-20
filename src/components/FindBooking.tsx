@@ -56,7 +56,7 @@ export default function FindBooking({ autoOpen }: { autoOpen?: boolean }) {
 const styles = StyleSheet.create({
   card: { marginTop: 14, padding: 14, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, ...shadow.card },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  icon: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
-  title: { fontFamily: FONTS.uiBold, fontSize: 15.5, color: C.ink },
+  icon: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
+  title: { fontFamily: FONTS.display, fontSize: 18, lineHeight: 22, color: C.ink },
   sub: { fontFamily: FONTS.ui, fontSize: 12.5, color: C.ink55, marginTop: 1 },
 });

@@ -4,7 +4,7 @@ import { Text } from '@/components/Text';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { EASE } from '@/components/ui';
-import { C, FONTS } from '@/theme';
+import { C } from '@/theme';
 
 // Two-or-more option toggle with a sliding thumb. `dark` sits on photography.
 export default function Segmented<T extends string>({ options, value, onChange, dark }: { options: { key: T; label: string }[]; value: T; onChange: (v: T) => void; dark?: boolean }) {
@@ -42,8 +42,8 @@ export default function Segmented<T extends string>({ options, value, onChange, 
 const styles = StyleSheet.create({
   track: { flexDirection: 'row', borderRadius: 999, padding: 2, borderWidth: StyleSheet.hairlineWidth },
   trackDark: { backgroundColor: 'rgba(20,30,27,0.42)', borderColor: C.cream45 },
-  trackLight: { backgroundColor: C.pureWhite, borderColor: C.line },
+  trackLight: { backgroundColor: C.snow, borderColor: C.line },
   thumb: { position: 'absolute', top: 2, bottom: 2, borderRadius: 999 },
   opt: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 9, paddingHorizontal: 16 },
-  label: { fontSize: 13, fontFamily: FONTS.uiSemi },
+  label: { fontSize: 10.5, letterSpacing: 1.8, fontWeight: '700', textTransform: 'uppercase' },
 });

@@ -35,7 +35,7 @@ export default function PageHeader({ title, right }: { title: string; right?: Re
 
 const styles = StyleSheet.create({
   bar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: S.gutter - 4, paddingBottom: 10, backgroundColor: C.sand, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  round: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line },
-  title: { flex: 1, textAlign: 'center', fontFamily: FONTS.uiSemi, fontSize: 16, color: C.ink },
+  round: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  title: { flex: 1, textAlign: 'center', fontFamily: FONTS.display, fontSize: 21, color: C.ink },
   side: { width: 40, alignItems: 'flex-end' },
 });

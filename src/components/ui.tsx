@@ -7,7 +7,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTim
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { photo } from '@/data/photos';
-import { C, F, FONTS, S, T, shadow } from '@/theme';
+import { C, F, S, T } from '@/theme';
 
 export const EASE = Easing.bezier(0.22, 1, 0.36, 1);
 
@@ -76,12 +76,12 @@ export function PressableScale({ children, onPress, style, disabled, scaleTo = 0
 }
 
 export function Button({ label, onPress, variant = 'primary', icon, style, disabled }: { label: string; onPress?: () => void; variant?: 'primary' | 'secondary' | 'light'; icon?: ReactNode; style?: StyleProp<ViewStyle>; disabled?: boolean }) {
-  const bg = variant === 'primary' ? C.pine : variant === 'light' ? C.pureWhite : C.pureWhite;
-  const fg = variant === 'primary' ? C.cream : C.ink;
+  const bg = variant === 'primary' ? C.pine : variant === 'light' ? C.sand : 'transparent';
+  const fg = variant === 'primary' ? C.sand : C.ink;
   return (
-    <PressableScale onPress={onPress} disabled={disabled} style={[styles.btn, { backgroundColor: bg, borderColor: variant === 'primary' ? bg : C.line }, style]}>
+    <PressableScale onPress={onPress} disabled={disabled} style={[styles.btn, { backgroundColor: bg, borderColor: variant === 'secondary' ? C.lineStrong : bg }, style]}>
       {icon}
-      <Text style={[styles.btnText, { color: fg }]}>{label}</Text>
+      <Caps color={fg} style={{ letterSpacing: 2.4 }}>{label}</Caps>
     </PressableScale>
   );
 }
@@ -92,10 +92,10 @@ export function BackBar({ onBack, title, right, light }: { onBack: () => void; t
   const fg = light ? C.sand : C.ink;
   return (
     <View style={[styles.backBar, { paddingTop: insets.top + 6 }]}>
-      <Pressable onPress={onBack} hitSlop={12} accessibilityLabel="Back" style={[styles.round, styles.roundFloat, light && { backgroundColor: 'rgba(0,0,0,0.3)', borderColor: 'rgba(255,255,255,0.4)' }]}>
-        <ChevronLeft size={19} color={light ? C.pureWhite : C.ink} strokeWidth={1.75} />
+      <Pressable onPress={onBack} hitSlop={12} accessibilityLabel="Back" style={[styles.round, { width: 40, height: 40, borderRadius: 20, borderColor: light ? C.cream45 : 'rgba(255,255,255,0.7)', backgroundColor: light ? 'rgba(28,38,34,0.25)' : 'rgba(245,242,235,0.94)' }]}>
+        <ChevronLeft size={18} color={fg} strokeWidth={1.5} />
       </Pressable>
-      {title ? <Text style={[styles.barTitle, { color: fg }]} numberOfLines={1}>{title}</Text> : <View style={{ flex: 1 }} />}
+      {title ? <Caps color={fg} style={{ flex: 1, textAlign: 'center' }}>{title}</Caps> : <View style={{ flex: 1 }} />}
       <View style={{ minWidth: 38, alignItems: 'flex-end' }}>{right}</View>
     </View>
   );
@@ -112,18 +112,18 @@ export function BookingSteps({ current }: { current: 1 | 2 | 3 }) {
           const done = n < current || current === 3;
           const active = n === current;
           return (
-            <View key={label} style={[{ flexDirection: 'row', alignItems: 'center', gap: 8 }, n < 3 ? { flex: 1, minWidth: 0 } : { flexShrink: 0 }]}>
-              <View style={[styles.step, { flexShrink: 0 }, done ? { backgroundColor: C.pine, borderColor: C.pine } : active ? { borderColor: C.ink } : { borderColor: C.line }]}>
-                {done ? <Check size={13} color={C.cream} /> : <Text style={{ fontFamily: FONTS.uiBold, fontSize: 11.5, color: active ? C.ink : C.ink40 }}>{n}</Text>}
+            <View key={label} style={{ flex: n < 3 ? 1 : 0, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={[styles.step, done ? { backgroundColor: C.pine, borderColor: C.pine } : active ? { borderColor: C.ink } : { borderColor: C.line }]}>
+                {done ? <Check size={13} color={C.sand} /> : <Text style={{ fontFamily: F.display, fontSize: 11, color: active ? C.ink : C.ink40 }}>0{n}</Text>}
               </View>
               {n < 3 && <View style={{ flex: 1, height: StyleSheet.hairlineWidth * 2, backgroundColor: done ? C.pine : C.line }} />}
             </View>
           );
         })}
       </View>
-      <Text style={{ fontFamily: FONTS.uiSemi, fontSize: 12, color: C.ink55, marginTop: 10 }}>
+      <Caps color={C.ink55} style={{ fontSize: 9, marginTop: 10 }}>
         Step {current} of 3 · {STEPS[current - 1]}
-      </Text>
+      </Caps>
     </View>
   );
 }
@@ -133,18 +133,16 @@ export function Stepper({ label, hint, value, min, max, onChange }: { label: str
   return (
     <View style={styles.stepperRow}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.stepLabel}>{label}</Text>
+        <Text style={{ fontFamily: F.display, fontSize: 19, color: C.ink }}>{label}</Text>
         {hint && <Text style={[T.small, { marginTop: 2 }]}>{hint}</Text>}
       </View>
-      <View style={styles.capsule}>
-        <PressableScale disabled={value <= min} onPress={() => onChange(value - 1)} style={styles.stepBtn}>
-          <Minus size={16} color={C.ink} strokeWidth={1.75} />
-        </PressableScale>
-        <Text style={styles.stepValue}>{value}</Text>
-        <PressableScale disabled={value >= max} onPress={() => onChange(value + 1)} style={styles.stepBtn}>
-          <Plus size={16} color={C.ink} strokeWidth={1.75} />
-        </PressableScale>
-      </View>
+      <PressableScale disabled={value <= min} onPress={() => onChange(value - 1)} style={styles.stepBtn}>
+        <Minus size={16} color={C.ink} strokeWidth={1.5} />
+      </PressableScale>
+      <Text style={{ width: 40, textAlign: 'center', fontFamily: F.display, fontSize: 20, color: C.ink }}>{value}</Text>
+      <PressableScale disabled={value >= max} onPress={() => onChange(value + 1)} style={styles.stepBtn}>
+        <Plus size={16} color={C.ink} strokeWidth={1.5} />
+      </PressableScale>
     </View>
   );
 }
@@ -179,9 +177,8 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
       <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }, panel]}>
         <View style={styles.grabber} />
         <View style={styles.sheetHead}>
-          <View style={{ width: 38 }} />
-          <Text style={styles.sheetTitle}>{title}</Text>
-          <Pressable onPress={onClose} hitSlop={12} style={[styles.round, { borderColor: C.line, backgroundColor: C.pureWhite }]}>
+          <Caps>{title}</Caps>
+          <Pressable onPress={onClose} hitSlop={12} style={[styles.round, { borderColor: C.line }]}>
             <X size={16} color={C.ink} strokeWidth={1.5} />
           </Pressable>
         </View>
@@ -193,19 +190,12 @@ export function Sheet({ open, onClose, title, children, footer }: { open: boolea
 }
 
 const styles = StyleSheet.create({
-  btn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, height: 52, paddingHorizontal: 24, borderWidth: 1, borderRadius: 999 },
-  btnText: { fontFamily: FONTS.uiBold, fontSize: 15, letterSpacing: 0.1 },
-  barTitle: { flex: 1, textAlign: 'center', fontFamily: FONTS.uiSemi, fontSize: 15.5 },
-  roundFloat: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.pureWhite, borderColor: 'rgba(255,255,255,0.9)', ...shadow.card },
-  stepLabel: { fontFamily: FONTS.uiSemi, fontSize: 15.5, color: C.ink },
-  stepValue: { minWidth: 34, textAlign: 'center', fontFamily: FONTS.uiBold, fontSize: 16, color: C.ink, fontVariant: ['tabular-nums'] },
-  capsule: { flexDirection: 'row', alignItems: 'center', height: 44, paddingHorizontal: 4, borderRadius: 999, borderWidth: 1, borderColor: C.line, backgroundColor: C.pureWhite },
-  sheetTitle: { flex: 1, textAlign: 'center', fontFamily: FONTS.uiSemi, fontSize: 16, color: C.ink },
+  btn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16, paddingHorizontal: 22, borderWidth: 1, borderRadius: S.radius },
   backBar: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 20, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8 },
   round: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   step: { width: 28, height: 28, borderRadius: 14, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   stepperRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  stepBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  stepBtn: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: C.lineStrong, alignItems: 'center', justifyContent: 'center' },
   sheet: { position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '92%', backgroundColor: C.sand, borderTopLeftRadius: 30, borderTopRightRadius: 30 },
   grabber: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: C.lineStrong, marginTop: 10 },
   sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: S.gutter, paddingTop: 14, paddingBottom: 10 },

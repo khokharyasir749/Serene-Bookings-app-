@@ -5,7 +5,6 @@ import { FlatList, Pressable, StyleSheet, View, useWindowDimensions } from 'reac
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Lightbox } from '@/components/Gallery';
-import { Chip, PhotoTag, SectionTitle } from '@/components/kit';
 import PageHeader from '@/components/PageHeader';
 import Scrim from '@/components/Scrim';
 import { Text } from '@/components/Text';
@@ -40,14 +39,16 @@ export default function Amenities() {
               <Scrim bottom={0.55} />
               <View style={{ flex: 1 }} />
               <View style={{ padding: 20 }}>
-                <PhotoTag label="Serene Heights · Nathia Gali" icon="location-outline" />
+                <Text style={styles.heroKicker}>AMENITIES</Text>
                 <Text style={styles.heroTitle}>50+ Resort Facilities</Text>
               </View>
             </View>
             <Text style={[T.body, { marginTop: 16 }]}>Everything for a winter escape or a summer retreat, without leaving the resort.</Text>
             <View style={styles.chips}>
               {AMENITY_HIGHLIGHTS.map((h) => (
-                <Chip key={h} label={h} />
+                <View key={h} style={styles.chip}>
+                  <Text style={styles.chipText}>{h}</Text>
+                </View>
               ))}
             </View>
           </View>
@@ -99,9 +100,9 @@ export default function Amenities() {
       default:
         return (
           <View style={styles.cta}>
-            <Text style={styles.ctaKicker}>Book your stay</Text>
+            <Text style={styles.ctaKicker}>BOOK YOUR STAY</Text>
             <Text style={styles.ctaTitle}>All of this, a lift ride from your apartment</Text>
-            <Button variant="light" label="Check availability" style={{ marginTop: 18, borderColor: C.pureWhite }} onPress={() => router.navigate('/apartments')} icon={<Ionicons name="arrow-forward-outline" size={16} color={C.ink} />} />
+            <Button label="Check availability" style={{ marginTop: 18 }} onPress={() => router.navigate('/apartments')} icon={<Ionicons name="arrow-forward-outline" size={16} color={C.cream} />} />
           </View>
         );
     }
@@ -117,17 +118,23 @@ export default function Amenities() {
 }
 
 function Section({ label, title, sub }: { label: string; title: string; sub?: string }) {
-  return <SectionTitle title={title} sub={sub ?? label} style={{ paddingHorizontal: S.gutter, marginBottom: 14 }} />;
+  return (
+    <View style={{ paddingHorizontal: S.gutter, marginBottom: 16 }}>
+      <Text style={T.eyebrow}>{label}</Text>
+      <Text style={[T.h2, { marginTop: 4 }]}>{title}</Text>
+      {sub && <Text style={[T.small, { marginTop: 3 }]}>{sub}</Text>}
+    </View>
+  );
 }
 
 const ExperienceTile = memo(function ExperienceTile({ index, title, image, onPress }: { index: number; title: string; image: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={styles.tile} accessibilityLabel={`Open ${title}`}>
-      <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim bottom={0.6} />
-      <PhotoTag label={pad(index + 1)} />
-      <View style={{ flex: 1 }} />
-      <Text style={styles.tileTitle} numberOfLines={2}>{title}</Text>
+      <Photo src={image} style={styles.tileImg} />
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 8 }}>
+        <Text style={styles.tileNum}>{pad(index + 1)}</Text>
+        <Text style={styles.tileTitle} numberOfLines={2}>{title}</Text>
+      </View>
     </Pressable>
   );
 });
@@ -135,20 +142,15 @@ const ExperienceTile = memo(function ExperienceTile({ index, title, image, onPre
 function GroupCard({ index, group, items }: { index: number; group: string; items: Amenity[] }) {
   return (
     <View style={styles.group}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <View style={styles.groupNo}>
-          <Text style={styles.groupNoText}>{index + 1}</Text>
-        </View>
-        <Text style={styles.groupTitle}>{group}</Text>
-        <Text style={styles.groupCount}>{items.length}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
+        <Text style={styles.tileNum}>{pad(index + 1)}</Text>
+        <Text style={[T.h3, { fontSize: 22 }]}>{group}</Text>
       </View>
       {GROUP_BLURB[group] && <Text style={[T.small, { marginTop: 4 }]}>{GROUP_BLURB[group]}</Text>}
       <View style={{ marginTop: 10 }}>
         {items.map((a, i) => (
           <View key={a.key} style={[styles.row, i > 0 && styles.rowLine]}>
-            <View style={styles.rowIcon}>
-              <Ionicons name={(AMENITY_ICON[a.key] ?? 'heart-outline') as never} size={16} color={C.pine} />
-            </View>
+            <Ionicons name={(AMENITY_ICON[a.key] ?? 'heart-outline') as never} size={19} color={C.pine} style={{ marginTop: 1 }} />
             <View style={{ flex: 1 }}>
               <Text style={styles.rowName}>{a.name}</Text>
               {a.description && <Text style={[T.small, { marginTop: 2 }]}>{a.description}</Text>}
@@ -162,23 +164,22 @@ function GroupCard({ index, group, items }: { index: number; group: string; item
 
 const styles = StyleSheet.create({
   hero: { height: 240, borderRadius: S.card, overflow: 'hidden', backgroundColor: C.snow },
+  heroKicker: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
   heroTitle: { color: C.cream, fontFamily: FONTS.display, fontSize: 34, lineHeight: 38, marginTop: 4 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
+  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
+  chipText: { fontSize: 12.5, fontFamily: FONTS.uiSemi, color: C.ink },
   grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: S.gutter, gap: 14 },
-  tile: { width: '47.5%', flexGrow: 1, aspectRatio: 0.82, padding: 10, borderRadius: 20, overflow: 'hidden', backgroundColor: C.snow },
+  tile: { width: '47.5%', flexGrow: 1 },
+  tileImg: { width: '100%', aspectRatio: 1, borderRadius: 18 },
   tileNum: { color: C.ink40, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.2, fontVariant: ['tabular-nums'] },
-  tileTitle: { fontFamily: FONTS.display, fontSize: 19, lineHeight: 22, color: '#FFFFFF' },
-  groupNo: { width: 26, height: 26, borderRadius: 13, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  groupNoText: { fontFamily: FONTS.uiBold, fontSize: 12, color: C.cream },
-  groupTitle: { flex: 1, fontFamily: FONTS.uiBold, fontSize: 16.5, color: C.ink },
-  groupCount: { fontFamily: FONTS.uiSemi, fontSize: 12, color: C.ink55, paddingHorizontal: 9, paddingVertical: 3, borderRadius: 999, borderWidth: 1, borderColor: C.line, overflow: 'hidden' },
-  rowIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  tileTitle: { flex: 1, fontFamily: FONTS.display, fontSize: 17, lineHeight: 20, color: C.ink },
   group: { padding: 18, marginBottom: 12, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
+  row: { flexDirection: 'row', gap: 12, paddingVertical: 11 },
   rowLine: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
   rowName: { fontFamily: FONTS.uiSemi, fontSize: 14, color: C.ink },
   cta: { marginHorizontal: S.gutter, marginTop: 40, padding: 22, borderRadius: S.card, backgroundColor: C.pine },
-  ctaKicker: { color: C.gold, fontFamily: FONTS.uiSemi, fontSize: 12.5 },
+  ctaKicker: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
   ctaTitle: { color: C.cream, fontFamily: FONTS.display, fontSize: 27, lineHeight: 31, marginTop: 8 },
 });
 

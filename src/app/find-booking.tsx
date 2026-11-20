@@ -6,7 +6,6 @@ import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BookingLookupForm from '@/components/BookingLookupForm';
-import { SectionTitle } from '@/components/kit';
 import PageHeader from '@/components/PageHeader';
 import { Text } from '@/components/Text';
 import { useBooking } from '@/state/booking';
@@ -38,7 +37,7 @@ export default function FindBookingScreen() {
           contentContainerStyle={{ paddingHorizontal: S.gutter, paddingTop: 26, paddingBottom: insets.bottom + 40 }}
         >
           <Animated.View entering={rise(0)}>
-            <Text style={T.eyebrow}>Manage your stay</Text>
+            <Text style={T.eyebrow}>MANAGE YOUR STAY</Text>
             <Text style={[T.h1, { marginTop: 8 }]}>Your reservation, in a moment</Text>
             <Text style={[T.body, { marginTop: 10 }]}>Look up any booking with its reference and the email it was made with. No account needed.</Text>
           </Animated.View>
@@ -59,7 +58,6 @@ export default function FindBookingScreen() {
             />
           </Animated.View>
 
-          <SectionTitle title="More options" style={{ marginTop: 26 }} />
           <Animated.View entering={rise(2)} style={styles.options}>
             {user ? (
               <Option
@@ -109,7 +107,7 @@ function Option({ icon, title, sub, onPress, last }: { icon: React.ComponentProp
         <Text style={styles.optTitle}>{title}</Text>
         <Text style={styles.optSub}>{sub}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={17} color={C.ink40} />
+      <Ionicons name="arrow-forward-outline" size={18} color={C.ink55} />
     </Pressable>
   );
 }
@@ -119,11 +117,11 @@ const styles = StyleSheet.create({
   card: { marginTop: 26, padding: 18, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, ...shadow.card },
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
   icon: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  cardTitle: { fontFamily: FONTS.uiBold, fontSize: 17, color: C.ink },
-  options: { marginTop: 12, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, paddingHorizontal: 16 },
+  cardTitle: { fontFamily: FONTS.display, fontSize: 21, color: C.ink },
+  options: { marginTop: 18, borderRadius: S.card, backgroundColor: C.white, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, paddingHorizontal: 16 },
   opt: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15 },
   optLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  optIcon: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  optIcon: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
   optTitle: { fontFamily: FONTS.uiSemi, fontSize: 15, color: C.ink },
   optSub: { fontFamily: FONTS.ui, fontSize: 12.5, color: C.ink55, marginTop: 2 },
 });
