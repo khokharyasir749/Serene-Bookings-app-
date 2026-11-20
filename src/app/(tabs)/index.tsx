@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ChevronRight } from '@/components/icons';
 import { memo, useCallback, useState } from 'react';
@@ -5,17 +6,16 @@ import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View 
 import { Text } from '@/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import BrandHeader from '@/components/BrandHeader';
+import LuxuryFooter from '@/components/LuxuryFooter';
 import Scrim from '@/components/Scrim';
 import { useScrollTop } from '@/components/ScrollTop';
 import SearchCard from '@/components/SearchCard';
-import Segmented from '@/components/Segmented';
-import BrandHeader from '@/components/BrandHeader';
-import LuxuryFooter from '@/components/LuxuryFooter';
 import { Photo, PressableScale } from '@/components/ui';
-import { PROPERTY, REASONS, ROOM_TYPES, type RoomType } from '@/data/catalog';
+import { areaRangeOf, PROPERTY, REASONS, ROOM_TYPES, type RoomType } from '@/data/catalog';
 import { money } from '@/lib/stay';
 import { useBooking } from '@/state/booking';
-import { C, F, S, T, tabBarSpace } from '@/theme';
+import { C, F, FONTS, S, shadow, T, tabBarSpace } from '@/theme';
 
 const SEASONS = {
   summer: '/images/resort/hero-tower-mist.jpg',
@@ -37,7 +37,6 @@ const greeting = () => {
   return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
 };
 
-// Discover: a focused, curated start — search first, then apartments and experiences to tap into.
 export default function Discover() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -46,7 +45,7 @@ export default function Discover() {
   const { ref, onScroll } = useScrollTop();
   const [season, setSeason] = useState<Season>('summer');
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const resW = Math.round(width * 0.64);
+  const resW = Math.min(300, Math.round(width * 0.74));
 
   useFocusEffect(
     useCallback(() => {
@@ -57,7 +56,7 @@ export default function Discover() {
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: C.sand }}>
       <ScrollView
         ref={ref}
         style={{ flex: 1 }}
@@ -69,36 +68,68 @@ export default function Discover() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 0 }}
       >
+        {/* Serene Brand Header */}
         <BrandHeader />
 
-        <View style={{ paddingHorizontal: S.gutter, marginTop: 26 }}>
-          <Text style={T.eyebrow}>{user ? `${greeting()}, ${user.firstName}` : greeting()}</Text>
-          <Text style={[T.h1, { marginTop: 2 }]}>Find your mountain home</Text>
+        {/* Editorial Greeting Header */}
+        <View style={styles.greetingHeader}>
+          <View style={styles.eyebrowPill}>
+            <Ionicons name="sparkles" size={10} color={C.gold} style={{ marginRight: 5 }} />
+            <Text style={styles.eyebrowText}>7,906 FT · NATHIA GALI</Text>
+          </View>
+          <Text style={styles.greetingTitle}>
+            {user ? `${greeting()}, ${user.firstName}` : 'Find your mountain sanctuary'}
+          </Text>
+          <Text style={styles.greetingSub}>
+            Serene Heights luxury suites & residences nestled in the pine hills of Nathia Gali.
+          </Text>
         </View>
 
-        {/* Hero */}
-        <View style={[styles.hero, { height: width - S.gutter * 2 }]}>
+        {/* Cinematic Resort Hero Banner */}
+        <View style={styles.hero}>
           <Photo src={SEASONS[season]} style={StyleSheet.absoluteFill} />
-          <Scrim top={0.28} bottom={0.55} />
-          <View style={{ padding: 14, width: 236 }}>
-            <Segmented
-              dark
-              value={season}
-              onChange={setSeason}
-              options={[
-                { key: 'summer', label: 'Summer' },
-                { key: 'winter', label: 'Winter' },
-              ]}
-            />
+          <Scrim top={0.35} bottom={0.85} />
+
+          {/* Top meta row inside hero */}
+          <View style={styles.heroTopRow}>
+            <View style={styles.heroBadge}>
+              <Ionicons name="location-outline" size={12} color={C.cream} style={{ marginRight: 4 }} />
+              <Text style={styles.heroBadgeText}>Beside PAF Base · 7,906 ft</Text>
+            </View>
+
+            {/* Season switcher pill */}
+            <View style={styles.seasonSwitch}>
+              <Pressable
+                onPress={() => setSeason('summer')}
+                hitSlop={4}
+                style={[styles.seasonBtn, season === 'summer' && styles.seasonBtnOn]}
+                accessibilityLabel="Summer season">
+                <Text style={[styles.seasonBtnText, season === 'summer' && styles.seasonBtnTextOn]}>
+                  🌲 Summer
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setSeason('winter')}
+                hitSlop={4}
+                style={[styles.seasonBtn, season === 'winter' && styles.seasonBtnOn]}
+                accessibilityLabel="Winter season">
+                <Text style={[styles.seasonBtnText, season === 'winter' && styles.seasonBtnTextOn]}>
+                  ❄️ Winter
+                </Text>
+              </Pressable>
+            </View>
           </View>
+
           <View style={{ flex: 1 }} />
-          <View style={{ padding: 20 }}>
-            <Text style={styles.heroKicker}>7,906 FT · THE GALIYAT</Text>
-            <Text style={[T.h2, { color: C.sand, marginTop: 6 }]}>A home above the clouds</Text>
+
+          {/* Bottom text inside hero */}
+          <View style={styles.heroBottom}>
+            <Text style={styles.heroKicker}>BESPOKE LUXURY RESIDENCES</Text>
+            <Text style={styles.heroTitle}>A Home Above the Clouds</Text>
           </View>
         </View>
 
-        {/* Search */}
+        {/* Elevated Search Card */}
         <View style={{ paddingHorizontal: S.gutter, marginTop: 14 }}>
           <SearchCard
             stay={stay}
@@ -111,24 +142,34 @@ export default function Discover() {
           />
         </View>
 
-        {/* At a glance */}
+        {/* At a glance metric bar */}
         <View style={styles.glance}>
           {GLANCE.map((g, i) => (
             <View key={g.label} style={[styles.glanceItem, i > 0 && styles.glanceDiv]}>
-              <Text style={[T.h3, { color: C.cream, fontVariant: ['tabular-nums'] }]}>{g.value}</Text>
+              <Text style={styles.glanceNum}>{g.value}</Text>
               <Text style={styles.glanceLabel}>{g.label.toUpperCase()}</Text>
             </View>
           ))}
         </View>
 
-        {/* Apartments */}
-        <SectionHead title="Apartments" sub="Five one-bedroom layouts" onMore={() => router.navigate('/apartments')} />
+        {/* Curated Apartments Showcase */}
+        <SectionHead
+          title="Curated Residences"
+          sub="Five luxury one-bedroom layouts"
+          onMore={() => router.navigate('/apartments')}
+        />
         <FlatList
           horizontal
           nestedScrollEnabled
           data={ROOM_TYPES}
           keyExtractor={(t) => t.slug}
-          renderItem={({ item }) => <ResidenceCard t={item} w={resW} onPress={() => router.push(`/room/${item.slug}`)} />}
+          renderItem={({ item }) => (
+            <ResidenceCard
+              t={item}
+              w={resW}
+              onPress={() => router.push(`/room/${item.slug}`)}
+            />
+          )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
           snapToInterval={resW + 14}
@@ -137,31 +178,50 @@ export default function Discover() {
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
         />
 
-        {/* Experiences */}
-        <SectionHead title="On the mountain" sub="50+ facilities, steps from your door" />
+        {/* Resort Facilities & Experiences */}
+        <SectionHead
+          title="Resort Experiences"
+          sub="50+ world-class facilities at 7,906 ft"
+          onMore={() => router.push('/amenities')}
+        />
         <FlatList
           horizontal
           nestedScrollEnabled
           data={EXPERIENCES}
           keyExtractor={(e) => e.title}
-          renderItem={({ item }) => <ExperienceCard title={item.title} image={item.image} />}
+          renderItem={({ item }) => (
+            <ExperienceCard
+              title={item.title}
+              image={item.image}
+              onPress={() => router.push('/amenities')}
+            />
+          )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={152}
+          snapToInterval={176}
           initialNumToRender={3}
           windowSize={3}
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 12 }}
         />
 
-        {/* Why Serene */}
-        <SectionHead title="Why Serene Heights" />
+        {/* Why Serene Heights Editorial Cards */}
+        <SectionHead
+          title="Why Serene Heights"
+          sub="Crafted for year-round alpine luxury"
+        />
         <View style={styles.reasons}>
           {REASONS.map((r, i) => (
-            <View key={r.label} style={[styles.reason, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line }]}>
-              <Photo src={r.image} style={{ width: 64, height: 64, borderRadius: 14 }} />
+            <View
+              key={r.label}
+              style={[
+                styles.reason,
+                i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+              ]}
+            >
+              <Photo src={r.image} style={styles.reasonPhoto} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.reasonLabel}>{r.label.toUpperCase()}</Text>
-                <Text style={[T.h3, { fontSize: 16, lineHeight: 21, marginTop: 4 }]}>{r.title}</Text>
+                <Text style={styles.reasonTitle}>{r.title}</Text>
               </View>
             </View>
           ))}
@@ -174,37 +234,100 @@ export default function Discover() {
   );
 }
 
-const ResidenceCard = memo(function ResidenceCard({ t, w, onPress }: { t: RoomType; w: number; onPress: () => void }) {
+const ResidenceCard = memo(function ResidenceCard({
+  t,
+  w,
+  onPress,
+}: {
+  t: RoomType;
+  w: number;
+  onPress: () => void;
+}) {
+  const [fav, setFav] = useState(false);
+  const tag = t.outdoorSpace.includes('terrace') ? 'Private terrace' : t.slug.includes('corner') ? 'Corner suite' : 'Valley views';
+
   return (
-    <PressableScale onPress={onPress} scaleTo={0.97} style={{ width: w }}>
-      <Photo src={t.images[0]} style={{ width: w, height: w, borderRadius: S.photo }} />
-      <Text numberOfLines={1} style={[T.h3, { marginTop: 12 }]}>{t.name.replace(' Apartment', '')}</Text>
-      <Text style={[T.small, { marginTop: 2 }]}>
-        From <Text style={{ color: C.ink, fontWeight: '600' }}>{money(t.baseRate)}</Text> / night
-      </Text>
+    <PressableScale onPress={onPress} scaleTo={0.97} style={[styles.resCard, { width: w }]}>
+      <View style={styles.resImgWrap}>
+        <Photo src={t.images[0]} style={styles.resImg} />
+        {/* Top-left tag */}
+        <View style={styles.resTag}>
+          <Text style={styles.resTagText}>✦ {tag}</Text>
+        </View>
+        {/* Top-right favorite button */}
+        <Pressable
+          onPress={() => setFav((v) => !v)}
+          hitSlop={8}
+          style={styles.resHeart}
+          accessibilityLabel="Favorite">
+          <Ionicons
+            name={fav ? 'heart' : 'heart-outline'}
+            size={16}
+            color={fav ? C.gold : C.pine}
+          />
+        </Pressable>
+      </View>
+
+      <View style={{ paddingHorizontal: 4, paddingTop: 10 }}>
+        <Text numberOfLines={1} style={styles.resName}>{t.name}</Text>
+        <Text style={styles.resMeta}>⭐ 4.8 (126 reviews) · 7,906 ft</Text>
+        <Text style={styles.resSpecs} numberOfLines={1}>
+          📐 {areaRangeOf(t.slug)} · 👤 {t.maxOccupancy} guests · 🛏️ {t.bedType}
+        </Text>
+
+        <View style={styles.resFoot}>
+          <View>
+            <Text style={styles.resFrom}>FROM</Text>
+            <Text style={styles.resPrice}>
+              {money(t.baseRate)} <Text style={styles.resNight}>/ night</Text>
+            </Text>
+          </View>
+          <View style={styles.resArrow}>
+            <Ionicons name="arrow-forward" size={13} color={C.cream} />
+          </View>
+        </View>
+      </View>
     </PressableScale>
   );
 });
 
-const ExperienceCard = memo(function ExperienceCard({ title, image }: { title: string; image: string }) {
+const ExperienceCard = memo(function ExperienceCard({
+  title,
+  image,
+  onPress,
+}: {
+  title: string;
+  image: string;
+  onPress?: () => void;
+}) {
   return (
-    <View style={{ width: 140 }}>
-      <Photo src={image} style={{ width: 140, height: 140, borderRadius: 18 }} />
-      <Text numberOfLines={1} style={[T.small, { color: C.ink, marginTop: 9, fontWeight: '500' }]}>{title}</Text>
-    </View>
+    <PressableScale onPress={onPress} scaleTo={0.97} style={styles.expCard}>
+      <Photo src={image} style={StyleSheet.absoluteFill} />
+      <Scrim bottom={0.72} />
+      <View style={{ flex: 1 }} />
+      <Text numberOfLines={2} style={styles.expTitle}>{title}</Text>
+    </PressableScale>
   );
 });
 
-function SectionHead({ title, sub, onMore }: { title: string; sub?: string; onMore?: () => void }) {
+function SectionHead({
+  title,
+  sub,
+  onMore,
+}: {
+  title: string;
+  sub?: string;
+  onMore?: () => void;
+}) {
   return (
     <View style={styles.sectionHead}>
       <View style={{ flex: 1 }}>
-        <Text style={T.h2}>{title}</Text>
-        {sub && <Text style={[T.small, { marginTop: 2 }]}>{sub}</Text>}
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {sub && <Text style={styles.sectionSub}>{sub}</Text>}
       </View>
       {onMore && (
         <Pressable onPress={onMore} hitSlop={10} style={styles.more}>
-          <Text style={{ fontSize: 13.5, fontWeight: '600', color: C.pine }}>See all</Text>
+          <Text style={styles.moreText}>See all</Text>
           <ChevronRight size={15} color={C.pine} strokeWidth={2} />
         </Pressable>
       )}
@@ -213,23 +336,324 @@ function SectionHead({ title, sub, onMore }: { title: string; sub?: string; onMo
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: S.gutter },
-  lockup: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  wordmark: { fontFamily: F.display, fontSize: 16, letterSpacing: 4.2, color: C.pine },
-  sub: { fontSize: 8.5, letterSpacing: 2.4, color: C.ink55, marginTop: 3, fontWeight: '600' },
-  signIn: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingLeft: 6, paddingRight: 14, height: 36, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: C.lineStrong, backgroundColor: C.white, minWidth: 80, justifyContent: 'center' },
-  signInText: { fontSize: 13, fontWeight: '600', color: C.ink },
-  avatar: { width: 26, height: 26, borderRadius: 13, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  hero: { marginHorizontal: S.gutter, marginTop: 18, borderRadius: S.card, overflow: 'hidden', backgroundColor: C.snow },
-  heroKicker: { fontSize: 10, letterSpacing: 2.6, color: C.cream70, fontWeight: '600' },
-  glance: { flexDirection: 'row', marginHorizontal: S.gutter, marginTop: 14, paddingVertical: 18, backgroundColor: C.pine, borderRadius: S.card, borderWidth: 1, borderColor: C.goldLine },
-  glanceItem: { flex: 1, alignItems: 'center' },
-  glanceDiv: { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: C.goldLine },
-  glanceLabel: { color: C.gold, fontSize: 9, letterSpacing: 1.4, marginTop: 4, fontWeight: '700' },
-  sectionHead: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: S.gutter, marginTop: 34, marginBottom: 14 },
-  more: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 4 },
-  reasons: { marginHorizontal: S.gutter, backgroundColor: C.white, borderRadius: S.card, paddingHorizontal: 14 },
-  reason: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14 },
-  reasonLabel: { fontSize: 9.5, letterSpacing: 1.8, color: C.pine, fontWeight: '700' },
-  cta: { marginHorizontal: S.gutter, marginTop: 34, padding: 26, borderRadius: S.card, backgroundColor: C.pine, alignItems: 'center' },
+  greetingHeader: {
+    paddingHorizontal: S.gutter,
+    marginTop: 20,
+  },
+  eyebrowPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 999,
+    backgroundColor: C.snow,
+    borderWidth: 1,
+    borderColor: C.line,
+    marginBottom: 8,
+  },
+  eyebrowText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.3,
+    color: C.ink,
+  },
+  greetingTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 31,
+    lineHeight: 35,
+    letterSpacing: -0.4,
+    color: C.ink,
+  },
+  greetingSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    lineHeight: 18,
+    color: C.ink70,
+    marginTop: 4,
+  },
+  hero: {
+    marginHorizontal: S.gutter,
+    marginTop: 18,
+    height: 310,
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.35)',
+    ...shadow.card,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0, 0, 0, 0.38)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  heroBadgeText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 0.8,
+    color: '#FFFFFF',
+  },
+  seasonSwitch: {
+    flexDirection: 'row',
+    padding: 3,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0, 0, 0, 0.42)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  seasonBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  seasonBtnOn: {
+    backgroundColor: C.gold,
+  },
+  seasonBtnText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.85)',
+  },
+  seasonBtnTextOn: {
+    color: C.pine,
+  },
+  heroBottom: {
+    padding: 18,
+  },
+  heroKicker: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.8,
+    color: C.gold,
+  },
+  heroTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 27,
+    lineHeight: 31,
+    color: '#FFFFFF',
+    marginTop: 4,
+  },
+  glance: {
+    flexDirection: 'row',
+    marginHorizontal: S.gutter,
+    marginTop: 14,
+    paddingVertical: 16,
+    backgroundColor: C.pine,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: C.goldLine,
+    ...shadow.card,
+  },
+  glanceItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  glanceDiv: {
+    borderLeftWidth: StyleSheet.hairlineWidth,
+    borderLeftColor: C.goldLine,
+  },
+  glanceNum: {
+    fontFamily: FONTS.display,
+    fontSize: 21,
+    color: C.cream,
+    fontVariant: ['tabular-nums'],
+  },
+  glanceLabel: {
+    color: C.gold,
+    fontFamily: FONTS.uiBold,
+    fontSize: 9,
+    letterSpacing: 1.4,
+    marginTop: 3,
+  },
+  sectionHead: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingHorizontal: S.gutter,
+    marginTop: 32,
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 25,
+    lineHeight: 29,
+    color: C.ink,
+  },
+  sectionSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 12.5,
+    color: C.ink55,
+    marginTop: 3,
+  },
+  more: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingVertical: 4,
+  },
+  moreText: {
+    fontSize: 13,
+    fontFamily: FONTS.uiBold,
+    color: C.pine,
+  },
+  resCard: {
+    backgroundColor: C.pureWhite,
+    borderRadius: 22,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: C.line,
+    ...shadow.card,
+  },
+  resImgWrap: {
+    position: 'relative',
+    width: '100%',
+    aspectRatio: 16 / 11,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: C.snow,
+  },
+  resImg: {
+    width: '100%',
+    height: '100%',
+  },
+  resTag: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+  },
+  resTagText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    color: C.pine,
+  },
+  resHeart: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.pill,
+  },
+  resName: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 15.5,
+    color: C.ink,
+    marginTop: 2,
+  },
+  resMeta: {
+    fontFamily: FONTS.ui,
+    fontSize: 11.5,
+    color: C.ink55,
+    marginTop: 3,
+  },
+  resSpecs: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 11,
+    color: C.ink70,
+    marginTop: 5,
+  },
+  resFoot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.line,
+  },
+  resFrom: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9,
+    letterSpacing: 1.2,
+    color: C.gold,
+  },
+  resPrice: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 15.5,
+    color: C.ink,
+    fontVariant: ['tabular-nums'],
+    marginTop: 1,
+  },
+  resNight: {
+    fontFamily: FONTS.ui,
+    fontSize: 11.5,
+    color: C.ink55,
+  },
+  resArrow: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: C.pine,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  expCard: {
+    width: 164,
+    height: 205,
+    borderRadius: 20,
+    overflow: 'hidden',
+    padding: 12,
+    backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: C.line,
+    ...shadow.card,
+  },
+  expTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    lineHeight: 18,
+    color: '#FFFFFF',
+  },
+  reasons: {
+    marginHorizontal: S.gutter,
+    backgroundColor: C.pureWhite,
+    borderRadius: 22,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: C.line,
+    ...shadow.card,
+  },
+  reason: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingVertical: 14,
+  },
+  reasonPhoto: {
+    width: 62,
+    height: 62,
+    borderRadius: 14,
+  },
+  reasonLabel: {
+    fontSize: 9.5,
+    letterSpacing: 1.5,
+    color: C.gold,
+    fontFamily: FONTS.uiBold,
+  },
+  reasonTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    lineHeight: 18,
+    color: C.ink,
+    marginTop: 3,
+  },
 });

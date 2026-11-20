@@ -4,7 +4,7 @@ import { Text } from '@/components/Text';
 
 import { Button, Caps, PressableScale } from '@/components/ui';
 import { fmtShort, guestsLabel, nightsBetween, plural, type Stay } from '@/lib/stay';
-import { C, F } from '@/theme';
+import { C, F, FONTS, shadow } from '@/theme';
 
 // The primary search: two clearly labelled fields and one obvious action.
 export default function SearchCard({ stay, onDates, onGuests, onSearch }: { stay: Stay; onDates: () => void; onGuests: () => void; onSearch: () => void }) {
@@ -13,40 +13,43 @@ export default function SearchCard({ stay, onDates, onGuests, onSearch }: { stay
     <View style={styles.card}>
       <PressableScale onPress={onDates} scaleTo={0.985} style={styles.field}>
         <View style={styles.icon}>
-          <CalendarDays size={17} color={C.pine} strokeWidth={1.5} />
+          <CalendarDays size={18} color={C.pine} strokeWidth={1.75} />
         </View>
         <View style={{ flex: 1 }}>
-          <Caps color={C.ink55} style={{ fontSize: 9 }}>Check-in — Check-out</Caps>
+          <Caps color={C.gold} style={{ fontSize: 9.5, letterSpacing: 1.3 }}>CHECK-IN — CHECK-OUT</Caps>
           <Text style={styles.value}>
             {fmtShort(stay.checkIn)} – {fmtShort(stay.checkOut)}
           </Text>
         </View>
-        <Text style={styles.meta}>{plural(nights, 'night')}</Text>
-        <ChevronRight size={16} color={C.ink40} strokeWidth={1.5} />
+        <View style={styles.nightsBadge}>
+          <Text style={styles.nightsText}>{plural(nights, 'night')}</Text>
+        </View>
+        <ChevronRight size={16} color={C.ink40} strokeWidth={1.75} />
       </PressableScale>
       <View style={styles.div} />
       <PressableScale onPress={onGuests} scaleTo={0.985} style={styles.field}>
         <View style={styles.icon}>
-          <Users size={17} color={C.pine} strokeWidth={1.5} />
+          <Users size={18} color={C.pine} strokeWidth={1.75} />
         </View>
         <View style={{ flex: 1 }}>
-          <Caps color={C.ink55} style={{ fontSize: 9 }}>Guests</Caps>
+          <Caps color={C.gold} style={{ fontSize: 9.5, letterSpacing: 1.3 }}>GUESTS & APARTMENTS</Caps>
           <Text style={styles.value}>
             {guestsLabel(stay.adults, stay.children)} · {plural(stay.rooms, 'apartment')}
           </Text>
         </View>
-        <ChevronRight size={16} color={C.ink40} strokeWidth={1.5} />
+        <ChevronRight size={16} color={C.ink40} strokeWidth={1.75} />
       </PressableScale>
-      <Button label="Check availability" onPress={onSearch} style={{ marginTop: 12 }} />
+      <Button label="Search residences" onPress={onSearch} icon={<ChevronRight size={15} color={C.sand} strokeWidth={2} />} style={{ marginTop: 14 }} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: C.white, borderRadius: 22, padding: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  field: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 4 },
-  icon: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
-  value: { fontFamily: F.display, fontSize: 16.5, color: C.ink, marginTop: 4 },
-  meta: { fontSize: 12, color: C.ink55, marginRight: 2 },
-  div: { height: StyleSheet.hairlineWidth, backgroundColor: C.lineStrong, marginLeft: 54 },
+  card: { backgroundColor: C.pureWhite, borderRadius: 24, padding: 14, borderWidth: 1, borderColor: C.line, ...shadow.card },
+  field: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 6 },
+  icon: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.goldSoft, alignItems: 'center', justifyContent: 'center' },
+  value: { fontFamily: FONTS.uiBold, fontSize: 16, color: C.ink, marginTop: 3 },
+  nightsBadge: { paddingHorizontal: 9, paddingVertical: 3.5, borderRadius: 999, backgroundColor: C.snow, marginRight: 4 },
+  nightsText: { fontFamily: FONTS.uiBold, fontSize: 11, color: C.pine },
+  div: { height: StyleSheet.hairlineWidth, backgroundColor: C.line, marginLeft: 60, marginVertical: 2 },
 });

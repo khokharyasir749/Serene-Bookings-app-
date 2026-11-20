@@ -73,7 +73,10 @@ export const S = { gutter: 20, radius: 14, card: 22, photo: 20, tabBar: 64 };
 export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 10 + 36;
 
 export const shadow = {
-  card: { shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
+  card: { shadowColor: '#123524', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 3 },
+  cardHover: { shadowColor: '#123524', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 6 },
+  pill: { shadowColor: '#123524', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 2 },
+  dock: { shadowColor: '#000000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.28, shadowRadius: 26, elevation: 10 },
 } as const;
 
 // One type scale for the whole app:
