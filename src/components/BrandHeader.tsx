@@ -28,7 +28,7 @@ export default function BrandHeader() {
       <SereneLogoMark size={42} color={C.pine} snow={C.cream} />
       <View style={{ flex: 1 }}>
         <Text style={styles.brand} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>SERENE HEIGHTS</Text>
-        <Text style={styles.sub} numberOfLines={1}>BOOKINGS · NATHIA GALI</Text>
+        <Text style={styles.sub} numberOfLines={1}>RESORT · NATHIA GALI</Text>
       </View>
       <Pressable onPress={press} accessibilityRole="button" accessibilityLabel={user ? 'Account' : 'Sign in'} style={({ pressed }) => [styles.pill, user ? styles.on : styles.off, pressed && styles.pressed]}>
         {user ? (
@@ -43,8 +43,8 @@ export default function BrandHeader() {
           </>
         ) : (
           <>
-            <Ionicons name="person-outline" size={15} color={C.cream} />
-            <Text style={[styles.label, { color: C.pureWhite }]}>Sign in</Text>
+            <Ionicons name="person-outline" size={14} color={C.gold} />
+            <Text style={[styles.label, { color: '#FFFFFF' }]}>Sign in</Text>
           </>
         )}
       </Pressable>
@@ -53,14 +53,14 @@ export default function BrandHeader() {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: S.gutter },
-  brand: { color: C.ink, fontFamily: FONTS.display, fontSize: 19, letterSpacing: 1.3, lineHeight: 23 },
-  sub: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.8, marginTop: 1 },
-  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 12, height: 38, ...shadow.card },
-  off: { backgroundColor: C.pine },
-  on: { backgroundColor: C.pureWhite, paddingLeft: 5 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: S.gutter, paddingBottom: 6 },
+  brand: { color: C.pine, fontFamily: FONTS.display, fontSize: 20, letterSpacing: 1.4, lineHeight: 24 },
+  sub: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 2, marginTop: 1 },
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 13, height: 38, ...shadow.pill },
+  off: { backgroundColor: C.pine, borderWidth: 1, borderColor: 'rgba(200, 164, 106, 0.4)' },
+  on: { backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line, paddingLeft: 5 },
   pressed: { opacity: 0.88, transform: [{ scale: 0.97 }] },
-  label: { fontSize: 13, fontFamily: FONTS.uiBold },
+  label: { fontSize: 12.5, fontFamily: FONTS.uiBold },
   initials: { width: 28, height: 28, borderRadius: 14, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
   initialsText: { color: C.cream, fontSize: 11, fontFamily: FONTS.uiBold, letterSpacing: 0.5 },
 });

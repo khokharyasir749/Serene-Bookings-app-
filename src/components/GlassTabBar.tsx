@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GlassSurface from '@/components/GlassSurface';
 import { scrollActiveToTop, useScrollTopVisible } from '@/components/ScrollTop';
 import { Text } from '@/components/Text';
-import { C, FONTS, S } from '@/theme';
+import { C, FONTS, S, shadow } from '@/theme';
 
 // Floating glass dock, ported from the Serene Groups app (src/core/components/FloatingDock.tsx): clear glass with a
 // specular hairline, a sheer white active pill with Pine icon + label, and a 32 px up-arrow above its right edge
@@ -62,12 +62,13 @@ export function DockBridge(props: DockProps) {
 function Item({ icon, label, focused, onPress }: { icon: Glyph; label: string; focused: boolean; onPress: () => void }) {
   const scale = useRef(new Animated.Value(1)).current;
   const to = (v: number) => Animated.spring(scale, { toValue: v, speed: 40, bounciness: 6, useNativeDriver: true }).start();
-  const tint = focused ? C.pine : C.dockInactive;
+  const iconColor = focused ? C.gold : C.dockInactive;
+  const textColor = focused ? '#FFFFFF' : C.dockInactive;
   return (
     <Pressable onPress={onPress} onPressIn={() => to(0.92)} onPressOut={() => to(1)} accessibilityRole="tab" accessibilityState={{ selected: focused }} accessibilityLabel={label} style={styles.item}>
       <Animated.View style={[styles.pill, focused && styles.pillOn, { transform: [{ scale }] }]}>
-        <Ionicons name={icon} size={21} color={tint} />
-        <Text style={[styles.label, { color: tint }]}>{label}</Text>
+        <Ionicons name={icon} size={20} color={iconColor} />
+        <Text style={[styles.label, { color: textColor }]}>{label}</Text>
       </Animated.View>
     </Pressable>
   );
@@ -84,21 +85,25 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
 
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { bottom: insets.bottom + 10 }]}>
-      <GlassSurface blurTarget={blurTarget} radius={DOCK_RADIUS} style={styles.dock}>
-        {state.routes.map((r, i) => {
-          const icon = ICON[r.name];
-          if (!icon) return null;
-          const focused = state.index === i;
-          return <Item key={r.key} icon={icon} label={(descriptors[r.key]?.options.title ?? r.name).toUpperCase()} focused={focused} onPress={() => !focused && navigateToTab(r.key)} />;
-        })}
-        <Item icon="menu-outline" label="MENU" focused={false} onPress={() => router.push('/menu')} />
-      </GlassSurface>
-      {showTop && (
-        <GlassSurface blurTarget={blurTarget} radius={16} intensity={30} style={styles.top}>
-          <Pressable onPress={scrollActiveToTop} style={styles.topHit} accessibilityRole="button" accessibilityLabel="Scroll to top">
-            <Ionicons name="chevron-up-outline" size={15} color={C.pine} />
-          </Pressable>
+      <View style={styles.dockShadow}>
+        <GlassSurface blurTarget={blurTarget} radius={DOCK_RADIUS} intensity={40} style={styles.dock}>
+          {state.routes.map((r, i) => {
+            const icon = ICON[r.name];
+            if (!icon) return null;
+            const focused = state.index === i;
+            return <Item key={r.key} icon={icon} label={(descriptors[r.key]?.options.title ?? r.name).toUpperCase()} focused={focused} onPress={() => !focused && navigateToTab(r.key)} />;
+          })}
+          <Item icon="menu-outline" label="MENU" focused={false} onPress={() => router.push('/menu')} />
         </GlassSurface>
+      </View>
+      {showTop && (
+        <View style={styles.topShadow}>
+          <GlassSurface blurTarget={blurTarget} radius={16} intensity={40} style={styles.top}>
+            <Pressable onPress={scrollActiveToTop} style={styles.topHit} accessibilityRole="button" accessibilityLabel="Scroll to top">
+              <Ionicons name="chevron-up-outline" size={15} color={C.pine} />
+            </Pressable>
+          </GlassSurface>
+        </View>
       )}
     </View>
   );
@@ -106,11 +111,13 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
 
 const styles = StyleSheet.create({
   wrap: { position: 'absolute', left: 20, right: 20 },
-  top: { position: 'absolute', right: 0, top: -42, width: 32, height: 32 },
+  dockShadow: { borderRadius: DOCK_RADIUS, backgroundColor: 'transparent', ...shadow.dock },
+  topShadow: { position: 'absolute', right: 0, top: -42, borderRadius: 16, backgroundColor: 'transparent', ...shadow.pill },
+  top: { width: 32, height: 32 },
   topHit: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   dock: { flexDirection: 'row', alignItems: 'center', height: S.tabBar, paddingHorizontal: 8 },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  pill: { alignItems: 'center', justifyContent: 'center', gap: 1, paddingHorizontal: 6, minWidth: 66, height: 48, borderRadius: 999, borderWidth: 1, borderColor: 'transparent' },
-  pillOn: { backgroundColor: C.dockActive, borderColor: C.dockBorder },
+  pill: { alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 8, minWidth: 66, height: 48, borderRadius: 999, borderWidth: 1, borderColor: 'transparent' },
+  pillOn: { backgroundColor: C.pine, borderColor: 'rgba(200, 164, 106, 0.4)', ...shadow.pill },
   label: { fontSize: 10, fontFamily: FONTS.uiBold, letterSpacing: 1.2 },
 });

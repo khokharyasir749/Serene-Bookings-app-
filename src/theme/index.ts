@@ -45,11 +45,11 @@ export const C = {
   goldLine: gold(0.45),
   positive: '#1D7348',
   danger: '#B42318',
-  // Glass dock (exact values from the Groups app)
-  dockGlass: 'rgba(255, 253, 249, 0.16)',
-  dockActive: white(0.32),
-  dockBorder: white(0.55),
-  dockInactive: pine(0.78),
+  // Glass dock (frosted glassmorphic tokens)
+  dockGlass: 'rgba(255, 255, 255, 0.86)',
+  dockActive: PINE,
+  dockBorder: 'rgba(255, 255, 255, 0.92)',
+  dockInactive: pine(0.55),
 } as const;
 
 // Cormorant Garamond for editorial display, Plus Jakarta Sans for UI and numerals (loaded in app/_layout.tsx).
