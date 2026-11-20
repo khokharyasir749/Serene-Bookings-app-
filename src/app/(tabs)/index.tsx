@@ -35,37 +35,37 @@ const EXPERIENCES = [
     title: 'Heated Glass Pool',
     category: 'WELLNESS · 8TH FLOOR',
     image: '/images/resort/aerial-rooftop-pool.jpg',
-    desc: 'Indoor temperature-controlled infinity pool overlooking 360° cloud valleys.',
+    desc: 'Indoor heated infinity pool with 360° cloud & pine valley views.',
   },
   {
     title: 'Panoramic Dining',
-    category: 'RESTAURANT & TERRACE',
+    category: 'FINE DINING · ROOFTOP',
     image: '/images/dining/rooftop-dining-glass.jpg',
-    desc: 'Cloud-level cuisine featuring Pakistani heritage recipes and international dishes.',
+    desc: 'Cloud-level dining featuring Pakistani heritage & global cuisine.',
   },
   {
     title: 'Private Ski Slope',
     category: 'WINTER SPORTS · SLOPE G2',
     image: '/images/activities/ski-slope-aerial.jpg',
-    desc: "Pakistan's first private ski slope and snow tubing run beside PAF Airbase.",
+    desc: "Pakistan's first private ski slope and snow tubing track.",
   },
   {
     title: 'Sunset Sky Lounge',
     category: 'LOUNGE & HIGH TEA',
     image: '/images/dining/sky-lounge.jpg',
-    desc: 'Artisanal high tea and evening drinks facing sunset vistas over the pines.',
+    desc: 'Artisanal high tea and evening mocktails facing sunset vistas.',
   },
   {
     title: 'Pine Forest Trails',
     category: 'OUTDOOR EXPLORATION',
     image: '/images/activities/winter-trails.jpg',
-    desc: 'Private gated trailhead leading directly into the historic Nathia Gali forest.',
+    desc: 'Private gated trailhead leading directly into the historic forest.',
   },
   {
     title: 'Cedarwood Sauna & Spa',
     category: 'SPA & HYDROTHERAPY',
     image: '/images/resort/glass-roof-pool.jpg',
-    desc: 'Alpine steam room, cedarwood sauna, and restorative cold-plunge recovery.',
+    desc: 'Alpine steam room, cedarwood sauna, and cold plunge recovery.',
   },
 ];
 
@@ -76,7 +76,7 @@ export default function Discover() {
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const resW = Math.min(312, Math.round(width * 0.78));
+  const resW = Math.min(320, Math.round(width * 0.82));
 
   useFocusEffect(
     useCallback(() => {
@@ -199,10 +199,10 @@ export default function Discover() {
           )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={228}
+          snapToInterval={242}
           initialNumToRender={3}
           windowSize={3}
-          contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 12 }}
+          contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
         />
 
         {/* Resort Architecture & Floor Plans Story Card */}
@@ -328,12 +328,13 @@ const ResidenceCard = memo(function ResidenceCard({
       : 'Valley Views';
 
   return (
-    <PressableScale onPress={onPress} scaleTo={0.97} style={[styles.resCard, { width: w }]}>
+    <PressableScale onPress={onPress} scaleTo={0.975} style={[styles.resCard, { width: w }]}>
+      {/* Full top edge-to-edge photo */}
       <View style={styles.resImgWrap}>
         <Photo src={t.images[0]} style={styles.resImg} />
-        <Scrim bottom={0.4} />
+        <Scrim top={0.25} bottom={0.4} />
 
-        {/* Top-left tag */}
+        {/* Top-left frosted tag */}
         <View style={styles.resTag}>
           <Text style={styles.resTagText}>{tag.toUpperCase()}</Text>
         </View>
@@ -350,30 +351,27 @@ const ResidenceCard = memo(function ResidenceCard({
             color={fav ? '#E11D48' : C.pine}
           />
         </Pressable>
-
-        {/* Bottom-left photo meta */}
-        <View style={styles.resPhotoMeta}>
-          <Text style={styles.resPhotoMetaText}>{t.images.length} PHOTOS · G1–8TH FL</Text>
-        </View>
       </View>
 
-      <View style={{ paddingHorizontal: 6, paddingTop: 14 }}>
-        <Text numberOfLines={1} style={styles.resName}>{t.name}</Text>
+      {/* Card Content Area with Generous Padding */}
+      <View style={styles.resBody}>
+        <Text numberOfLines={2} style={styles.resName}>{t.name}</Text>
         <Text numberOfLines={1} style={styles.resTagline}>{t.tagline}</Text>
 
-        {/* Clean Spec Row with vector icons */}
-        <View style={styles.specRow}>
+        {/* Structured Spec Capsule */}
+        <View style={styles.specCapsule}>
           <View style={styles.specItem}>
-            <Ionicons name="expand-outline" size={13} color={C.gold} style={{ marginRight: 4 }} />
+            <Ionicons name="expand-outline" size={13} color={C.gold} style={{ marginRight: 5 }} />
             <Text style={styles.specText}>{areaRangeOf(t.slug)}</Text>
           </View>
           <View style={styles.specDot} />
           <View style={styles.specItem}>
-            <Ionicons name="people-outline" size={13} color={C.gold} style={{ marginRight: 4 }} />
+            <Ionicons name="people-outline" size={13} color={C.gold} style={{ marginRight: 5 }} />
             <Text style={styles.specText}>Up to {t.maxOccupancy} guests</Text>
           </View>
         </View>
 
+        {/* Price & Action Row */}
         <View style={styles.resFoot}>
           <View>
             <Text style={styles.resFrom}>STARTING FROM</Text>
@@ -406,10 +404,10 @@ const ExperienceCard = memo(function ExperienceCard({
   onPress?: () => void;
 }) {
   return (
-    <PressableScale onPress={onPress} scaleTo={0.97} style={styles.expCard}>
+    <PressableScale onPress={onPress} scaleTo={0.975} style={styles.expCard}>
       <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim top={0.25} bottom={0.88} />
-      
+      <Scrim top={0.25} bottom={0.92} />
+
       {/* Top category badge */}
       <View style={styles.expTag}>
         <Text style={styles.expTagText}>{category}</Text>
@@ -421,7 +419,7 @@ const ExperienceCard = memo(function ExperienceCard({
       <View style={styles.expInfo}>
         <Text numberOfLines={1} style={styles.expTitle}>{title}</Text>
         <Text numberOfLines={2} style={styles.expDesc}>{desc}</Text>
-        
+
         <View style={styles.expActionRow}>
           <Text style={styles.expActionText}>Explore facility</Text>
           <Ionicons name="arrow-forward" size={12} color={C.gold} />
@@ -545,15 +543,15 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: FONTS.display,
-    fontSize: 25,
-    lineHeight: 29,
+    fontSize: 26,
+    lineHeight: 30,
     color: C.ink,
   },
   sectionSub: {
     fontFamily: FONTS.ui,
-    fontSize: 12.5,
+    fontSize: 13,
     color: C.ink55,
-    marginTop: 3,
+    marginTop: 4,
   },
   more: {
     flexDirection: 'row',
@@ -569,17 +567,15 @@ const styles = StyleSheet.create({
   resCard: {
     backgroundColor: C.pureWhite,
     borderRadius: 24,
-    padding: 10,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.22)',
+    borderColor: 'rgba(200, 164, 106, 0.25)',
     ...shadow.cardHover,
   },
   resImgWrap: {
     position: 'relative',
     width: '100%',
     aspectRatio: 16 / 10.5,
-    borderRadius: 18,
-    overflow: 'hidden',
     backgroundColor: C.snow,
   },
   resImg: {
@@ -588,8 +584,8 @@ const styles = StyleSheet.create({
   },
   resTag: {
     position: 'absolute',
-    top: 9,
-    left: 9,
+    top: 10,
+    left: 10,
     paddingHorizontal: 9,
     paddingVertical: 4.5,
     borderRadius: 999,
@@ -605,8 +601,8 @@ const styles = StyleSheet.create({
   },
   resHeart: {
     position: 'absolute',
-    top: 9,
-    right: 9,
+    top: 10,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -615,44 +611,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...shadow.pill,
   },
-  resPhotoMeta: {
-    position: 'absolute',
-    bottom: 8,
-    left: 10,
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-  },
-  resPhotoMetaText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 0.8,
-    color: '#FFFFFF',
+  resBody: {
+    padding: 16,
+    paddingTop: 14,
   },
   resName: {
     fontFamily: FONTS.display,
-    fontSize: 21,
-    lineHeight: 25,
+    fontSize: 22,
+    lineHeight: 26,
     color: C.pine,
   },
   resTagline: {
     fontFamily: FONTS.ui,
-    fontSize: 12,
+    fontSize: 12.5,
     color: C.ink55,
-    marginTop: 2,
+    marginTop: 3,
   },
-  specRow: {
+  specCapsule: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
+    backgroundColor: 'rgba(236, 230, 218, 0.45)',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    marginTop: 10,
   },
   specItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   specText: {
-    fontFamily: FONTS.uiMedium,
+    fontFamily: FONTS.uiSemi,
     fontSize: 11,
     color: C.ink70,
   },
@@ -661,14 +650,14 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 1.5,
     backgroundColor: C.lineStrong,
-    marginHorizontal: 8,
+    marginHorizontal: 10,
   },
   resFoot: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 12,
-    paddingTop: 10,
+    marginTop: 14,
+    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.line,
   },
@@ -685,7 +674,7 @@ const styles = StyleSheet.create({
   },
   resPrice: {
     fontFamily: FONTS.uiBold,
-    fontSize: 17,
+    fontSize: 18,
     color: C.ink,
     fontVariant: ['tabular-nums'],
   },
@@ -698,8 +687,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    paddingHorizontal: 13,
+    paddingVertical: 7.5,
     borderRadius: 999,
     backgroundColor: C.pine,
     ...shadow.pill,
@@ -710,29 +699,29 @@ const styles = StyleSheet.create({
     color: C.cream,
   },
   expCard: {
-    width: 216,
-    height: 275,
+    width: 228,
+    height: 280,
     borderRadius: 24,
     overflow: 'hidden',
-    padding: 14,
+    padding: 16,
     backgroundColor: C.pine,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.24)',
+    borderColor: 'rgba(200, 164, 106, 0.25)',
     ...shadow.cardHover,
   },
   expTag: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(18, 53, 36, 0.75)',
+    backgroundColor: 'rgba(18, 53, 36, 0.82)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   expTagText: {
     fontFamily: FONTS.uiBold,
     fontSize: 8.5,
-    letterSpacing: 1.2,
+    letterSpacing: 1.3,
     color: C.gold,
   },
   expInfo: {
@@ -740,26 +729,26 @@ const styles = StyleSheet.create({
   },
   expTitle: {
     fontFamily: FONTS.display,
-    fontSize: 20,
-    lineHeight: 24,
+    fontSize: 22,
+    lineHeight: 26,
     color: '#FFFFFF',
   },
   expDesc: {
     fontFamily: FONTS.ui,
-    fontSize: 11.5,
-    lineHeight: 16,
-    color: 'rgba(236, 238, 237, 0.88)',
-    marginTop: 4,
+    fontSize: 12,
+    lineHeight: 17,
+    color: 'rgba(236, 238, 237, 0.92)',
+    marginTop: 5,
   },
   expActionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginTop: 8,
+    marginTop: 10,
   },
   expActionText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 11,
+    fontSize: 11.5,
     color: C.gold,
   },
   storyCard: {
