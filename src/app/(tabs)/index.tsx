@@ -76,7 +76,7 @@ export default function Discover() {
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const resW = Math.min(320, Math.round(width * 0.82));
+  const resW = Math.min(296, Math.round(width * 0.76));
 
   useFocusEffect(
     useCallback(() => {
@@ -329,61 +329,40 @@ const ResidenceCard = memo(function ResidenceCard({
 
   return (
     <PressableScale onPress={onPress} scaleTo={0.975} style={[styles.resCard, { width: w }]}>
-      {/* Full top edge-to-edge photo */}
-      <View style={styles.resImgWrap}>
-        <Photo src={t.images[0]} style={styles.resImg} />
-        <Scrim top={0.25} bottom={0.4} />
+      {/* Full-bleed portrait interior photography */}
+      <Photo src={t.images[0]} style={StyleSheet.absoluteFill} />
+      <Scrim top={0.25} bottom={0.9} />
 
-        {/* Top-left frosted tag */}
-        <View style={styles.resTag}>
-          <Text style={styles.resTagText}>{tag.toUpperCase()}</Text>
-        </View>
-
-        {/* Top-right favorite button */}
-        <Pressable
-          onPress={() => setFav((v) => !v)}
-          hitSlop={8}
-          style={styles.resHeart}
-          accessibilityLabel="Favorite">
-          <Ionicons
-            name={fav ? 'heart' : 'heart-outline'}
-            size={16}
-            color={fav ? '#E11D48' : C.pine}
-          />
-        </Pressable>
+      {/* Top-left frosted tag */}
+      <View style={styles.resTag}>
+        <Text style={styles.resTagText}>{tag.toUpperCase()}</Text>
       </View>
 
-      {/* Card Content Area with Generous Padding */}
-      <View style={styles.resBody}>
+      {/* Top-right favorite button */}
+      <Pressable
+        onPress={() => setFav((v) => !v)}
+        hitSlop={8}
+        style={styles.resHeart}
+        accessibilityLabel="Favorite">
+        <Ionicons
+          name={fav ? 'heart' : 'heart-outline'}
+          size={16}
+          color={fav ? '#E11D48' : '#FFFFFF'}
+        />
+      </Pressable>
+
+      <View style={{ flex: 1 }} />
+
+      {/* Bottom editorial content right on the picture */}
+      <View style={styles.resOverlay}>
         <Text numberOfLines={2} style={styles.resName}>{t.name}</Text>
-        <Text numberOfLines={1} style={styles.resTagline}>{t.tagline}</Text>
-
-        {/* Structured Spec Capsule */}
-        <View style={styles.specCapsule}>
-          <View style={styles.specItem}>
-            <Ionicons name="expand-outline" size={13} color={C.gold} style={{ marginRight: 5 }} />
-            <Text style={styles.specText}>{areaRangeOf(t.slug)}</Text>
-          </View>
-          <View style={styles.specDot} />
-          <View style={styles.specItem}>
-            <Ionicons name="people-outline" size={13} color={C.gold} style={{ marginRight: 5 }} />
-            <Text style={styles.specText}>Up to {t.maxOccupancy} guests</Text>
-          </View>
-        </View>
-
-        {/* Price & Action Row */}
-        <View style={styles.resFoot}>
-          <View>
-            <Text style={styles.resFrom}>STARTING FROM</Text>
-            <View style={styles.priceRow}>
-              <Text style={styles.resPrice}>{money(t.baseRate)}</Text>
-              <Text style={styles.resNight}> / night</Text>
-            </View>
-          </View>
-          <View style={styles.resCta}>
-            <Text style={styles.resCtaText}>View Suite</Text>
-            <Ionicons name="arrow-forward" size={12} color={C.cream} />
-          </View>
+        <Text style={styles.resPrice}>
+          From <Text style={styles.resPriceBold}>{money(t.baseRate)}</Text>
+          <Text style={styles.resNight}> / night</Text>
+        </Text>
+        <View style={styles.resActionRow}>
+          <Text style={styles.resActionText}>View suite details</Text>
+          <Ionicons name="arrow-forward" size={13} color={C.gold} />
         </View>
       </View>
     </PressableScale>
@@ -406,7 +385,7 @@ const ExperienceCard = memo(function ExperienceCard({
   return (
     <PressableScale onPress={onPress} scaleTo={0.975} style={styles.expCard}>
       <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim top={0.25} bottom={0.92} />
+      <Scrim top={0.25} bottom={0.9} />
 
       {/* Top category badge */}
       <View style={styles.expTag}>
@@ -565,143 +544,85 @@ const styles = StyleSheet.create({
     color: C.pine,
   },
   resCard: {
-    backgroundColor: C.pureWhite,
-    borderRadius: 24,
+    height: 380,
+    borderRadius: 26,
     overflow: 'hidden',
+    backgroundColor: C.pine,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.25)',
+    borderColor: 'rgba(200, 164, 106, 0.35)',
+    padding: 16,
     ...shadow.cardHover,
   },
-  resImgWrap: {
-    position: 'relative',
-    width: '100%',
-    aspectRatio: 16 / 10.5,
-    backgroundColor: C.snow,
-  },
-  resImg: {
-    width: '100%',
-    height: '100%',
-  },
   resTag: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    backgroundColor: 'rgba(18, 53, 36, 0.78)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.6)',
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   resTagText: {
     fontFamily: FONTS.uiBold,
     fontSize: 9,
-    letterSpacing: 0.8,
-    color: C.pine,
+    letterSpacing: 1.1,
+    color: C.gold,
   },
   resHeart: {
     position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    top: 14,
+    right: 14,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.pill,
   },
-  resBody: {
-    padding: 16,
-    paddingTop: 14,
+  resOverlay: {
+    paddingTop: 8,
   },
   resName: {
     fontFamily: FONTS.display,
-    fontSize: 22,
-    lineHeight: 26,
-    color: C.pine,
-  },
-  resTagline: {
-    fontFamily: FONTS.ui,
-    fontSize: 12.5,
-    color: C.ink55,
-    marginTop: 3,
-  },
-  specCapsule: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(236, 230, 218, 0.45)',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    marginTop: 10,
-  },
-  specItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  specText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 11,
-    color: C.ink70,
-  },
-  specDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: C.lineStrong,
-    marginHorizontal: 10,
-  },
-  resFoot: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 14,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: C.line,
-  },
-  resFrom: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 1.2,
-    color: C.gold,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    marginTop: 1,
+    fontSize: 24,
+    lineHeight: 28,
+    color: '#FFFFFF',
   },
   resPrice: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    color: 'rgba(236, 238, 237, 0.92)',
+    marginTop: 6,
+  },
+  resPriceBold: {
     fontFamily: FONTS.uiBold,
-    fontSize: 18,
-    color: C.ink,
+    color: C.gold,
+    fontSize: 16,
     fontVariant: ['tabular-nums'],
   },
   resNight: {
-    fontFamily: FONTS.ui,
-    fontSize: 11.5,
-    color: C.ink55,
+    fontSize: 12,
+    color: 'rgba(236, 238, 237, 0.75)',
   },
-  resCta: {
+  resActionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    paddingHorizontal: 13,
-    paddingVertical: 7.5,
-    borderRadius: 999,
-    backgroundColor: C.pine,
-    ...shadow.pill,
+    marginTop: 10,
   },
-  resCtaText: {
+  resActionText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 11.5,
-    color: C.cream,
+    fontSize: 12,
+    color: C.gold,
+    letterSpacing: 0.3,
   },
   expCard: {
     width: 228,
-    height: 280,
-    borderRadius: 24,
+    height: 310,
+    borderRadius: 26,
     overflow: 'hidden',
     padding: 16,
     backgroundColor: C.pine,
