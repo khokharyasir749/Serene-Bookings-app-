@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { BackHandler, Keyboard, Linking, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { Easing, FadeInDown, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -25,6 +25,7 @@ export default function Menu() {
   const H = height + 80;
   const p = useSharedValue(0);
   const closing = useRef(false);
+  const [closingState, setClosingState] = useState(false);
   const [lightBar, setLightBar] = useState(false);
   const curtain = useAnimatedStyle(() => ({ transform: [{ translateY: -(1 - p.get()) * H }] }));
   const inner = useAnimatedStyle(() => ({ transform: [{ translateY: (1 - p.get()) * H }] }));
@@ -39,10 +40,14 @@ export default function Menu() {
   const closeThen = (then?: () => void) => {
     if (closing.current) return;
     closing.current = true;
+    setClosingState(true);
+    Keyboard.dismiss();
     p.set(withTiming(0, { duration: 560, easing: Easing.bezier(0.77, 0, 0.18, 1) }));
     setTimeout(() => setLightBar(false), 300);
     setTimeout(() => {
-      router.back();
+      if (router.canGoBack()) {
+        router.back();
+      }
       if (then) setTimeout(then, 60);
     }, 580);
   };
@@ -58,7 +63,12 @@ export default function Menu() {
   }, []);
 
   // Tab destinations: lift the curtain, then switch tab. Sub-screens open on top, so back returns to the menu.
-  const toTab = (path: '/' | '/apartments') => () => closeThen(() => router.navigate(path));
+  const toTab = (path: '/' | '/apartments') => () =>
+    closeThen(() => {
+      if (path !== '/') {
+        router.navigate(path);
+      }
+    });
 
   const items: Item[] = [
     { n: '01', label: 'Home', go: toTab('/') },
@@ -69,14 +79,17 @@ export default function Menu() {
     {
       n: '06',
       label: 'Find a booking',
-      go: () => router.push('/find-booking'),
+      go: () => {
+        Keyboard.dismiss();
+        router.push('/find-booking');
+      },
     },
   ];
 
   const quick = [CONTACT.lines[0], CONTACT.lines[1]];
 
   return (
-    <View style={styles.stage}>
+    <View style={styles.stage} pointerEvents={closingState ? 'none' : 'auto'}>
       <StatusBar style={lightBar ? 'light' : 'dark'} />
       <Animated.View style={[styles.curtain, curtain]}>
       <Animated.View style={[styles.root, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 16 }, inner]}>
@@ -88,30 +101,28 @@ export default function Menu() {
         </Pressable>
       </View>
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: 18, paddingBottom: 12 }} showsVerticalScrollIndicator={false}>
-          {items.map((it, i) => {
-            const on = hot === it.n;
-            return (
-              <Animated.View key={it.n} entering={FadeInDown.delay(250 + i * 60).duration(700).easing(Easing.bezier(0.22, 1, 0.36, 1))}>
-                <Pressable
-                  onPress={it.go}
-                  onPressIn={() => setHot(it.n)}
-                  onPressOut={() => setHot(null)}
-                  accessibilityRole="link"
-                  accessibilityLabel={it.label}
-                  style={styles.item}>
-                  <Text style={[styles.num, on && { color: C.cream }]}>{it.n}</Text>
-                  <Text style={[styles.label, on && { color: C.gold }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
-                    {it.label.toUpperCase()}
-                  </Text>
-                  <Ionicons name="arrow-forward-outline" size={20} color={C.gold} style={{ opacity: on ? 1 : 0 }} />
-                </Pressable>
-              </Animated.View>
-            );
-          })}
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: 18, paddingBottom: 12 }} showsVerticalScrollIndicator={false}>
+        {items.map((it, i) => {
+          const on = hot === it.n;
+          return (
+            <Animated.View key={it.n} entering={FadeInDown.delay(250 + i * 60).duration(700).easing(Easing.bezier(0.22, 1, 0.36, 1))}>
+              <Pressable
+                onPress={it.go}
+                onPressIn={() => setHot(it.n)}
+                onPressOut={() => setHot(null)}
+                accessibilityRole="link"
+                accessibilityLabel={it.label}
+                style={styles.item}>
+                <Text style={[styles.num, on && { color: C.cream }]}>{it.n}</Text>
+                <Text style={[styles.label, on && { color: C.gold }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>
+                  {it.label.toUpperCase()}
+                </Text>
+                <Ionicons name="arrow-forward-outline" size={20} color={C.gold} style={{ opacity: on ? 1 : 0 }} />
+              </Pressable>
+            </Animated.View>
+          );
+        })}
+      </ScrollView>
 
       <View style={styles.foot}>
         {quick.map((q) => (

@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/Text';
@@ -11,10 +11,20 @@ import { C, FONTS, S } from '@/theme';
 export default function PageHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  const handleBack = () => {
+    Keyboard.dismiss();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
+
   return (
     <View style={[styles.bar, { paddingTop: insets.top + 8 }]}>
       <StatusBar style="dark" />
-      <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} hitSlop={12} accessibilityLabel="Back" style={styles.round}>
+      <Pressable onPress={handleBack} hitSlop={12} accessibilityLabel="Back" style={styles.round}>
         <Ionicons name="chevron-back-outline" size={20} color={C.ink} />
       </Pressable>
       <Text style={styles.title} numberOfLines={1}>{title}</Text>

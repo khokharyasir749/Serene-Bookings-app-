@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ChevronRight } from '@/components/icons';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Text } from '@/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -45,13 +45,30 @@ export default function Discover() {
   const { stay, setStay, user } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [season, setSeason] = useState<Season>('summer');
+  const [scrollEnabled, setScrollEnabled] = useState(true);
   const resW = Math.round(width * 0.64);
+
+  useFocusEffect(
+    useCallback(() => {
+      setScrollEnabled(true);
+    }, [])
+  );
 
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView ref={ref} onScroll={onScroll} scrollEventThrottle={64} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 0 }}>
+      <ScrollView
+        ref={ref}
+        style={{ flex: 1 }}
+        scrollEnabled={scrollEnabled}
+        nestedScrollEnabled
+        keyboardShouldPersistTaps="handled"
+        onScroll={onScroll}
+        scrollEventThrottle={64}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 0 }}
+      >
         <BrandHeader />
 
         <View style={{ paddingHorizontal: S.gutter, marginTop: 26 }}>
@@ -108,6 +125,7 @@ export default function Discover() {
         <SectionHead title="Apartments" sub="Five one-bedroom layouts" onMore={() => router.navigate('/apartments')} />
         <FlatList
           horizontal
+          nestedScrollEnabled
           data={ROOM_TYPES}
           keyExtractor={(t) => t.slug}
           renderItem={({ item }) => <ResidenceCard t={item} w={resW} onPress={() => router.push(`/room/${item.slug}`)} />}
@@ -123,6 +141,7 @@ export default function Discover() {
         <SectionHead title="On the mountain" sub="50+ facilities, steps from your door" />
         <FlatList
           horizontal
+          nestedScrollEnabled
           data={EXPERIENCES}
           keyExtractor={(e) => e.title}
           renderItem={({ item }) => <ExperienceCard title={item.title} image={item.image} />}

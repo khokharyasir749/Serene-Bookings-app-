@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,11 +19,23 @@ export default function FindBookingScreen() {
   const insets = useSafeAreaInsets();
   const { user, bookings } = useBooking();
 
+  useEffect(() => {
+    return () => {
+      Keyboard.dismiss();
+    };
+  }, []);
+
   return (
     <View style={styles.root}>
       <PageHeader title="Find a booking" />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: S.gutter, paddingTop: 26, paddingBottom: insets.bottom + 40 }}>
+        <ScrollView
+          nestedScrollEnabled
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: S.gutter, paddingTop: 26, paddingBottom: insets.bottom + 40 }}
+        >
           <Animated.View entering={rise(0)}>
             <Text style={T.eyebrow}>MANAGE YOUR STAY</Text>
             <Text style={[T.h1, { marginTop: 8 }]}>Your reservation, in a moment</Text>
@@ -36,16 +49,47 @@ export default function FindBookingScreen() {
               </View>
               <Text style={styles.cardTitle}>Booking lookup</Text>
             </View>
-            <BookingLookupForm hideNote onFound={(b) => router.replace({ pathname: '/booking/[ref]', params: { ref: b.reference } })} />
+            <BookingLookupForm
+              hideNote
+              onFound={(b) => {
+                Keyboard.dismiss();
+                router.replace({ pathname: '/booking/[ref]', params: { ref: b.reference } });
+              }}
+            />
           </Animated.View>
 
           <Animated.View entering={rise(2)} style={styles.options}>
             {user ? (
-              <Option icon="calendar-outline" title="View all my stays" sub={bookings.length ? `${bookings.length} reservation${bookings.length === 1 ? '' : 's'} on your account` : 'Your reservations appear here'} onPress={() => router.navigate('/trips')} />
+              <Option
+                icon="calendar-outline"
+                title="View all my stays"
+                sub={bookings.length ? `${bookings.length} reservation${bookings.length === 1 ? '' : 's'} on your account` : 'Your reservations appear here'}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  router.navigate('/trips');
+                }}
+              />
             ) : (
-              <Option icon="person-outline" title="Sign in to view all stays" sub="See every reservation in one place" onPress={() => router.push('/login')} />
+              <Option
+                icon="person-outline"
+                title="Sign in to view all stays"
+                sub="See every reservation in one place"
+                onPress={() => {
+                  Keyboard.dismiss();
+                  router.push('/login');
+                }}
+              />
             )}
-            <Option icon="bed-outline" title="Explore apartments" sub="Plan a new stay" onPress={() => router.navigate('/apartments')} last />
+            <Option
+              icon="bed-outline"
+              title="Explore apartments"
+              sub="Plan a new stay"
+              onPress={() => {
+                Keyboard.dismiss();
+                router.navigate('/apartments');
+              }}
+              last
+            />
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import AnimatedSplashScreen from '@/components/AnimatedSplashScreen';
 import { BookingProvider } from '@/state/booking';
@@ -34,25 +35,27 @@ export default function RootLayout() {
   if (!ready) return <View style={{ flex: 1, backgroundColor: C.pine }} />;
 
   return (
-    <BookingProvider>
-      <View style={{ flex: 1, backgroundColor: C.sand }}>
-        <StatusBar style={splash ? 'light' : 'dark'} />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.sand }, animation: 'slide_from_right' }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="room/[slug]" />
-          <Stack.Screen name="book/[slug]" options={{ animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="booking/[ref]" options={{ animation: 'fade', gestureEnabled: false }} />
-          <Stack.Screen name="stay" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="rates/[slug]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="login" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="menu" options={{ presentation: 'transparentModal', animation: 'none', gestureEnabled: false, contentStyle: { backgroundColor: 'transparent' } }} />
-          <Stack.Screen name="amenities" />
-          <Stack.Screen name="floor-plans" />
-          <Stack.Screen name="location" />
-          <Stack.Screen name="find-booking" />
-        </Stack>
-        {splash && <AnimatedSplashScreen onFinish={() => setSplash(false)} />}
-      </View>
-    </BookingProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BookingProvider>
+        <View style={{ flex: 1, backgroundColor: C.sand }}>
+          <StatusBar style={splash ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.sand }, animation: 'slide_from_right' }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="room/[slug]" />
+            <Stack.Screen name="book/[slug]" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="booking/[ref]" options={{ animation: 'fade', gestureEnabled: false }} />
+            <Stack.Screen name="stay" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="rates/[slug]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="login" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="menu" options={{ presentation: 'transparentModal', animation: 'none', gestureEnabled: false, contentStyle: { backgroundColor: 'transparent' } }} />
+            <Stack.Screen name="amenities" />
+            <Stack.Screen name="floor-plans" />
+            <Stack.Screen name="location" />
+            <Stack.Screen name="find-booking" />
+          </Stack>
+          {splash && <AnimatedSplashScreen onFinish={() => setSplash(false)} />}
+        </View>
+      </BookingProvider>
+    </GestureHandlerRootView>
   );
 }
