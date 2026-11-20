@@ -14,7 +14,6 @@ import { useScrollTop } from '@/components/ScrollTop';
 import SearchCard from '@/components/SearchCard';
 import { Photo, PressableScale } from '@/components/ui';
 import { areaRangeOf, PROPERTY, REASONS, REVIEWS, REVIEW_SCORE, ROOM_TYPES, type RoomType } from '@/data/catalog';
-import { money } from '@/lib/stay';
 import { useBooking } from '@/state/booking';
 import { C, FONTS, S, shadow, tabBarSpace } from '@/theme';
 
@@ -33,39 +32,27 @@ const GLANCE = [
 const EXPERIENCES = [
   {
     title: 'Heated Glass Pool',
-    category: 'WELLNESS · 8TH FLOOR',
     image: '/images/resort/aerial-rooftop-pool.jpg',
-    pill: '360° Cloud Views',
   },
   {
     title: 'Panoramic Dining',
-    category: 'FINE DINING · ROOFTOP',
     image: '/images/dining/rooftop-dining-glass.jpg',
-    pill: 'Cloud-Level Cuisine',
   },
   {
     title: 'Private Ski Slope',
-    category: 'WINTER SPORTS · SLOPE G2',
     image: '/images/activities/ski-slope-aerial.jpg',
-    pill: 'Winter Snow Slope',
   },
   {
     title: 'Sunset Sky Lounge',
-    category: 'LOUNGE & HIGH TEA',
     image: '/images/dining/sky-lounge.jpg',
-    pill: 'High Tea & Sunsets',
   },
   {
     title: 'Pine Forest Trails',
-    category: 'OUTDOOR EXPLORATION',
     image: '/images/activities/winter-trails.jpg',
-    pill: 'Private Trailhead',
   },
   {
     title: 'Cedarwood Sauna & Spa',
-    category: 'SPA & HYDROTHERAPY',
     image: '/images/resort/glass-roof-pool.jpg',
-    pill: 'Steam & Cold Plunge',
   },
 ];
 
@@ -76,7 +63,7 @@ export default function Discover() {
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const resW = Math.min(296, Math.round(width * 0.76));
+  const resW = Math.min(290, Math.round(width * 0.74));
 
   useFocusEffect(
     useCallback(() => {
@@ -191,15 +178,13 @@ export default function Discover() {
           renderItem={({ item }) => (
             <ExperienceCard
               title={item.title}
-              category={item.category}
               image={item.image}
-              pill={item.pill}
               onPress={() => router.push('/amenities')}
             />
           )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={242}
+          snapToInterval={220 + 14}
           initialNumToRender={3}
           windowSize={3}
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
@@ -320,70 +305,19 @@ const ResidenceCard = memo(function ResidenceCard({
   w: number;
   onPress: () => void;
 }) {
-  const [fav, setFav] = useState(false);
-  const tag = t.outdoorSpace.toLowerCase().includes('terrace')
-    ? 'Private Terrace'
-    : t.slug.includes('corner')
-      ? 'Corner Suite'
-      : 'Valley Views';
-
   return (
     <PressableScale onPress={onPress} scaleTo={0.975} style={[styles.resCard, { width: w }]}>
-      {/* Full-bleed portrait interior photography */}
+      {/* Full-bleed portrait photography */}
       <Photo src={t.images[0]} style={StyleSheet.absoluteFill} />
-      <Scrim top={0.25} bottom={0.88} />
-
-      {/* Top pills row on picture */}
-      <View style={styles.cardTopRow}>
-        <View style={styles.topTagPill}>
-          <Text style={styles.topTagPillText}>{tag.toUpperCase()}</Text>
-        </View>
-
-        <Pressable
-          onPress={() => setFav((v) => !v)}
-          hitSlop={8}
-          style={styles.favPill}
-          accessibilityLabel="Favorite">
-          <Ionicons
-            name={fav ? 'heart' : 'heart-outline'}
-            size={16}
-            color={fav ? '#E11D48' : '#FFFFFF'}
-          />
-        </Pressable>
-      </View>
+      <Scrim bottom={0.45} />
 
       <View style={{ flex: 1 }} />
 
-      {/* Bottom overlay with limited text and pills directly on picture */}
-      <View style={styles.cardBottomOverlay}>
-        {/* Spec pills on picture */}
-        <View style={styles.specPillsRow}>
-          <View style={styles.frostedPill}>
-            <Ionicons name="expand-outline" size={11.5} color={C.gold} style={{ marginRight: 4 }} />
-            <Text style={styles.frostedPillText}>{areaRangeOf(t.slug)}</Text>
-          </View>
-          <View style={styles.frostedPill}>
-            <Ionicons name="people-outline" size={11.5} color={C.gold} style={{ marginRight: 4 }} />
-            <Text style={styles.frostedPillText}>{t.maxOccupancy} Guests</Text>
-          </View>
-        </View>
-
-        {/* Limited suite name */}
-        <Text numberOfLines={1} style={styles.resName}>{t.name}</Text>
-
-        {/* Price & Action Pill row on picture */}
-        <View style={styles.cardFootOnPic}>
-          <View>
-            <Text style={styles.fromLabel}>STARTING FROM</Text>
-            <Text style={styles.priceOnPic}>
-              {money(t.baseRate)} <Text style={styles.nightOnPic}>/ night</Text>
-            </Text>
-          </View>
-
-          <View style={styles.actionPill}>
-            <Text style={styles.actionPillText}>View Suite</Text>
-            <Ionicons name="arrow-forward" size={12} color={C.cream} />
-          </View>
+      {/* Just one heading (the name) in glass form */}
+      <View style={styles.glassDock}>
+        <View style={styles.glassBar}>
+          <Text numberOfLines={1} style={styles.glassTitle}>{t.name}</Text>
+          <Ionicons name="arrow-forward" size={15} color={C.pine} />
         </View>
       </View>
     </PressableScale>
@@ -392,42 +326,26 @@ const ResidenceCard = memo(function ResidenceCard({
 
 const ExperienceCard = memo(function ExperienceCard({
   title,
-  category,
   image,
-  pill,
   onPress,
 }: {
   title: string;
-  category: string;
   image: string;
-  pill: string;
   onPress?: () => void;
 }) {
   return (
     <PressableScale onPress={onPress} scaleTo={0.975} style={styles.expCard}>
+      {/* Full-bleed experience photography */}
       <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim top={0.25} bottom={0.88} />
-
-      {/* Top category pill on picture */}
-      <View style={styles.topTagPill}>
-        <Text style={styles.topTagPillText}>{category}</Text>
-      </View>
+      <Scrim bottom={0.45} />
 
       <View style={{ flex: 1 }} />
 
-      {/* Bottom overlay with limited text and pills on picture */}
-      <View style={styles.cardBottomOverlay}>
-        <View style={styles.frostedPill}>
-          <Text style={styles.frostedPillText}>{pill}</Text>
-        </View>
-
-        <Text numberOfLines={1} style={styles.expTitle}>{title}</Text>
-
-        <View style={styles.cardFootOnPic}>
-          <View style={styles.actionPill}>
-            <Text style={styles.actionPillText}>Explore</Text>
-            <Ionicons name="arrow-forward" size={12} color={C.cream} />
-          </View>
+      {/* Just one heading (the name) in glass form */}
+      <View style={styles.glassDock}>
+        <View style={styles.glassBar}>
+          <Text numberOfLines={1} style={styles.glassTitle}>{title}</Text>
+          <Ionicons name="arrow-forward" size={15} color={C.pine} />
         </View>
       </View>
     </PressableScale>
@@ -570,139 +488,50 @@ const styles = StyleSheet.create({
     color: C.pine,
   },
   resCard: {
-    height: 380,
+    height: 360,
     borderRadius: 26,
     overflow: 'hidden',
     backgroundColor: C.pine,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.35)',
-    padding: 14,
     ...shadow.cardHover,
   },
   expCard: {
-    width: 228,
-    height: 310,
-    borderRadius: 26,
+    width: 220,
+    height: 290,
+    borderRadius: 24,
     overflow: 'hidden',
-    padding: 14,
     backgroundColor: C.pine,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.3)',
     ...shadow.cardHover,
   },
-  cardTopRow: {
+  glassDock: {
+    padding: 12,
+  },
+  glassBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  topTagPill: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    backgroundColor: 'rgba(18, 53, 36, 0.82)',
+    backgroundColor: 'rgba(255, 255, 255, 0.88)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+    borderColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 14,
+    elevation: 5,
   },
-  topTagPillText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 1.2,
-    color: C.gold,
-  },
-  favPill: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow.pill,
-  },
-  cardBottomOverlay: {
-    paddingTop: 8,
-  },
-  specPillsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 8,
-  },
-  frostedPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
-    borderRadius: 999,
-    backgroundColor: 'rgba(0, 0, 0, 0.48)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.22)',
-  },
-  frostedPillText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 10.5,
-    color: '#ECEEED',
-  },
-  resName: {
+  glassTitle: {
+    flex: 1,
     fontFamily: FONTS.display,
-    fontSize: 23,
-    lineHeight: 27,
-    color: '#FFFFFF',
-  },
-  expTitle: {
-    fontFamily: FONTS.display,
-    fontSize: 22,
-    lineHeight: 26,
-    color: '#FFFFFF',
-    marginTop: 6,
-  },
-  cardFootOnPic: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    paddingTop: 8,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  fromLabel: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 1.1,
-    color: C.gold,
-  },
-  priceOnPic: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 17,
-    color: '#FFFFFF',
-    fontVariant: ['tabular-nums'],
-    marginTop: 1,
-  },
-  nightOnPic: {
-    fontFamily: FONTS.ui,
-    fontSize: 11.5,
-    color: 'rgba(236, 238, 237, 0.78)',
-  },
-  actionPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 13,
-    paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: C.pine,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.4)',
-    ...shadow.pill,
-  },
-  actionPillText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 11.5,
-    color: C.cream,
+    fontSize: 18,
+    lineHeight: 22,
+    color: C.pine,
+    marginRight: 6,
   },
   storyCard: {
     marginHorizontal: S.gutter,
