@@ -1,4 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ChevronRight } from '@/components/icons';
@@ -63,7 +65,7 @@ export default function Discover() {
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const resW = Math.min(290, Math.round(width * 0.74));
+  const resW = Math.min(312, Math.round(width * 0.78));
 
   useFocusEffect(
     useCallback(() => {
@@ -184,7 +186,7 @@ export default function Discover() {
           )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={220 + 14}
+          snapToInterval={236 + 14}
           initialNumToRender={3}
           windowSize={3}
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
@@ -309,15 +311,30 @@ const ResidenceCard = memo(function ResidenceCard({
     <PressableScale onPress={onPress} scaleTo={0.975} style={[styles.resCard, { width: w }]}>
       {/* Full-bleed portrait photography */}
       <Photo src={t.images[0]} style={StyleSheet.absoluteFill} />
-      <Scrim bottom={0.45} />
+      <Scrim bottom={0.22} />
 
       <View style={{ flex: 1 }} />
 
-      {/* Just one heading (the name) in glass form */}
+      {/* Crystal clear glass pill */}
       <View style={styles.glassDock}>
-        <View style={styles.glassBar}>
-          <Text numberOfLines={1} style={styles.glassTitle}>{t.name}</Text>
-          <Ionicons name="arrow-forward" size={15} color={C.pine} />
+        <View style={styles.crystalPill}>
+          <BlurView
+            intensity={60}
+            tint="light"
+            blurMethod="dimezisBlurView"
+            style={StyleSheet.absoluteFill}
+          />
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.42)', 'rgba(255, 255, 255, 0.18)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.crystalHighlight} />
+          <Text numberOfLines={1} style={styles.crystalTitle}>{t.name}</Text>
+          <View style={styles.crystalArrow}>
+            <Ionicons name="arrow-forward" size={13} color={C.pine} />
+          </View>
         </View>
       </View>
     </PressableScale>
@@ -337,15 +354,30 @@ const ExperienceCard = memo(function ExperienceCard({
     <PressableScale onPress={onPress} scaleTo={0.975} style={styles.expCard}>
       {/* Full-bleed experience photography */}
       <Photo src={image} style={StyleSheet.absoluteFill} />
-      <Scrim bottom={0.45} />
+      <Scrim bottom={0.22} />
 
       <View style={{ flex: 1 }} />
 
-      {/* Just one heading (the name) in glass form */}
+      {/* Crystal clear glass pill */}
       <View style={styles.glassDock}>
-        <View style={styles.glassBar}>
-          <Text numberOfLines={1} style={styles.glassTitle}>{title}</Text>
-          <Ionicons name="arrow-forward" size={15} color={C.pine} />
+        <View style={styles.crystalPill}>
+          <BlurView
+            intensity={60}
+            tint="light"
+            blurMethod="dimezisBlurView"
+            style={StyleSheet.absoluteFill}
+          />
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.42)', 'rgba(255, 255, 255, 0.18)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.crystalHighlight} />
+          <Text numberOfLines={1} style={styles.crystalTitle}>{title}</Text>
+          <View style={styles.crystalArrow}>
+            <Ionicons name="arrow-forward" size={13} color={C.pine} />
+          </View>
         </View>
       </View>
     </PressableScale>
@@ -497,8 +529,8 @@ const styles = StyleSheet.create({
     ...shadow.cardHover,
   },
   expCard: {
-    width: 220,
-    height: 290,
+    width: 236,
+    height: 300,
     borderRadius: 24,
     overflow: 'hidden',
     backgroundColor: C.pine,
@@ -509,29 +541,49 @@ const styles = StyleSheet.create({
   glassDock: {
     padding: 12,
   },
-  glassBar: {
+  crystalPill: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.88)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
+    borderRadius: 999,
+    overflow: 'hidden',
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 255, 255, 0.75)',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     shadowColor: '#123524',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.16,
     shadowRadius: 14,
     elevation: 5,
   },
-  glassTitle: {
+  crystalHighlight: {
+    position: 'absolute',
+    top: 0,
+    left: 18,
+    right: 18,
+    height: 1.2,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 1,
+  },
+  crystalTitle: {
     flex: 1,
     fontFamily: FONTS.display,
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 16.5,
+    lineHeight: 20,
     color: C.pine,
-    marginRight: 6,
+    marginRight: 8,
+  },
+  crystalArrow: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.45)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.9)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   storyCard: {
     marginHorizontal: S.gutter,
