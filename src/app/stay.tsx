@@ -2,33 +2,36 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Text } from '@/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ModalHeader from '@/components/ModalHeader';
-import Segmented from '@/components/Segmented';
-import { Button, Stepper } from '@/components/ui';
+import { Text } from '@/components/Text';
 import { CONFIG, roomType, type RoomType } from '@/data/catalog';
-import { addDays, fromISO, guestsLabel, monthName, nightlyRate, nightsBetween, plural, today, toISO } from '@/lib/stay';
+import { addDays, fromISO, monthName, nightlyRate, nightsBetween, plural, today, toISO } from '@/lib/stay';
 import { useBooking } from '@/state/booking';
-import { C, FONTS, S, T } from '@/theme';
+import { C, FONTS, S, shadow } from '@/theme';
 
-type Tab = 'dates' | 'guests';
+const HISTOGRAM_DATA = [
+  20, 28, 35, 48, 62, 78, 85, 92, 98, 86, 75, 68, 55, 48, 60, 72, 80, 70, 58, 42, 34, 26, 20, 16,
+];
 
-// Full-screen "Your stay": a range calendar (with nightly prices when an apartment type is known) and guests.
-// Params: tab = dates | guests · type = room slug for prices · next = apartments to show results after applying.
+const STAY_TYPES = ['All types', 'Deluxe', 'Executive', 'Presidential', 'Penthouse'];
+
 export default function StayModal() {
-  const params = useLocalSearchParams<{ tab?: Tab; type?: string; next?: string }>();
+  const params = useLocalSearchParams<{ tab?: 'dates' | 'guests'; type?: string; next?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { stay, setStay } = useBooking();
   const type = params.type ? roomType(params.type) : undefined;
+
   const [draft, setDraft] = useState(stay);
-  const [tab, setTab] = useState<Tab>(params.tab === 'guests' ? 'guests' : 'dates');
+  const [showCalendar, setShowCalendar] = useState(true);
   const [picking, setPicking] = useState<'in' | 'out'>('in');
+  const [selectedType, setSelectedType] = useState('All types');
+  const [minPrice, setMinPrice] = useState(20000);
+  const [maxPrice, setMaxPrice] = useState(55000);
 
   const nights = nightsBetween(draft.checkIn, draft.checkOut);
-  const valid = nights >= 1 && picking === 'in';
+  const valid = nights >= 1;
 
   const pick = useCallback(
     (iso: string) => {
@@ -36,7 +39,10 @@ export default function StayModal() {
         setDraft((d) => ({ ...d, checkIn: iso, checkOut: addDays(iso, 1) }));
         setPicking('out');
       } else {
-        const out = nightsBetween(draft.checkIn, iso) > CONFIG.maxStayNights ? addDays(draft.checkIn, CONFIG.maxStayNights) : iso;
+        const out =
+          nightsBetween(draft.checkIn, iso) > CONFIG.maxStayNights
+            ? addDays(draft.checkIn, CONFIG.maxStayNights)
+            : iso;
         setDraft((d) => ({ ...d, checkOut: out }));
         setPicking('in');
       }
@@ -47,134 +53,347 @@ export default function StayModal() {
   const apply = () => {
     setStay(draft);
     router.back();
-    if (params.next === 'apartments') setTimeout(() => router.navigate('/apartments'), 50);
+    if (params.next === 'apartments') {
+      setTimeout(() => router.navigate('/apartments'), 50);
+    }
+  };
+
+  const formatDateDisplay = (iso: string | null) => {
+    if (!iso) return 'Select date';
+    const d = fromISO(iso);
+    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    const y = d.getFullYear();
+    return `${m}/${day}/${y}`;
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: C.sand }}>
-      <ModalHeader title="Your stay" onClose={() => router.back()} />
-
-      <View style={{ paddingHorizontal: S.gutter, paddingTop: 14 }}>
-        {/* Live summary of the selection */}
-        <View style={styles.hero}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.heroEyebrow}>{type ? type.name.toUpperCase() : 'SERENE HEIGHTS · NATHIA GALI'}</Text>
-            {picking === 'in' && nights >= 1 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{plural(nights, 'night')}</Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.heroTitle}>{picking === 'out' ? 'Now choose check-out' : `${nights}-night stay`}</Text>
-          <View style={styles.dates}>
-            <DateBlock label="Check-in" iso={draft.checkIn} active={tab === 'dates' && picking === 'in'} onPress={() => { setTab('dates'); setPicking('in'); }} />
-            <Ionicons name="arrow-forward-outline" size={16} color={C.gold} />
-            <DateBlock label="Check-out" iso={picking === 'out' ? null : draft.checkOut} active={tab === 'dates' && picking === 'out'} onPress={() => { setTab('dates'); setPicking('out'); }} />
-          </View>
-          <Pressable onPress={() => setTab('guests')} style={styles.guests} hitSlop={6}>
-            <Ionicons name="people-outline" size={15} color={C.cream70} />
-            <Text style={styles.guestsText}>
-              {guestsLabel(draft.adults, draft.children)} · {plural(draft.rooms, 'apartment')}
-            </Text>
-            <Text style={styles.edit}>Edit</Text>
-          </Pressable>
-        </View>
-
-        <View style={{ marginTop: 14 }}>
-          <Segmented
-            value={tab}
-            onChange={setTab}
-            options={[
-              { key: 'dates', label: 'Dates' },
-              { key: 'guests', label: 'Guests' },
-            ]}
-          />
-        </View>
+    <View style={styles.root}>
+      {/* Top Drag Handle */}
+      <View style={styles.handleWrap}>
+        <View style={styles.handle} />
       </View>
 
-      {tab === 'dates' ? (
-        <Calendar checkIn={draft.checkIn} checkOut={picking === 'out' ? null : draft.checkOut} onPick={pick} type={type} />
-      ) : (
-        <ScrollView contentContainerStyle={{ paddingHorizontal: S.gutter, paddingTop: 8 }}>
-          <Stepper label="Adults" hint="Age 13+" value={draft.adults} min={draft.rooms} max={20} onChange={(adults) => setDraft((d) => ({ ...d, adults }))} />
-          <Stepper label="Children" hint="Age 0–12" value={draft.children} min={0} max={20} onChange={(children) => setDraft((d) => ({ ...d, children }))} />
-          <Stepper label="Apartments" hint={`Up to ${CONFIG.maxRooms} per booking`} value={draft.rooms} min={1} max={CONFIG.maxRooms} onChange={(rooms) => setDraft((d) => ({ ...d, rooms, adults: Math.max(d.adults, rooms) }))} />
-          <Text style={[T.small, { marginTop: 16 }]}>Each apartment sleeps 3–4 guests depending on type. Children under 5 stay free using existing beds.</Text>
-        </ScrollView>
-      )}
-
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        <Pressable onPress={() => { setDraft(stay); setPicking('in'); }} hitSlop={8}>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: C.ink, textDecorationLine: 'underline' }}>Reset</Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Search places</Text>
+        <Pressable
+          onPress={() => router.back()}
+          hitSlop={8}
+          accessibilityLabel="Close"
+          style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.8 }]}
+        >
+          <Ionicons name="close" size={20} color={C.ink} />
         </Pressable>
-        <Button label={valid ? `Search · ${plural(nights, 'night')}` : 'Choose check-out'} disabled={!valid} onPress={apply} style={{ flex: 1, marginLeft: 20 }} />
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 110 + insets.bottom }}
+      >
+        {/* Headline */}
+        <View style={styles.heroText}>
+          <Text style={styles.heroTitle}>Your stay is just a tap away</Text>
+          <Text style={styles.heroSub}>Set your travel preferences to see tailored stays</Text>
+        </View>
+
+        {/* Location Input Pill */}
+        <View style={styles.section}>
+          <View style={styles.locationPill}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.locationLabel}>Location</Text>
+              <Text style={styles.locationValue} numberOfLines={1}>
+                Nathia Gali, Abbottabad, Pakistan
+              </Text>
+            </View>
+            <View style={styles.locationIcon}>
+              <Ionicons name="search-outline" size={18} color={C.ink} />
+            </View>
+          </View>
+        </View>
+
+        {/* Date Selector Pills */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Dates</Text>
+          <View style={styles.dateRow}>
+            {/* Check-in Pill */}
+            <Pressable
+              onPress={() => {
+                setShowCalendar(true);
+                setPicking('in');
+              }}
+              style={[
+                styles.datePill,
+                showCalendar && picking === 'in' ? styles.datePillActive : styles.datePillInactive,
+              ]}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={styles.dateSubLabel}>Check-in</Text>
+                <Text style={styles.dateValue}>{formatDateDisplay(draft.checkIn)}</Text>
+              </View>
+              <Ionicons
+                name="chevron-down"
+                size={16}
+                color={showCalendar && picking === 'in' ? C.pine : C.ink55}
+              />
+            </Pressable>
+
+            {/* Check-out Pill */}
+            <Pressable
+              onPress={() => {
+                setShowCalendar(true);
+                setPicking('out');
+              }}
+              style={[
+                styles.datePill,
+                showCalendar && picking === 'out' ? styles.datePillActive : styles.datePillInactive,
+              ]}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={styles.dateSubLabel}>Check-out</Text>
+                <Text style={styles.dateValue}>
+                  {picking === 'out' ? 'Pick date' : formatDateDisplay(draft.checkOut)}
+                </Text>
+              </View>
+              <Ionicons
+                name="chevron-down"
+                size={16}
+                color={showCalendar && picking === 'out' ? C.pine : C.ink55}
+              />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Calendar Grid (Inline when active) */}
+        {showCalendar && (
+          <View style={styles.calendarWrap}>
+            <Calendar
+              checkIn={draft.checkIn}
+              checkOut={picking === 'out' ? null : draft.checkOut}
+              onPick={pick}
+              type={type}
+            />
+          </View>
+        )}
+
+        {/* Guests Counters */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Guests</Text>
+          <View style={styles.stepperRow}>
+            {/* Adults Counter */}
+            <View style={styles.counterBox}>
+              <View>
+                <Text style={styles.counterTitle}>Adults</Text>
+                <Text style={styles.counterSub}>Ages 13+</Text>
+              </View>
+              <View style={styles.stepperControl}>
+                <Pressable
+                  disabled={draft.adults <= draft.rooms}
+                  onPress={() => setDraft((d) => ({ ...d, adults: Math.max(d.rooms, d.adults - 1) }))}
+                  style={styles.stepBtn}
+                >
+                  <Ionicons name="remove" size={17} color={draft.adults <= draft.rooms ? '#CBD5E1' : C.ink} />
+                </Pressable>
+                <Text style={styles.stepNum}>{draft.adults}</Text>
+                <Pressable
+                  onPress={() => setDraft((d) => ({ ...d, adults: d.adults + 1 }))}
+                  style={styles.stepBtn}
+                >
+                  <Ionicons name="add" size={17} color={C.ink} />
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Children Counter */}
+            <View style={styles.counterBox}>
+              <View>
+                <Text style={styles.counterTitle}>Children</Text>
+                <Text style={styles.counterSub}>Ages 0–12</Text>
+              </View>
+              <View style={styles.stepperControl}>
+                <Pressable
+                  disabled={draft.children <= 0}
+                  onPress={() => setDraft((d) => ({ ...d, children: Math.max(0, d.children - 1) }))}
+                  style={styles.stepBtn}
+                >
+                  <Ionicons name="remove" size={17} color={draft.children <= 0 ? '#CBD5E1' : C.ink} />
+                </Pressable>
+                <Text style={styles.stepNum}>{draft.children}</Text>
+                <Pressable
+                  onPress={() => setDraft((d) => ({ ...d, children: d.children + 1 }))}
+                  style={styles.stepBtn}
+                >
+                  <Ionicons name="add" size={17} color={C.ink} />
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Shakuro Price Range Section with Histogram */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Price range</Text>
+
+          {/* Histogram Frequency Chart */}
+          <View style={styles.histogramContainer}>
+            <View style={styles.histogramBars}>
+              {HISTOGRAM_DATA.map((val, idx) => {
+                // Active bars inside selected middle range
+                const isInRange = idx >= 4 && idx <= 18;
+                return (
+                  <View key={idx} style={styles.barCol}>
+                    <View
+                      style={[
+                        styles.barFill,
+                        {
+                          height: `${val}%`,
+                          backgroundColor: isInRange ? C.pine : '#E5E7EB',
+                        },
+                      ]}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Min & Max Price Pills */}
+          <View style={styles.priceRow}>
+            <View style={styles.pricePill}>
+              <Text style={styles.pricePillLabel}>Minimum</Text>
+              <Text style={styles.pricePillValue}>PKR {minPrice.toLocaleString()}</Text>
+            </View>
+            <View style={styles.priceDivLine} />
+            <View style={styles.pricePill}>
+              <Text style={styles.pricePillLabel}>Maximum</Text>
+              <Text style={styles.pricePillValue}>PKR {maxPrice.toLocaleString()}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Shakuro Stay Types Pills */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Stay types</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeScroll}>
+            {STAY_TYPES.map((st) => {
+              const isSel = selectedType === st;
+              return (
+                <Pressable
+                  key={st}
+                  onPress={() => setSelectedType(st)}
+                  style={[styles.typePill, isSel ? styles.typePillActive : styles.typePillInactive]}
+                >
+                  <Text style={[styles.typeText, isSel ? styles.typeTextActive : styles.typeTextInactive]}>
+                    {st}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </ScrollView>
+
+      {/* Sticky Bottom Actions */}
+      <View style={[styles.footer, { paddingBottom: Math.max(16, insets.bottom + 8) }]}>
+        <Pressable
+          onPress={() => {
+            setDraft(stay);
+            setPicking('in');
+          }}
+          style={styles.resetBtn}
+        >
+          <Text style={styles.resetBtnText}>Reset</Text>
+        </Pressable>
+
+        <Pressable
+          disabled={!valid}
+          onPress={apply}
+          style={[styles.searchActionBtn, !valid && { opacity: 0.5 }]}
+        >
+          <Ionicons name="search" size={16} color={C.pureWhite} style={{ marginRight: 6 }} />
+          <Text style={styles.searchActionText}>
+            {valid ? `Search · ${plural(nights, 'night')}` : 'Choose check-out'}
+          </Text>
+        </Pressable>
       </View>
     </View>
-  );
-}
-
-const WEEKDAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-function DateBlock({ label, iso, active, onPress }: { label: string; iso: string | null; active: boolean; onPress: () => void }) {
-  const d = iso ? fromISO(iso) : null;
-  return (
-    <Pressable onPress={onPress} style={[styles.dateBlock, active && styles.dateOn]} accessibilityRole="button" accessibilityLabel={label}>
-      <Text style={styles.dateLabel}>{label.toUpperCase()}</Text>
-      {d ? (
-        <>
-          <Text style={styles.dateBig}>
-            {d.getDate()} {monthName(d.getMonth()).slice(0, 3)}
-          </Text>
-          <Text style={styles.dateSub}>{WEEKDAY[d.getDay()]}</Text>
-        </>
-      ) : (
-        <>
-          <Text style={[styles.dateBig, { color: C.cream45 }]}>Select</Text>
-          <Text style={styles.dateSub}>Tap a date</Text>
-        </>
-      )}
-    </Pressable>
   );
 }
 
 const WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-function Calendar({ checkIn, checkOut, onPick, type }: { checkIn: string; checkOut: string | null; onPick: (iso: string) => void; type?: RoomType }) {
+function Calendar({
+  checkIn,
+  checkOut,
+  onPick,
+  type,
+}: {
+  checkIn: string;
+  checkOut: string | null;
+  onPick: (iso: string) => void;
+  type?: RoomType;
+}) {
   const min = today();
   const months = useMemo(() => {
     const start = fromISO(min);
-    return Array.from({ length: 12 }, (_, i) => toISO(new Date(start.getFullYear(), start.getMonth() + i, 1)));
+    return Array.from({ length: 4 }, (_, i) =>
+      toISO(new Date(start.getFullYear(), start.getMonth() + i, 1)),
+    );
   }, [min]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.calContainer}>
       <View style={styles.weekRow}>
         {WEEK.map((d, i) => (
-          <Text key={i} style={styles.weekDay}>{d}</Text>
+          <Text key={i} style={styles.weekDay}>
+            {d}
+          </Text>
         ))}
       </View>
-      <FlatList
-        data={months}
-        keyExtractor={(m) => m}
-        initialNumToRender={2}
-        windowSize={5}
-        contentContainerStyle={{ paddingHorizontal: S.gutter, paddingBottom: 24 }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => <Month first={item} min={min} checkIn={checkIn} checkOut={checkOut} onPick={onPick} type={type} />}
-      />
+      {months.slice(0, 2).map((item) => (
+        <Month
+          key={item}
+          first={item}
+          min={min}
+          checkIn={checkIn}
+          checkOut={checkOut}
+          onPick={onPick}
+          type={type}
+        />
+      ))}
     </View>
   );
 }
 
-const Month = memo(function Month({ first, min, checkIn, checkOut, onPick, type }: { first: string; min: string; checkIn: string; checkOut: string | null; onPick: (iso: string) => void; type?: RoomType }) {
+const Month = memo(function Month({
+  first,
+  min,
+  checkIn,
+  checkOut,
+  onPick,
+  type,
+}: {
+  first: string;
+  min: string;
+  checkIn: string;
+  checkOut: string | null;
+  onPick: (iso: string) => void;
+  type?: RoomType;
+}) {
   const m = fromISO(first);
   const lead = m.getDay();
   const days = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
-  const cells: (string | null)[] = [...Array(lead).fill(null), ...Array.from({ length: days }, (_, i) => toISO(new Date(m.getFullYear(), m.getMonth(), i + 1)))];
+  const cells: (string | null)[] = [
+    ...Array(lead).fill(null),
+    ...Array.from({ length: days }, (_, i) => toISO(new Date(m.getFullYear(), m.getMonth(), i + 1))),
+  ];
   while (cells.length % 7) cells.push(null);
+
   return (
-    <View style={{ marginTop: 20 }}>
-      <Text style={[T.h3, { marginBottom: 8 }]}>{monthName(m.getMonth())} {m.getFullYear()}</Text>
+    <View style={{ marginTop: 14 }}>
+      <Text style={styles.monthTitle}>
+        {monthName(m.getMonth())} {m.getFullYear()}
+      </Text>
       <View style={styles.grid}>
         {cells.map((iso, i) => {
           if (!iso) return <View key={i} style={styles.cell} />;
@@ -183,11 +402,24 @@ const Month = memo(function Month({ first, min, checkIn, checkOut, onPick, type 
           const inRange = checkOut != null && iso > checkIn && iso < checkOut;
           const price = type && !past ? nightlyRate(type, iso) : null;
           return (
-            <Pressable key={iso} disabled={past} onPress={() => onPick(iso)} style={[styles.cell, inRange && styles.inRange]}>
+            <Pressable
+              key={iso}
+              disabled={past}
+              onPress={() => onPick(iso)}
+              style={[styles.cell, inRange && styles.inRange]}
+            >
               <View style={[styles.day, edge && styles.dayOn]}>
-                <Text style={[styles.dayText, past && { color: C.ink40, textDecorationLine: 'line-through' }, edge && { color: C.sand }]}>{fromISO(iso).getDate()}</Text>
+                <Text
+                  style={[
+                    styles.dayText,
+                    past && { color: C.ink40, textDecorationLine: 'line-through' },
+                    edge && { color: C.pureWhite, fontFamily: FONTS.uiBold },
+                  ]}
+                >
+                  {fromISO(iso).getDate()}
+                </Text>
               </View>
-              {price != null && <Text style={styles.price}>{Math.round(price / 1000)}k</Text>}
+              {price != null && <Text style={styles.dayPrice}>{Math.round(price / 1000)}k</Text>}
             </Pressable>
           );
         })}
@@ -197,28 +429,364 @@ const Month = memo(function Month({ first, min, checkIn, checkOut, onPick, type 
 });
 
 const styles = StyleSheet.create({
-  hero: { padding: 18, borderRadius: S.card, backgroundColor: C.pine },
-  heroEyebrow: { flex: 1, color: C.gold, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.6 },
-  heroTitle: { color: C.cream, fontFamily: FONTS.display, fontSize: 30, lineHeight: 34, marginTop: 6 },
-  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, backgroundColor: C.gold },
-  badgeText: { color: C.pine, fontFamily: FONTS.uiBold, fontSize: 11 },
-  dates: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 },
-  dateBlock: { flex: 1, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14, backgroundColor: 'rgba(236, 238, 237, 0.08)', borderWidth: 1, borderColor: 'transparent' },
-  dateOn: { borderColor: C.gold },
-  dateLabel: { color: C.cream45, fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.3 },
-  dateBig: { color: C.cream, fontFamily: FONTS.display, fontSize: 24, lineHeight: 28, marginTop: 4 },
-  dateSub: { color: C.cream70, fontFamily: FONTS.ui, fontSize: 12 },
-  guests: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 14, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(236, 238, 237, 0.18)' },
-  guestsText: { flex: 1, color: C.cream, fontFamily: FONTS.uiSemi, fontSize: 13.5 },
-  edit: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 12.5 },
-  weekRow: { flexDirection: 'row', paddingHorizontal: S.gutter, marginTop: 16, paddingBottom: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  weekDay: { flex: 1, textAlign: 'center', fontSize: 11, color: C.ink55, fontWeight: '600' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: { width: `${100 / 7}%`, height: 54, alignItems: 'center', justifyContent: 'center' },
-  inRange: { backgroundColor: C.snow },
-  day: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
-  dayOn: { backgroundColor: C.pine },
-  dayText: { fontSize: 15, color: C.ink },
-  price: { fontSize: 9, color: C.ink55, marginTop: -3 },
-  footer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: S.gutter, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line, backgroundColor: C.sand },
+  root: {
+    flex: 1,
+    backgroundColor: C.pureWhite,
+  },
+  handleWrap: {
+    alignItems: 'center',
+    paddingTop: 12,
+    paddingBottom: 6,
+  },
+  handle: {
+    width: 38,
+    height: 4.5,
+    borderRadius: 3,
+    backgroundColor: '#D1D5DB',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: S.gutter,
+    paddingVertical: 10,
+  },
+  headerTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 18,
+    color: C.ink,
+  },
+  closeBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: C.fill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroText: {
+    paddingHorizontal: S.gutter,
+    marginTop: 10,
+  },
+  heroTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 22,
+    lineHeight: 28,
+    letterSpacing: -0.3,
+    color: C.ink,
+  },
+  heroSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 13.5,
+    color: C.ink55,
+    marginTop: 4,
+  },
+  section: {
+    paddingHorizontal: S.gutter,
+    marginTop: 20,
+  },
+  sectionLabel: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 15,
+    color: C.ink,
+    marginBottom: 10,
+  },
+  locationPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 18,
+    backgroundColor: C.fill,
+    borderWidth: 1,
+    borderColor: '#E8EAEB',
+  },
+  locationLabel: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11,
+    color: C.ink55,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  locationValue: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    color: C.ink,
+    marginTop: 2,
+  },
+  locationIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: C.pureWhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.pill,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  datePill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1.5,
+  },
+  datePillActive: {
+    borderColor: C.pine,
+    backgroundColor: C.pureWhite,
+  },
+  datePillInactive: {
+    borderColor: '#E8EAEB',
+    backgroundColor: C.fill,
+  },
+  dateSubLabel: {
+    fontFamily: FONTS.ui,
+    fontSize: 11,
+    color: C.ink55,
+  },
+  dateValue: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 13.5,
+    color: C.ink,
+    marginTop: 2,
+  },
+  calendarWrap: {
+    marginHorizontal: S.gutter,
+    marginTop: 14,
+    padding: 14,
+    borderRadius: 20,
+    backgroundColor: C.canvas,
+    borderWidth: 1,
+    borderColor: '#ECEEF0',
+  },
+  calContainer: {},
+  weekRow: {
+    flexDirection: 'row',
+    paddingBottom: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E2E8F0',
+  },
+  weekDay: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 11.5,
+    color: C.ink55,
+    fontFamily: FONTS.uiSemi,
+  },
+  monthTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14.5,
+    color: C.ink,
+    marginBottom: 6,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  cell: {
+    width: `${100 / 7}%`,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inRange: {
+    backgroundColor: '#E8F5E9',
+  },
+  day: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayOn: {
+    backgroundColor: C.pine,
+  },
+  dayText: {
+    fontSize: 13.5,
+    color: C.ink,
+    fontFamily: FONTS.uiMedium,
+  },
+  dayPrice: {
+    fontSize: 8.5,
+    color: C.ink55,
+    marginTop: -2,
+  },
+  stepperRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  counterBox: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 16,
+    backgroundColor: C.fill,
+    borderWidth: 1,
+    borderColor: '#E8EAEB',
+  },
+  counterTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 13.5,
+    color: C.ink,
+  },
+  counterSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 11,
+    color: C.ink55,
+    marginTop: 1,
+  },
+  stepperControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    backgroundColor: C.pureWhite,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  stepBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNum: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    color: C.ink,
+  },
+  histogramContainer: {
+    height: 70,
+    justifyContent: 'flex-end',
+    marginBottom: 12,
+    paddingHorizontal: 6,
+  },
+  histogramBars: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    height: 60,
+  },
+  barCol: {
+    flex: 1,
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginHorizontal: 1.5,
+  },
+  barFill: {
+    width: '100%',
+    minWidth: 4,
+    borderRadius: 3,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pricePill: {
+    flex: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: C.fill,
+    borderWidth: 1,
+    borderColor: '#E8EAEB',
+  },
+  priceDivLine: {
+    width: 10,
+    height: 1.5,
+    backgroundColor: '#CBD5E1',
+  },
+  pricePillLabel: {
+    fontFamily: FONTS.ui,
+    fontSize: 10.5,
+    color: C.ink55,
+  },
+  pricePillValue: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 13.5,
+    color: C.ink,
+    marginTop: 2,
+  },
+  typeScroll: {
+    gap: 8,
+  },
+  typePill: {
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 999,
+  },
+  typePillActive: {
+    backgroundColor: C.pine,
+  },
+  typePillInactive: {
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  typeText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 13,
+  },
+  typeTextActive: {
+    color: C.pureWhite,
+  },
+  typeTextInactive: {
+    color: C.ink,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: S.gutter,
+    paddingTop: 12,
+    backgroundColor: C.pureWhite,
+    borderTopWidth: 1,
+    borderTopColor: '#ECEEF0',
+    ...shadow.dock,
+  },
+  resetBtn: {
+    paddingHorizontal: 20,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetBtnText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    color: C.ink,
+  },
+  searchActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: C.pine,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.pill,
+  },
+  searchActionText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14.5,
+    color: C.pureWhite,
+  },
 });

@@ -5,6 +5,7 @@ import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Lightbox } from '@/components/Gallery';
+import { Chip, SectionTitle, SpecChip, type IconName } from '@/components/kit';
 import PageHeader from '@/components/PageHeader';
 import { Text } from '@/components/Text';
 import { Button, Photo } from '@/components/ui';
@@ -50,7 +51,7 @@ export default function FloorPlans() {
             {FACTS.map((f, i) => (
               <View key={f.k} style={[styles.fact, i > 0 && styles.factLine]}>
                 <Text style={styles.factV}>{f.v}</Text>
-                <Text style={styles.factK}>{f.k.toUpperCase()}</Text>
+                <Text style={styles.factK}>{f.k}</Text>
               </View>
             ))}
           </View>
@@ -61,18 +62,11 @@ export default function FloorPlans() {
     if (item.id === 'floors') {
       return (
         <View style={{ marginTop: 28 }}>
-          <View style={{ paddingHorizontal: S.gutter }}>
-            <Text style={T.eyebrow}>By floor</Text>
-            <Text style={[T.h2, { marginTop: 4 }]}>{floor.label}</Text>
-          </View>
+          <SectionTitle title="Browse by floor" sub={floor.label} style={{ paddingHorizontal: S.gutter }} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
             {FLOORS.map((f) => {
               const on = f.key === floor.key;
-              return (
-                <Pressable key={f.key} onPress={() => setFloorKey(f.key)} style={[styles.tab, on && styles.tabOn]} accessibilityRole="tab" accessibilityState={{ selected: on }}>
-                  <Text style={[styles.tabText, on && { color: C.cream }]}>{f.label}</Text>
-                </Pressable>
-              );
+              return <Chip key={f.key} label={f.label} active={on} onPress={() => setFloorKey(f.key)} />;
             })}
           </ScrollView>
 
@@ -80,7 +74,7 @@ export default function FloorPlans() {
             <Pressable onPress={() => setZoom({ photos: PLANS, i: idx })} style={styles.planCard} accessibilityLabel={`Enlarge ${floor.label} plan`}>
               <Photo src={floor.plan} contain style={styles.plan} />
               <View style={styles.zoom}>
-                <Ionicons name="expand-outline" size={14} color={C.cream} />
+                <Ionicons name="expand-outline" size={14} color={C.ink} />
                 <Text style={styles.zoomText}>Enlarge</Text>
               </View>
             </Pressable>
@@ -107,9 +101,7 @@ export default function FloorPlans() {
 
     return (
       <View style={{ marginTop: 36, paddingHorizontal: S.gutter }}>
-        <Text style={T.eyebrow}>Bookable layouts</Text>
-        <Text style={[T.h2, { marginTop: 4 }]}>Apartment types</Text>
-        <Text style={[T.small, { marginTop: 3, marginBottom: 14 }]}>Every layout on these plans is one of five bookable types.</Text>
+        <SectionTitle title="Apartment types" sub="Every layout on these plans is one of five bookable types." style={{ marginBottom: 14 }} />
         {ROOM_TYPES.map((t, i) => (
           <TypeCard
             key={t.slug}
@@ -152,7 +144,7 @@ function TypeCard({ index, type, onPlan, onOpen }: { index: number; type: RoomTy
     { icon: 'resize-outline', text: areaRangeOf(type.slug) },
     { icon: 'bed-outline', text: type.bedType },
     { icon: 'leaf-outline', text: type.outdoorSpace },
-    { icon: 'people-outline', text: `Sleeps up to ${type.maxOccupancy}` },
+    { icon: 'people-outline', text: `${type.maxOccupancy} guests` },
     { icon: 'business-outline', text: `${apartmentsOf(type.slug).length} apartments · ${floors.length} floors` },
   ];
   return (
@@ -162,16 +154,15 @@ function TypeCard({ index, type, onPlan, onOpen }: { index: number; type: RoomTy
           <Photo src={plan} contain style={styles.typePlan} />
         </Pressable>
       )}
-      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 12 }}>
-        <Text style={styles.tileNum}>{pad(index + 1)}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
+        <View style={styles.no}>
+          <Text style={styles.noText}>{index + 1}</Text>
+        </View>
         <Text style={[T.h3, { flex: 1 }]}>{type.name}</Text>
       </View>
-      <View style={{ marginTop: 8, gap: 6 }}>
+      <View style={{ marginTop: 10, flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {specs.map((s) => (
-          <View key={s.text} style={{ flexDirection: 'row', alignItems: 'center', gap: 9 }}>
-            <Ionicons name={s.icon as never} size={15} color={C.ink55} />
-            <Text style={[T.small, { color: C.ink70, flex: 1 }]}>{s.text}</Text>
-          </View>
+          <SpecChip key={s.text} icon={s.icon as IconName} label={s.text} />
         ))}
       </View>
       <View style={styles.typeFoot}>
@@ -189,29 +180,31 @@ function TypeCard({ index, type, onPlan, onOpen }: { index: number; type: RoomTy
 }
 
 const styles = StyleSheet.create({
-  facts: { flexDirection: 'row', marginTop: 16, paddingVertical: 14, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
-  fact: { flex: 1, alignItems: 'center' },
-  factLine: { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: C.lineStrong },
-  factV: { fontFamily: FONTS.display, fontSize: 24, color: C.ink, fontVariant: ['tabular-nums'] },
-  factK: { fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.3, color: C.ink55, marginTop: 3 },
+  facts: { flexDirection: 'row', gap: 10, marginTop: 16 },
+  fact: { flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 16, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  factLine: {},
+  factV: { fontFamily: FONTS.uiBold, fontSize: 18, color: C.ink, fontVariant: ['tabular-nums'] },
+  factK: { fontFamily: FONTS.ui, fontSize: 12, color: C.ink55, marginTop: 2 },
+  no: { width: 26, height: 26, borderRadius: 13, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
+  noText: { fontFamily: FONTS.uiBold, fontSize: 12, color: C.cream },
   tabs: { paddingHorizontal: S.gutter, gap: 8, marginTop: 14 },
   tab: { paddingHorizontal: 14, height: 36, borderRadius: 999, justifyContent: 'center', backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
   tabOn: { backgroundColor: C.pine, borderColor: C.pine },
   tabText: { fontFamily: FONTS.uiSemi, fontSize: 12.5, color: C.ink },
   planCard: { borderRadius: S.card, backgroundColor: '#FFFFFF', borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, overflow: 'hidden' },
   plan: { width: '100%', aspectRatio: 3 / 2, backgroundColor: '#FFFFFF' },
-  zoom: { position: 'absolute', right: 10, top: 10, flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: 'rgba(18, 53, 36, 0.82)' },
-  zoomText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 11 },
-  legend: { gap: 8, marginTop: 14, padding: 14, borderRadius: 14, backgroundColor: C.snow },
+  zoom: { position: 'absolute', right: 10, top: 10, flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, height: 28, borderRadius: 999, backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line },
+  zoomText: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 11.5 },
+  legend: { gap: 8, marginTop: 14, padding: 14, borderRadius: 16, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   swatch: { width: 11, height: 11, borderRadius: 3, marginTop: 3 },
   pager: { flexDirection: 'row', alignItems: 'center', marginTop: 16, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.lineStrong },
   pagerBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
   pagerText: { flexShrink: 1, fontFamily: FONTS.uiSemi, fontSize: 13, color: C.ink },
-  pagerCount: { fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.2, color: C.ink55, fontVariant: ['tabular-nums'], paddingHorizontal: 8 },
+  pagerCount: { fontFamily: FONTS.uiBold, fontSize: 12, color: C.ink55, fontVariant: ['tabular-nums'], paddingHorizontal: 8 },
   tileNum: { color: C.ink40, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.2, fontVariant: ['tabular-nums'] },
-  type: { padding: 16, marginBottom: 14, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  type: { padding: 10, paddingBottom: 14, marginBottom: 14, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   typePlan: { width: '100%', aspectRatio: 3 / 2, borderRadius: 14, backgroundColor: '#FFFFFF', borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  typeFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+  typeFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, marginHorizontal: 4, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
   price: { fontFamily: FONTS.uiBold, fontSize: 16, color: C.ink, fontVariant: ['tabular-nums'] },
   per: { fontFamily: FONTS.ui, fontSize: 12.5, color: C.ink55 },
   view: { flexDirection: 'row', alignItems: 'center', gap: 2 },

@@ -4,6 +4,7 @@ import { useState, type ComponentProps } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Card, SectionTitle } from '@/components/kit';
 import ModalHeader from '@/components/ModalHeader';
 import { Text } from '@/components/Text';
 import { Photo } from '@/components/ui';
@@ -45,11 +46,13 @@ export default function RatesModal() {
       <ModalHeader title="Choose your rate" onClose={() => router.back()} />
       <ScrollView contentContainerStyle={{ padding: S.gutter, paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
         {/* Your selection */}
-        <View style={styles.summary}>
-          <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}>
+        <Text style={styles.lead}>Your stay is a tap away</Text>
+        <Text style={[T.small, { marginTop: 4 }]}>Review your apartment and dates, then choose how you would like to pay.</Text>
+
+        <Card style={{ marginTop: 18 }} pad={12}>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
             <Photo src={type.images[0]} style={styles.thumb} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.eyebrowGold}>YOUR SELECTION</Text>
               <Text style={styles.roomName} numberOfLines={2}>{type.name}</Text>
               <Text style={styles.roomSpecs} numberOfLines={1}>{type.bedType} · {type.outdoorSpace}</Text>
             </View>
@@ -57,27 +60,23 @@ export default function RatesModal() {
 
           <View style={styles.dates}>
             <DateCell label="Check-in" top={WEEKDAY[ci.getDay()]} value={fmtDay(stay.checkIn)} />
-            <View style={styles.nightsWrap}>
-              <View style={styles.nightsLine} />
-              <View style={styles.nights}>
-                <Text style={styles.nightsText}>{plural(q.nights, 'night')}</Text>
-              </View>
-              <View style={styles.nightsLine} />
-            </View>
-            <DateCell label="Check-out" top={WEEKDAY[co.getDay()]} value={fmtDay(stay.checkOut)} align="right" />
+            <DateCell label="Check-out" top={WEEKDAY[co.getDay()]} value={fmtDay(stay.checkOut)} />
           </View>
 
           <View style={styles.summaryFoot}>
-            <Ionicons name="people-outline" size={16} color={C.cream70} />
-            <Text style={styles.guests}>
-              {guestsLabel(stay.adults, stay.children)} · {plural(stay.rooms, 'apartment')}
-            </Text>
+            <View style={styles.footChip}>
+              <Ionicons name="moon-outline" size={13} color={C.ink70} />
+              <Text style={styles.footChipText}>{plural(q.nights, 'night')}</Text>
+            </View>
+            <View style={styles.footChip}>
+              <Ionicons name="people-outline" size={13} color={C.ink70} />
+              <Text style={styles.footChipText} numberOfLines={1}>{guestsLabel(stay.adults, stay.children)} · {plural(stay.rooms, 'apt')}</Text>
+            </View>
             <Pressable onPress={() => router.push({ pathname: '/stay', params: { type: type.slug } })} hitSlop={8} style={styles.change} accessibilityRole="button" accessibilityLabel="Change dates and guests">
               <Text style={styles.changeText}>Change</Text>
-              <Ionicons name="chevron-forward-outline" size={13} color={C.pine} />
             </Pressable>
           </View>
-        </View>
+        </Card>
 
         {!bookable ? (
           <View style={styles.notice}>
@@ -86,8 +85,7 @@ export default function RatesModal() {
           </View>
         ) : (
           <>
-            <Text style={[T.h2, { marginTop: 28 }]}>Select your rate</Text>
-            <Text style={[T.small, { marginTop: 3, marginBottom: 14 }]}>Prices are for your whole stay and include taxes. Nothing is charged now.</Text>
+            <SectionTitle title="Select your rate" sub="Totals for your whole stay, taxes included. Nothing is charged now." style={{ marginTop: 28, marginBottom: 14 }} />
 
             {RATE_PLANS.map((rp) => (
               <RateCard key={rp.code} rp={rp} on={rp.code === code} onPress={() => setCode(rp.code)} q={quote(type, rp, stay)} />
@@ -99,7 +97,7 @@ export default function RatesModal() {
       {/* Footer: the running total and the one action */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.footLabel} numberOfLines={1}>{plan.name.toUpperCase()}</Text>
+          <Text style={styles.footLabel} numberOfLines={1}>{plan.name}</Text>
           <Text style={styles.footTotal}>{money(q.grandTotal)}</Text>
           <Text style={styles.footNote}>Total incl. taxes</Text>
         </View>
@@ -110,21 +108,21 @@ export default function RatesModal() {
           accessibilityLabel="Continue"
           style={({ pressed }) => [styles.cta, !bookable && { opacity: 0.4 }, pressed && { opacity: 0.92, transform: [{ scale: 0.985 }] }]}>
           <Text style={styles.ctaText}>Continue</Text>
-          <View style={styles.badge}>
-            <Ionicons name="arrow-forward-outline" size={19} color={C.pine} />
-          </View>
+          <Ionicons name="arrow-forward-outline" size={18} color={C.cream} />
         </Pressable>
       </View>
     </View>
   );
 }
 
-function DateCell({ label, top, value, align }: { label: string; top: string; value: string; align?: 'right' }) {
+function DateCell({ label, top, value }: { label: string; top: string; value: string }) {
   return (
-    <View style={{ alignItems: align === 'right' ? 'flex-end' : 'flex-start' }}>
-      <Text style={styles.cellLabel}>{label.toUpperCase()}</Text>
-      <Text style={styles.cellValue}>{value}</Text>
-      <Text style={styles.cellTop}>{top}</Text>
+    <View style={{ flex: 1 }}>
+      <Text style={styles.cellLabel}>{label}</Text>
+      <View style={styles.cellBox}>
+        <Ionicons name="calendar-outline" size={16} color={C.ink55} />
+        <Text style={styles.cellValue} numberOfLines={1}>{top}, {value}</Text>
+      </View>
     </View>
   );
 }
@@ -158,7 +156,7 @@ function RateCard({ rp, on, onPress, q }: { rp: RatePlan; on: boolean; onPress: 
       <View style={styles.perks}>
         {perks.map((p) => (
           <View key={p.text} style={[styles.perk, p.tone === 'plain' && styles.perkPlain]}>
-            <Ionicons name={p.icon} size={12} color={p.tone === 'plain' ? C.ink55 : C.positive} />
+            <Ionicons name={p.icon} size={12} color={p.tone === 'plain' ? C.ink55 : C.pine} />
             <Text style={[styles.perkText, p.tone === 'plain' && { color: C.ink55 }]}>{p.text}</Text>
           </View>
         ))}
@@ -168,22 +166,18 @@ function RateCard({ rp, on, onPress, q }: { rp: RatePlan; on: boolean; onPress: 
 }
 
 const styles = StyleSheet.create({
-  summary: { padding: 18, borderRadius: S.card, backgroundColor: C.pine },
-  thumb: { width: 76, height: 76, borderRadius: 18 },
-  eyebrowGold: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.6 },
-  roomName: { color: C.cream, fontFamily: FONTS.display, fontSize: 23, lineHeight: 26, marginTop: 4 },
-  roomSpecs: { color: C.cream70, fontFamily: FONTS.ui, fontSize: 12.5, marginTop: 4 },
-  dates: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 18, paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(236, 238, 237, 0.2)' },
-  cellLabel: { color: C.cream45, fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.3 },
-  cellValue: { color: C.cream, fontFamily: FONTS.display, fontSize: 27, lineHeight: 30, marginTop: 3 },
-  cellTop: { color: C.cream70, fontFamily: FONTS.ui, fontSize: 12, marginTop: 1 },
-  nightsWrap: { flex: 1, flexDirection: 'row', alignItems: 'center' },
-  nightsLine: { flex: 1, height: StyleSheet.hairlineWidth * 2, backgroundColor: 'rgba(200, 164, 106, 0.55)' },
-  nights: { paddingHorizontal: 10, height: 24, borderRadius: 12, backgroundColor: C.gold, justifyContent: 'center', marginHorizontal: 6 },
-  nightsText: { color: C.pine, fontFamily: FONTS.uiBold, fontSize: 11 },
-  summaryFoot: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 16, paddingTop: 14, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(236, 238, 237, 0.2)' },
-  guests: { flex: 1, color: C.cream, fontFamily: FONTS.uiSemi, fontSize: 13.5 },
-  change: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingLeft: 12, paddingRight: 8, height: 30, borderRadius: 15, backgroundColor: C.cream },
+  lead: { fontFamily: FONTS.uiBold, fontSize: 20, color: C.ink, letterSpacing: -0.2 },
+  thumb: { width: 68, height: 68, borderRadius: 14 },
+  roomName: { color: C.ink, fontFamily: FONTS.display, fontSize: 22, lineHeight: 25 },
+  roomSpecs: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 12.5, marginTop: 3 },
+  dates: { flexDirection: 'row', gap: 10, marginTop: 14 },
+  cellLabel: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 12.5, marginBottom: 6 },
+  cellBox: { flexDirection: 'row', alignItems: 'center', gap: 8, height: 48, paddingHorizontal: 12, borderRadius: 14, borderWidth: 1, borderColor: C.line, backgroundColor: C.pureWhite },
+  cellValue: { flex: 1, color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 14, fontVariant: ['tabular-nums'] },
+  summaryFoot: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
+  footChip: { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 5, height: 30, paddingHorizontal: 10, borderRadius: 999, backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  footChipText: { flexShrink: 1, fontFamily: FONTS.uiMedium, fontSize: 12, color: C.ink70 },
+  change: { marginLeft: 'auto', paddingHorizontal: 12, height: 30, borderRadius: 15, borderWidth: 1, borderColor: C.pine, justifyContent: 'center' },
   changeText: { color: C.pine, fontFamily: FONTS.uiBold, fontSize: 12 },
   notice: { marginTop: 24, padding: 18, borderRadius: S.card, backgroundColor: C.pureWhite },
   rate: { padding: 16, marginBottom: 12, borderRadius: S.card, backgroundColor: C.pureWhite },
@@ -192,21 +186,20 @@ const styles = StyleSheet.create({
   rateTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: C.lineStrong, alignItems: 'center', justifyContent: 'center', marginTop: 2 },
   radioOn: { backgroundColor: C.pine, borderColor: C.pine },
-  rateName: { color: C.ink, fontFamily: FONTS.display, fontSize: 21, lineHeight: 24 },
+  rateName: { color: C.ink, fontFamily: FONTS.uiBold, fontSize: 16, lineHeight: 21 },
   save: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', marginTop: 6, paddingHorizontal: 8, height: 20, borderRadius: 10, backgroundColor: C.pine },
   saveText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 0.8 },
   strike: { color: C.danger, fontFamily: FONTS.ui, fontSize: 12, textDecorationLine: 'line-through', opacity: 0.85, fontVariant: ['tabular-nums'] },
   total: { color: C.ink, fontFamily: FONTS.uiBold, fontSize: 19, letterSpacing: -0.2, fontVariant: ['tabular-nums'] },
   perNight: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 11.5, marginTop: 1, fontVariant: ['tabular-nums'] },
   perks: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 14, paddingLeft: 36 },
-  perk: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, height: 26, borderRadius: 13, backgroundColor: 'rgba(29, 115, 72, 0.09)' },
-  perkPlain: { backgroundColor: C.snow },
-  perkText: { color: C.positive, fontFamily: FONTS.uiSemi, fontSize: 11.5 },
-  footer: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: S.gutter, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line, backgroundColor: C.sand },
-  footLabel: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.3 },
+  perk: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, height: 26, borderRadius: 13, borderWidth: 1, borderColor: C.line, backgroundColor: C.pureWhite },
+  perkPlain: { backgroundColor: C.sand },
+  perkText: { color: C.ink70, fontFamily: FONTS.uiMedium, fontSize: 11.5 },
+  footer: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: S.gutter, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line, backgroundColor: C.pureWhite },
+  footLabel: { color: C.ink55, fontFamily: FONTS.uiSemi, fontSize: 12 },
   footTotal: { color: C.ink, fontFamily: FONTS.uiBold, fontSize: 20, letterSpacing: -0.2, marginTop: 1, fontVariant: ['tabular-nums'] },
   footNote: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 11.5 },
-  cta: { flexDirection: 'row', alignItems: 'center', gap: 16, height: 58, paddingLeft: 24, paddingRight: 8, borderRadius: 29, backgroundColor: C.pine, ...shadow.card, shadowOpacity: 0.18, shadowRadius: 12, elevation: 4 },
-  ctaText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 16 },
-  badge: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center' },
+  cta: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, paddingHorizontal: 26, borderRadius: 999, backgroundColor: C.pine },
+  ctaText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 15 },
 });

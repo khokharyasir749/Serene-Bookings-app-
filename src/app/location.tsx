@@ -5,6 +5,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Accordion from '@/components/Accordion';
+import { PhotoTag, SectionTitle } from '@/components/kit';
 import PageHeader from '@/components/PageHeader';
 import Scrim from '@/components/Scrim';
 import { Text } from '@/components/Text';
@@ -40,9 +41,9 @@ function ContactRow({ icon, label, value, cta, href, first }: { icon: string; la
     <>
       <View style={styles.rowHead}>
         <View style={styles.well}>
-          <Ionicons name={icon as IconName} size={17} color={C.cream} />
+          <Ionicons name={icon as IconName} size={17} color={C.pine} />
         </View>
-        <Text style={[styles.label, { flex: 1 }]}>{label.toUpperCase()}</Text>
+        <Text style={[styles.label, { flex: 1 }]}>{label}</Text>
         {cta && (
           <View style={styles.cta}>
             <Text style={styles.ctaText}>{cta}</Text>
@@ -70,7 +71,7 @@ function Fact({ icon, k, v }: { icon: IconName; k: string; v: string }) {
   return (
     <View style={styles.fact}>
       <Ionicons name={icon} size={18} color={C.pine} />
-      <Text style={styles.factK}>{k.toUpperCase()}</Text>
+      <Text style={styles.factK}>{k}</Text>
       <Text style={styles.factV}>{v}</Text>
     </View>
   );
@@ -92,7 +93,7 @@ export default function Location() {
             <Scrim bottom={0.6} />
             <View style={{ flex: 1 }} />
             <View style={{ padding: 20 }}>
-              <Text style={styles.heroKicker}>NATHIA GALI · 7,906 FT</Text>
+              <PhotoTag label="Nathia Gali · 7,906 ft" icon="location-outline" />
               <Text style={styles.heroTitle}>Getting here</Text>
             </View>
           </View>
@@ -104,8 +105,7 @@ export default function Location() {
 
         {/* Contact */}
         <View style={styles.section}>
-          <Text style={T.eyebrow}>Contact</Text>
-          <Text style={[T.h2, { marginTop: 4, marginBottom: 14 }]}>Talk to us</Text>
+          <SectionTitle title="Talk to us" sub="Reservations, WhatsApp and the front desk" style={{ marginBottom: 12 }} />
           <View style={styles.card}>
             {CONTACT.lines.map((l, i) => (
               <ContactRow key={l.label} first={i === 0} icon={l.icon} label={l.label} value={l.value} cta={l.cta} href={l.href} />
@@ -122,13 +122,11 @@ export default function Location() {
 
         {/* Route */}
         <View style={styles.section}>
-          <Text style={T.eyebrow}>The route</Text>
-          <Text style={[T.h2, { marginTop: 4 }]}>Your journey up</Text>
-          <Text style={[T.small, { marginTop: 3, marginBottom: 14 }]}>Distances by road to the resort.</Text>
+          <SectionTitle title="Your journey up" sub="Distances by road to the resort" style={{ marginBottom: 12 }} />
           <View style={styles.card}>
             {ROUTE.map((d, i) => (
               <View key={d.place} style={[styles.stop, i > 0 && styles.rowLine]}>
-                <Text style={styles.stopNum}>{pad(i + 1)}</Text>
+                <View style={styles.stopDot}><Text style={styles.stopNum}>{i + 1}</Text></View>
                 <Text style={styles.stopName} numberOfLines={2}>{d.place}</Text>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text style={styles.stopDist}>{d.distance}</Text>
@@ -140,7 +138,7 @@ export default function Location() {
               <Ionicons name="location-outline" size={18} color={C.gold} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.arriveTitle}>Serene Heights</Text>
-                <Text style={styles.arriveSub}>KALA BAGH AIR BASE ROAD · 7,906 FT</Text>
+                <Text style={styles.arriveSub}>Kala Bagh Air Base Road · 7,906 ft</Text>
               </View>
             </View>
           </View>
@@ -152,7 +150,7 @@ export default function Location() {
                   <Ionicons name="location-outline" size={18} color={C.cream} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={T.h3}>Serene Heights</Text>
+                  <Text style={styles.mapTitle}>Serene Heights</Text>
                   <Text style={[T.small, { marginTop: 2 }]}>{PROPERTY.address}</Text>
                 </View>
               </View>
@@ -172,9 +170,7 @@ export default function Location() {
 
         {/* FAQ */}
         <View style={styles.section}>
-          <Text style={T.eyebrow}>FAQ</Text>
-          <Text style={[T.h2, { marginTop: 4 }]}>Good to know</Text>
-          <Text style={[T.small, { marginTop: 3, marginBottom: 10 }]}>Quick answers before you travel. Anything else? Call or WhatsApp us any time.</Text>
+          <SectionTitle title="Good to know" sub="Quick answers before you travel. Anything else? Call or WhatsApp us any time." style={{ marginBottom: 8 }} />
           {FAQS.map((f, i) => (
             <Accordion key={f.q} first={i === 0} title={f.q}>
               <Text style={T.body}>{f.a}</Text>
@@ -189,36 +185,37 @@ export default function Location() {
 
 const styles = StyleSheet.create({
   hero: { height: 230, borderRadius: S.card, overflow: 'hidden', backgroundColor: C.snow },
-  heroKicker: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
   heroTitle: { color: C.cream, fontFamily: FONTS.display, fontSize: 36, lineHeight: 40, marginTop: 4 },
-  section: { paddingHorizontal: S.gutter, marginTop: 40 },
+  section: { paddingHorizontal: S.gutter, marginTop: 32 },
   card: { borderRadius: S.card, backgroundColor: C.pureWhite, paddingHorizontal: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   row: { paddingVertical: 15 },
   rowLine: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
   rowHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  well: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  label: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 1.4 },
+  well: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  label: { color: C.ink55, fontFamily: FONTS.uiSemi, fontSize: 12.5 },
   value: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 15.5, lineHeight: 22, marginTop: 10, fontVariant: ['tabular-nums'] },
-  cta: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, height: 32, borderRadius: 999, backgroundColor: C.snow },
+  cta: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, height: 32, borderRadius: 999, borderWidth: 1, borderColor: C.line, backgroundColor: C.pureWhite },
   ctaText: { fontFamily: FONTS.uiBold, fontSize: 12, color: C.pine },
   facts: { flexDirection: 'row', gap: 10, marginTop: 14 },
-  fact: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 14, borderRadius: 16, backgroundColor: C.snow },
-  factK: { fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.3, color: C.ink55, marginTop: 2 },
-  factV: { fontFamily: FONTS.display, fontSize: 18, color: C.ink, fontVariant: ['tabular-nums'] },
+  fact: { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 14, borderRadius: 16, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  factK: { fontFamily: FONTS.ui, fontSize: 11.5, color: C.ink55, marginTop: 2 },
+  factV: { fontFamily: FONTS.uiBold, fontSize: 15, color: C.ink, fontVariant: ['tabular-nums'] },
   stop: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 },
-  stopNum: { width: 22, color: C.ink40, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.1, fontVariant: ['tabular-nums'] },
-  stopName: { flex: 1, fontFamily: FONTS.display, fontSize: 18, lineHeight: 21, color: C.ink },
+  stopDot: { width: 26, height: 26, borderRadius: 13, borderWidth: 1, borderColor: C.line, backgroundColor: C.sand, alignItems: 'center', justifyContent: 'center' },
+  stopNum: { color: C.ink70, fontFamily: FONTS.uiBold, fontSize: 11.5, fontVariant: ['tabular-nums'] },
+  stopName: { flex: 1, fontFamily: FONTS.uiSemi, fontSize: 14.5, lineHeight: 19, color: C.ink },
   stopDist: { fontFamily: FONTS.uiBold, fontSize: 12.5, color: C.ink, fontVariant: ['tabular-nums'] },
   stopDrive: { fontFamily: FONTS.ui, fontSize: 11.5, color: C.ink55, marginTop: 1 },
   arrive: { flexDirection: 'row', alignItems: 'center', gap: 12, marginHorizontal: -14, paddingHorizontal: 14, paddingVertical: 16, backgroundColor: C.pine, borderBottomLeftRadius: S.card, borderBottomRightRadius: S.card },
-  arriveTitle: { color: C.cream, fontFamily: FONTS.display, fontSize: 20 },
-  arriveSub: { color: C.cream70, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.2, marginTop: 2 },
-  mapCard: { marginTop: 16, borderRadius: S.card, overflow: 'hidden', backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  mapPhoto: { width: '100%', aspectRatio: 16 / 10 },
-  mapBody: { padding: 16 },
+  arriveTitle: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 15.5 },
+  arriveSub: { color: C.cream70, fontFamily: FONTS.ui, fontSize: 12, marginTop: 2 },
+  mapCard: { marginTop: 14, padding: 8, borderRadius: S.card, overflow: 'hidden', backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  mapPhoto: { width: '100%', aspectRatio: 16 / 10, borderRadius: 16 },
+  mapBody: { padding: 8, paddingTop: 14 },
   pin: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  mapBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, height: 48, borderRadius: 24 },
+  mapTitle: { fontFamily: FONTS.uiBold, fontSize: 16, color: C.ink },
+  mapBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, height: 48, borderRadius: 999 },
   mapBtnPrimary: { backgroundColor: C.pine },
-  mapBtnOutline: { borderWidth: 1.5, borderColor: C.pine },
+  mapBtnOutline: { borderWidth: 1, borderColor: C.line, backgroundColor: C.pureWhite },
   mapBtnText: { fontFamily: FONTS.uiBold, fontSize: 13.5, color: C.pine },
 });

@@ -11,7 +11,7 @@ import SereneLogoMark from '@/components/SereneLogoMark';
 import { Text } from '@/components/Text';
 import { EASE, Photo } from '@/components/ui';
 import { useBooking } from '@/state/booking';
-import { C, FONTS, S, shadow } from '@/theme';
+import { C, FONTS, S } from '@/theme';
 
 type Method = 'phone' | 'email';
 type Step = 'id' | 'code' | 'name';
@@ -121,7 +121,7 @@ export default function Login() {
                 <Ionicons name="location-outline" size={15} color="#FFFFFF" />
                 <Text style={styles.glassText}>Serene Heights · Nathia Gali</Text>
               </View>
-              <Text style={styles.altitude}>7,906 FT</Text>
+              <Text style={styles.altitude}>7,906 ft</Text>
             </View>
           </View>
 
@@ -138,7 +138,7 @@ export default function Login() {
                   ) : (
                     <View style={styles.eyebrowWrap}>
                       <View style={styles.rule} />
-                      <Text style={styles.eyebrow}>SERENE BOOKINGS</Text>
+                      <Text style={styles.eyebrow}>Serene Bookings</Text>
                     </View>
                   )}
                   <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -218,9 +218,7 @@ export default function Login() {
 
                 <Pressable onPress={next} accessibilityRole="button" accessibilityLabel={cta} style={({ pressed }) => [styles.cta, pressed && { opacity: 0.92, transform: [{ scale: 0.99 }] }]}>
                   <Text style={styles.ctaText}>{cta}</Text>
-                  <View style={styles.badge}>
-                    <Ionicons name="arrow-forward-outline" size={20} color={C.pine} />
-                  </View>
+                  <Ionicons name="arrow-forward-outline" size={18} color={C.cream} />
                 </Pressable>
               </Animated.View>
 
@@ -258,9 +256,8 @@ export default function Login() {
 function ModePill({ icon, label, on, onPress }: { icon: Glyph; label: string; on: boolean; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="radio" accessibilityState={{ checked: on }} style={[styles.mode, on ? styles.modeOn : styles.modeOff]}>
-      <Ionicons name={icon} size={17} color={on ? C.pine : C.ink55} />
-      <Text style={[styles.modeText, on && { color: C.ink }]} numberOfLines={1}>{label}</Text>
-      <View style={[styles.check, on && styles.checkOn]}>{on && <Ionicons name="checkmark-outline" size={13} color={C.cream} />}</View>
+      <Ionicons name={on ? 'checkmark-circle' : icon} size={17} color={on ? C.cream : C.ink70} />
+      <Text style={[styles.modeText, on && { color: C.cream }]} numberOfLines={1}>{label}</Text>
     </Pressable>
   );
 }
@@ -268,16 +265,14 @@ function ModePill({ icon, label, on, onPress }: { icon: Glyph; label: string; on
 function Field({ icon, label, prefix, right, ...rest }: TextInputProps & { icon: Glyph; label: string; prefix?: string; right?: React.ReactNode }) {
   const [focus, setFocus] = useState(false);
   return (
-    <View style={[styles.field, focus && styles.fieldFocus]}>
-      <Ionicons name={icon} size={20} color={focus ? C.pine : C.ink55} />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.fieldLabel}>{label.toUpperCase()}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          {prefix && <Text style={styles.prefix}>{prefix}</Text>}
-          <TextInput {...rest} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} placeholderTextColor={C.ink40} style={styles.inputText} />
-        </View>
+    <View>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <View style={[styles.field, focus && styles.fieldFocus]}>
+        <Ionicons name={icon} size={18} color={focus ? C.pine : C.ink55} />
+        {prefix && <Text style={styles.prefix}>{prefix}</Text>}
+        <TextInput {...rest} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} placeholderTextColor={C.ink40} style={styles.inputText} />
+        {right}
       </View>
-      {right}
     </View>
   );
 }
@@ -291,44 +286,41 @@ const styles = StyleSheet.create({
   place: { position: 'absolute', left: S.gutter, right: S.gutter, bottom: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   glass: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: 'rgba(0, 0, 0, 0.34)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.3)' },
   glassText: { color: '#FFFFFF', fontFamily: FONTS.uiSemi, fontSize: 12.5 },
-  altitude: { color: 'rgba(255,255,255,0.9)', fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
+  altitude: { color: 'rgba(255,255,255,0.92)', fontFamily: FONTS.uiSemi, fontSize: 12.5 },
   sheet: { flexGrow: 1, marginTop: -36, paddingTop: 26, paddingHorizontal: S.gutter + 2, borderTopLeftRadius: 34, borderTopRightRadius: 34, backgroundColor: C.sand },
   eyebrowRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, minHeight: 24 },
   eyebrowWrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   rule: { width: 22, height: 2, borderRadius: 1, backgroundColor: C.gold },
-  eyebrow: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 10.5, letterSpacing: 2 },
+  eyebrow: { color: C.ink55, fontFamily: FONTS.uiSemi, fontSize: 12.5 },
   backLink: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 4 },
   backText: { fontFamily: FONTS.uiBold, fontSize: 13, color: C.pine },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lineStrong },
   dotOn: { backgroundColor: C.pine },
-  heading: { color: C.ink, fontFamily: FONTS.display, fontSize: 39, lineHeight: 43 },
+  heading: { color: C.ink, fontFamily: FONTS.display, fontSize: 36, lineHeight: 40 },
   lede: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 14.5, lineHeight: 21, marginTop: 6 },
   modes: { flexDirection: 'row', gap: 10 },
-  mode: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, height: 56, paddingHorizontal: 14, borderRadius: 16 },
-  modeOn: { backgroundColor: C.pureWhite, borderWidth: 1.5, borderColor: C.pine, ...shadow.card },
-  modeOff: { backgroundColor: C.snow, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  modeText: { flex: 1, fontFamily: FONTS.uiSemi, fontSize: 14, color: C.ink55 },
-  check: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: C.lineStrong },
-  checkOn: { backgroundColor: C.pine, borderColor: C.pine },
-  field: { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 64, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 16, backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line, ...shadow.card },
+  mode: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, height: 44, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1 },
+  modeOn: { backgroundColor: C.pine, borderColor: C.pine },
+  modeOff: { backgroundColor: C.pureWhite, borderColor: C.line },
+  modeText: { fontFamily: FONTS.uiSemi, fontSize: 13.5, color: C.ink },
+  field: { flexDirection: 'row', alignItems: 'center', gap: 10, height: 54, paddingHorizontal: 16, borderRadius: 14, backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line },
   fieldFocus: { borderColor: C.pine, borderWidth: 1.5 },
-  fieldLabel: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.3 },
-  inputText: { flex: 1, paddingVertical: 2, fontFamily: FONTS.uiSemi, fontSize: 17, color: C.ink },
-  prefix: { fontFamily: FONTS.uiSemi, fontSize: 17, color: C.ink, paddingRight: 10, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: C.lineStrong },
+  fieldLabel: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 13, marginBottom: 8 },
+  inputText: { flex: 1, height: '100%', fontFamily: FONTS.uiMedium, fontSize: 16, color: C.ink },
+  prefix: { fontFamily: FONTS.uiSemi, fontSize: 16, color: C.ink, paddingRight: 10, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: C.lineStrong },
   otp: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
-  otpBox: { flex: 1, height: 62, borderRadius: 16, backgroundColor: C.pureWhite, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.line, ...shadow.card },
+  otpBox: { flex: 1, height: 58, borderRadius: 14, backgroundColor: C.pureWhite, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.line },
   otpActive: { borderColor: C.pine, borderWidth: 1.5 },
   otpText: { fontFamily: FONTS.uiBold, fontSize: 24, color: C.ink, fontVariant: ['tabular-nums'] },
   hidden: { position: 'absolute', opacity: 0, height: 1, width: 1 },
   link: { fontFamily: FONTS.uiBold, fontSize: 14, color: C.pine },
   error: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: 14, backgroundColor: 'rgba(180, 35, 24, 0.07)' },
   errorText: { flex: 1, color: C.danger, fontFamily: FONTS.uiMedium, fontSize: 13 },
-  cta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 62, marginTop: 6, paddingLeft: 26, paddingRight: 9, borderRadius: 31, backgroundColor: C.pine, ...shadow.card, shadowOpacity: 0.2, shadowRadius: 14, elevation: 4 },
-  ctaText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 17 },
-  badge: { width: 44, height: 44, borderRadius: 22, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center' },
-  perks: { flexDirection: 'row', marginTop: 18, paddingVertical: 14, borderRadius: 18, backgroundColor: C.snow },
+  cta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, height: 54, marginTop: 6, borderRadius: 999, backgroundColor: C.pine },
+  ctaText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 16 },
+  perks: { flexDirection: 'row', marginTop: 18, paddingVertical: 14, borderRadius: 18, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   perk: { flex: 1, alignItems: 'center', gap: 6, paddingHorizontal: 6 },
-  perkLine: { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: C.lineStrong },
+  perkLine: { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: C.line },
   perkText: { fontFamily: FONTS.uiSemi, fontSize: 11.5, color: C.ink, textAlign: 'center' },
   footer: { alignItems: 'center', gap: 14, marginTop: 20, paddingTop: 2 },
   guest: { fontFamily: FONTS.uiSemi, fontSize: 14.5, color: C.ink, textDecorationLine: 'underline' },

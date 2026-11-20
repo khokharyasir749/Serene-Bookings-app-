@@ -6,8 +6,10 @@ import { Text } from '@/components/Text';
 import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Chip } from '@/components/kit';
 import PriceSummary from '@/components/PriceSummary';
-import { BackBar, BookingSteps, Button, Caps, EASE } from '@/components/ui';
+import { BackBar, BookingSteps, Button } from '@/components/ui';
 import { ARRIVAL_TIMES, ratePlan, roomType } from '@/data/catalog';
 import { availability, money, quote } from '@/lib/stay';
 import { useBooking, type Guest } from '@/state/booking';
@@ -108,11 +110,16 @@ export default function Checkout() {
 
           {!user && (
             <Pressable onPress={() => router.push({ pathname: '/login', params: { reason: 'booking' } })} style={styles.signin}>
+              <View style={styles.well}>
+                <Ionicons name="person-outline" size={18} color={C.pine} />
+              </View>
               <View style={{ flex: 1 }}>
-                <Text style={T.h3}>Sign in to book</Text>
+                <Text style={styles.signTitle}>Sign in to book</Text>
                 <Text style={[T.small, { marginTop: 2 }]}>We’ll fill in your details and keep this stay in Trips.</Text>
               </View>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: C.pine }}>Sign in</Text>
+              <View style={styles.signPill}>
+                <Text style={styles.signPillText}>Sign in</Text>
+              </View>
             </Pressable>
           )}
 
@@ -122,15 +129,14 @@ export default function Checkout() {
 
           {unavailable && (
             <View style={styles.warn}>
-              <Text style={{ fontFamily: F.display, fontSize: 17, color: C.ink }}>No longer available</Text>
+              <Text style={styles.payTitle}>No longer available</Text>
               <Text style={[T.small, { marginTop: 4 }]}>This apartment is sold out for your dates. Go back and choose another.</Text>
             </View>
           )}
 
           {/* 01 Lead guest */}
           <View onLayout={(e) => (guestY.current = e.nativeEvent.layout.y)} style={styles.card}>
-            <Caps color={C.ink40}>01</Caps>
-            <Text style={styles.h3}>Lead guest details</Text>
+            <StepHead n={1} title="Lead guest details" />
             <Text style={[T.small, { marginTop: 4 }]}>The name must match the CNIC or passport shown at check-in.</Text>
             <View style={styles.formTop}>
               <Field label="First name" value={g.firstName} onChangeText={set('firstName')} error={errors.firstName} autoComplete="given-name" />
@@ -139,12 +145,10 @@ export default function Checkout() {
               <Field label="Mobile number" hint="For WhatsApp updates from the front desk" value={g.phone} onChangeText={set('phone')} error={errors.phone} keyboardType="phone-pad" placeholder="+92 3xx xxxxxxx" />
               <Field label="Country of residence" value={g.country} onChangeText={set('country')} />
             </View>
-            <Caps color={C.ink70} style={{ marginTop: 6 }}>Estimated arrival time</Caps>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 10 }}>
+            <Text style={styles.label}>Estimated arrival time</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingTop: 2, paddingBottom: 16 }}>
               {ARRIVAL_TIMES.map((a) => (
-                <Pressable key={a} onPress={() => setArrival(a)} style={[styles.chip, arrival === a && styles.chipOn]}>
-                  <Text style={{ fontSize: 12.5, color: arrival === a ? C.sand : C.ink70 }}>{a}</Text>
-                </Pressable>
+                <Chip key={a} label={a} active={arrival === a} onPress={() => setArrival(a)} />
               ))}
             </ScrollView>
             <Field label="Special requests (optional)" hint="Subject to availability, e.g. high floor, extra bedding, celebration" value={requests} onChangeText={setRequests} multiline />
@@ -152,19 +156,18 @@ export default function Checkout() {
 
           {/* 02 Payment */}
           <View style={styles.card}>
-            <Caps color={C.ink40}>02</Caps>
-            <Text style={styles.h3}>How would you like to pay?</Text>
+            <StepHead n={2} title="How would you like to pay?" />
             <View style={[styles.pay, styles.payOn]}>
               <View style={styles.radio}><View style={styles.radioDot} /></View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: F.display, fontSize: 17, color: C.ink }}>Pay at the property</Text>
+                <Text style={styles.payTitle}>Pay at the property</Text>
                 <Text style={[T.small, { marginTop: 2 }]}>Cash or card at check-in. Nothing is charged now.</Text>
               </View>
             </View>
             <View style={[styles.pay, { opacity: 0.5 }]}>
               <View style={styles.radio} />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: F.display, fontSize: 17, color: C.ink }}>Card online</Text>
+                <Text style={styles.payTitle}>Card online</Text>
                 <Text style={[T.small, { marginTop: 2 }]}>Coming soon</Text>
               </View>
             </View>
@@ -172,10 +175,9 @@ export default function Checkout() {
 
           {/* 03 Confirm */}
           <Animated.View onLayout={(e) => (confirmY.current = e.nativeEvent.layout.y)} style={[styles.card, shakeStyle]}>
-            <Caps color={C.ink40}>03</Caps>
-            <Text style={styles.h3}>Confirm</Text>
+            <StepHead n={3} title="Confirm" />
             <Pressable onPress={() => { setAccept((a) => !a); setErrors((e) => ({ ...e, acceptTerms: undefined })); }} style={styles.terms}>
-              <View style={[styles.box, accept && { backgroundColor: C.pine, borderColor: C.pine }]}>{accept && <Animated.View entering={FadeIn.duration(150)}><Check size={13} color={C.sand} strokeWidth={2.5} /></Animated.View>}</View>
+              <View style={[styles.box, accept && { backgroundColor: C.pine, borderColor: C.pine }]}>{accept && <Animated.View entering={FadeIn.duration(150)}><Check size={13} color={C.cream} strokeWidth={2.5} /></Animated.View>}</View>
               <Text style={[T.small, { flex: 1, color: C.ink70 }]}>
                 I agree to the booking conditions: {plan.refundable ? `free cancellation until ${plan.freeCancelHours} hours before check-in` : 'this rate is non-refundable'}, and the house rules (check-in from 2:00 PM, check-out until 12:00 PM, valid ID required).
               </Text>
@@ -187,12 +189,23 @@ export default function Checkout() {
         </ScrollView>
         <View style={[styles.bottom, { paddingBottom: insets.bottom + 12 }]}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: F.display, fontSize: 20, color: C.ink }}>{money(q.grandTotal)}</Text>
-            <Text style={[T.small, { fontSize: 11.5 }]}>Total incl. taxes</Text>
+            <Text style={styles.total}>{money(q.grandTotal)}</Text>
+            <Text style={[T.small, { fontSize: 12 }]}>Total incl. taxes · pay at property</Text>
           </View>
-          <Button label={submitting ? 'Confirming…' : 'Confirm booking'} disabled={submitting || unavailable} onPress={submit} icon={<Lock size={14} color={C.sand} strokeWidth={1.75} />} />
+          <Button label={submitting ? 'Confirming…' : 'Confirm booking'} disabled={submitting || unavailable} onPress={submit} icon={<Lock size={14} color={C.cream} strokeWidth={1.75} />} />
         </View>
       </KeyboardAvoidingView>
+    </View>
+  );
+}
+
+function StepHead({ n, title }: { n: number; title: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <View style={styles.stepNo}>
+        <Text style={styles.stepNoText}>{n}</Text>
+      </View>
+      <Text style={styles.h3}>{title}</Text>
     </View>
   );
 }
@@ -201,7 +214,7 @@ function Field({ label, hint, error, multiline, ...rest }: TextInputProps & { la
   const [focus, setFocus] = useState(false);
   return (
     <View style={{ marginBottom: 16 }}>
-      <Caps color={C.ink70} style={{ marginBottom: 8, fontSize: 10 }}>{label}</Caps>
+      <Text style={styles.label}>{label}</Text>
       <TextInput
         {...rest}
         multiline={multiline}
@@ -217,20 +230,27 @@ function Field({ label, hint, error, multiline, ...rest }: TextInputProps & { la
 
 const styles = StyleSheet.create({
   barBg: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 15, backgroundColor: C.sand, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  signin: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 16, padding: 16, borderRadius: S.card, backgroundColor: C.white, borderWidth: 1.5, borderColor: C.pine },
-  card: { backgroundColor: C.white, padding: 20, marginTop: 18, borderRadius: S.radius, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  h3: { fontFamily: F.display, fontSize: 23, color: C.ink, marginTop: 6 },
-  formTop: { marginTop: 18, paddingTop: 18, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-  input: { fontFamily: FONTS.ui, borderWidth: 1, borderColor: C.lineStrong, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: C.ink, backgroundColor: C.sand, borderRadius: 12 },
-  error: { color: C.danger, fontSize: 12, marginTop: 5 },
-  chip: { paddingHorizontal: 12, paddingVertical: 9, borderRadius: 999, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
-  chipOn: { backgroundColor: C.pine, borderColor: C.pine },
-  pay: { flexDirection: 'row', gap: 14, alignItems: 'center', padding: 16, marginTop: 12, borderWidth: 1, borderColor: C.line, borderRadius: 14 },
-  payOn: { borderColor: C.pine, backgroundColor: C.sand },
-  radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 1, borderColor: C.ink55, alignItems: 'center', justifyContent: 'center' },
-  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: C.pine },
+  signin: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 16, padding: 14, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: 1, borderColor: C.line },
+  well: { width: 40, height: 40, borderRadius: 20, backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  signTitle: { fontFamily: FONTS.uiBold, fontSize: 15, color: C.ink },
+  signPill: { height: 34, paddingHorizontal: 14, borderRadius: 999, backgroundColor: C.pine, justifyContent: 'center' },
+  signPillText: { fontFamily: FONTS.uiBold, fontSize: 12.5, color: C.cream },
+  card: { backgroundColor: C.pureWhite, padding: 18, marginTop: 16, borderRadius: S.card, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  stepNo: { width: 26, height: 26, borderRadius: 13, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
+  stepNoText: { fontFamily: FONTS.uiBold, fontSize: 12, color: C.cream },
+  h3: { flex: 1, fontFamily: FONTS.uiBold, fontSize: 17, color: C.ink },
+  label: { fontFamily: FONTS.uiSemi, fontSize: 13, color: C.ink, marginBottom: 8 },
+  formTop: { marginTop: 16, paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+  input: { fontFamily: FONTS.uiMedium, borderWidth: 1, borderColor: C.line, paddingHorizontal: 14, minHeight: 50, paddingVertical: 12, fontSize: 15, color: C.ink, backgroundColor: C.pureWhite, borderRadius: 14 },
+  error: { color: C.danger, fontSize: 12, marginTop: 5, fontFamily: FONTS.uiMedium },
+  pay: { flexDirection: 'row', gap: 14, alignItems: 'center', padding: 14, marginTop: 12, borderWidth: 1, borderColor: C.line, borderRadius: 16 },
+  payOn: { borderColor: C.pine, borderWidth: 1.5 },
+  payTitle: { fontFamily: FONTS.uiSemi, fontSize: 15, color: C.ink },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: C.lineStrong, alignItems: 'center', justifyContent: 'center' },
+  radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: C.pine },
   terms: { flexDirection: 'row', gap: 12, marginTop: 16, paddingTop: 16, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-  box: { width: 20, height: 20, borderWidth: 1, borderColor: C.ink55, alignItems: 'center', justifyContent: 'center', marginTop: 2 },
-  bottom: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: S.gutter, paddingTop: 12, backgroundColor: C.sand, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-  warn: { marginTop: 18, padding: 16, borderLeftWidth: 2, borderLeftColor: C.danger, backgroundColor: C.white },
+  box: { width: 22, height: 22, borderRadius: 7, borderWidth: 1.5, borderColor: C.lineStrong, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
+  bottom: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: S.gutter, paddingTop: 12, backgroundColor: C.pureWhite, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+  total: { fontFamily: FONTS.uiBold, fontSize: 18, color: C.ink, fontVariant: ['tabular-nums'] },
+  warn: { marginTop: 16, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(180, 35, 24, 0.3)', backgroundColor: 'rgba(180, 35, 24, 0.05)' },
 });

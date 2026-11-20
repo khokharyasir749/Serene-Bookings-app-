@@ -18,7 +18,7 @@ function Row({ icon, label, value, href, last }: { icon: Glyph; label: string; v
         <Ionicons name={icon} size={17} color={C.cream} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={styles.label}>{label.toUpperCase()}</Text>
+        <Text style={styles.label}>{label}</Text>
         <Text style={[styles.value, value.length > 32 && { fontSize: 12 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {value}
         </Text>
@@ -38,7 +38,7 @@ function SiteButton({ icon, label, value, href, primary }: { icon: Glyph; label:
       style={({ pressed }) => [styles.site, primary ? styles.sitePrimary : styles.siteOutline, pressed && { opacity: 0.85, transform: [{ scale: 0.985 }] }]}>
       <Ionicons name={icon} size={19} color={primary ? C.gold : C.pine} />
       <View style={{ flex: 1 }}>
-        <Text style={[styles.siteLabel, { color: primary ? C.gold : C.ink55 }]}>{label.toUpperCase()}</Text>
+        <Text style={[styles.siteLabel, { color: primary ? C.gold : C.ink55 }]}>{label}</Text>
         <Text style={[styles.siteValue, { color: fg }]} numberOfLines={1}>
           {value}
         </Text>
@@ -94,13 +94,13 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12 },
   rowLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
   disc: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  label: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.3 },
+  label: { color: C.ink55, fontFamily: FONTS.uiSemi, fontSize: 11.5 },
   value: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 14, marginTop: 1, fontVariant: ['tabular-nums'] },
   sites: { gap: 10, marginTop: 14 },
   site: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingLeft: 16, paddingRight: 12, borderRadius: 999 },
   sitePrimary: { backgroundColor: C.pine },
   siteOutline: { backgroundColor: C.pureWhite, borderWidth: 1.5, borderColor: C.pine },
-  siteLabel: { fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.4 },
+  siteLabel: { fontFamily: FONTS.uiSemi, fontSize: 11 },
   siteValue: { fontFamily: FONTS.uiSemi, fontSize: 14, marginTop: 1 },
   go: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   social: { flexDirection: 'row', justifyContent: 'center', gap: 12, marginTop: 28 },

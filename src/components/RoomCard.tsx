@@ -1,85 +1,113 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { Images, Star } from '@/components/icons';
-import { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text } from '@/components/Text';
+import { memo, useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Rating } from '@/components/kit';
+import { Text } from '@/components/Text';
 import { Photo, PressableScale } from '@/components/ui';
 import { areaRangeOf, REVIEW_SCORE, type RoomType } from '@/data/catalog';
-import { availability, guestsLabel, lowestQuote, money, plural, type Stay } from '@/lib/stay';
-import { C, FONTS, S, T } from '@/theme';
+import { availability, lowestQuote, money, plural, type Stay } from '@/lib/stay';
+import { C, FONTS, shadow } from '@/theme';
 
-// One apartment type in a list: a rounded square photo, then name, key facts and the price for the stay.
-function Spec({ icon, k, v, u }: { icon: React.ComponentProps<typeof Ionicons>['name']; k: string; v: string; u?: string }) {
-  return (
-    <View style={styles.spec}>
-      <Ionicons name={icon} size={17} color={C.pine} />
-      <Text style={styles.specK}>{k}</Text>
-      <Text style={styles.specV} numberOfLines={2}>
-        {v}
-        {u ? <Text style={styles.specU}> {u}</Text> : null}
-      </Text>
-    </View>
-  );
-}
-
+// Shakuro-style "Popular hotels" apartment card:
+// Large rounded photo with top-right floating heart, bold title, star rating + reviews + distance,
+// soft pill badges ("Free cancellation", "Breakfast included"), and bold price per night + stay total.
 function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
   const router = useRouter();
+  const [favorite, setFavorite] = useState(false);
   const av = availability(type, stay);
   const best = lowestQuote(type, stay);
   const bookable = !av.soldOut && av.fitsParty;
   const perNight = Math.round(best.q.grandTotal / Math.max(1, best.q.nights));
 
   return (
-    <PressableScale onPress={() => router.push(`/room/${type.slug}`)} scaleTo={0.98}>
-      <View>
+    <PressableScale onPress={() => router.push(`/room/${type.slug}`)} scaleTo={0.985} style={styles.card}>
+      {/* Photo with floating tags & favorite button */}
+      <View style={styles.imgWrap}>
         <Photo src={type.images[0]} style={styles.img} />
-        <View style={styles.count}>
-          <Images size={12} color={C.sand} strokeWidth={1.75} />
-          <Text style={{ color: C.sand, fontSize: 11.5, fontWeight: '600' }}>{type.images.filter((i) => !i.includes('floor-plans')).length}</Text>
+        {/* Top-left feature pill */}
+        <View style={styles.tagWrap}>
+          {bookable && av.available <= 3 ? (
+            <View style={styles.statusPill}>
+              <Text style={styles.statusPillText}>Only {av.available} left</Text>
+            </View>
+          ) : (
+            <View style={styles.statusPill}>
+              <Ionicons name="sunny-outline" size={11} color={C.ink} style={{ marginRight: 3 }} />
+              <Text style={styles.statusPillText}>{type.outdoorSpace}</Text>
+            </View>
+          )}
         </View>
-        {bookable && av.available <= 3 && (
-          <View style={styles.scarcity}>
-            <Text style={{ color: C.ink, fontSize: 11.5, fontWeight: '700' }}>Only {av.available} left</Text>
-          </View>
-        )}
+
+        {/* Top-right floating circular favorite button */}
+        <Pressable
+          onPress={(e) => {
+            e.stopPropagation();
+            setFavorite((prev) => !prev);
+          }}
+          hitSlop={8}
+          accessibilityLabel="Save to favorites"
+          style={({ pressed }) => [styles.favBtn, pressed && { opacity: 0.85 }]}
+        >
+          <Ionicons
+            name={favorite ? 'heart' : 'heart-outline'}
+            size={18}
+            color={favorite ? C.coral : C.ink}
+          />
+        </Pressable>
       </View>
 
-      <View style={{ paddingTop: 14, paddingHorizontal: 2 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={styles.kicker}>ONE-BEDROOM · {type.outdoorSpace.toUpperCase()}</Text>
-          <View style={styles.rating}>
-            <Star size={11} color={C.pine} fill={C.pine} />
-            <Text style={styles.ratingText}>{REVIEW_SCORE.average.toFixed(1)}</Text>
-          </View>
-        </View>
-        <Text style={[T.h2, { marginTop: 6 }]} numberOfLines={2}>{type.name}</Text>
-        <View style={styles.specs}>
-          <Spec icon="resize-outline" k="AREA" v={areaRangeOf(type.slug).replace(' sq ft', '')} u="sq ft" />
-          <Spec icon="bed-outline" k="BED" v={type.bedType.replace(/^1 /, '').replace(' + sofa bed', ' + sofa')} />
-          <Spec icon="people-outline" k="GUESTS" v={`Up to ${type.maxOccupancy}`} />
+      {/* Card Body */}
+      <View style={styles.body}>
+        {/* Title & nightly price */}
+        <View style={styles.titleRow}>
+          <Text style={styles.name} numberOfLines={1}>
+            {type.name.replace(' Apartment', '')}
+          </Text>
+          {bookable && (
+            <Text style={styles.price}>
+              {money(perNight)}
+              <Text style={styles.per}> / night</Text>
+            </Text>
+          )}
         </View>
 
+        {/* Rating, reviews & location */}
+        <View style={styles.metaRow}>
+          <Rating score={REVIEW_SCORE.average} count={REVIEW_SCORE.count} size={12.5} />
+          <Text style={styles.dot}>·</Text>
+          <Text style={styles.meta} numberOfLines={1}>Nathia Gali · 7,906 ft</Text>
+        </View>
+
+        {/* Feature Badges Pills */}
+        <View style={styles.badgesRow}>
+          <View style={styles.badgePill}>
+            <Text style={styles.badgeText}>Free cancellation</Text>
+          </View>
+          <View style={styles.badgePill}>
+            <Text style={styles.badgeText}>Breakfast included</Text>
+          </View>
+          <View style={styles.badgePill}>
+            <Text style={styles.badgeText}>{areaRangeOf(type.slug)}</Text>
+          </View>
+        </View>
+
+        {/* Total or sold out status */}
         {bookable ? (
-          <>
-            <Text style={styles.policy}>Free cancellation  ·  Pay at property</Text>
-            <View style={styles.priceRow}>
-              <View>
-                <Text style={styles.priceBig}>
-                  {money(perNight)}
-                  <Text style={styles.per}> / night</Text>
-                </Text>
-                <Text style={styles.priceNote}>Incl. taxes · {guestsLabel(stay.adults, stay.children)}</Text>
-              </View>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.totalLabel}>TOTAL · {plural(best.q.nights, 'NIGHT', 'NIGHTS')}</Text>
-                <Text style={styles.total}>{money(best.q.grandTotal)}</Text>
-              </View>
-            </View>
-          </>
+          <View style={styles.foot}>
+            <Text style={styles.totalSub}>
+              {plural(best.q.nights, 'night')} · {type.maxOccupancy} guests
+            </Text>
+            <Text style={styles.total}>
+              {money(best.q.grandTotal)}
+              <Text style={styles.totalSuffix}> total</Text>
+            </Text>
+          </View>
         ) : (
-          <Text style={[T.small, { color: C.danger, marginTop: 10 }]}>{av.soldOut ? 'Sold out for your dates' : `Sleeps ${type.maxOccupancy} per apartment — add an apartment`}</Text>
+          <Text style={styles.unavailable}>
+            {av.soldOut ? 'Sold out for your dates' : `Sleeps ${type.maxOccupancy} guests — add an apartment`}
+          </Text>
         )}
       </View>
     </PressableScale>
@@ -89,22 +117,149 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
 export default memo(RoomCard);
 
 const styles = StyleSheet.create({
-  img: { width: '100%', aspectRatio: 1, borderRadius: S.photo },
-  count: { position: 'absolute', left: 12, bottom: 12, flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
-  scarcity: { position: 'absolute', top: 14, left: 12, backgroundColor: 'rgba(245,242,235,0.94)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
-  kicker: { flex: 1, fontSize: 10, letterSpacing: 1.4, color: C.ink55, fontFamily: FONTS.uiBold },
-  rating: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: C.snow },
-  ratingText: { fontSize: 12, fontFamily: FONTS.uiBold, color: C.ink },
-  specs: { flexDirection: 'row', gap: 8, marginTop: 14 },
-  spec: { flex: 1, alignItems: 'flex-start', gap: 3, paddingVertical: 11, paddingHorizontal: 12, borderRadius: 14, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  specK: { fontSize: 9, letterSpacing: 1.2, fontFamily: FONTS.uiBold, color: C.ink55, marginTop: 4 },
-  specV: { fontSize: 14, fontFamily: FONTS.uiSemi, color: C.ink, fontVariant: ['tabular-nums'] },
-  specU: { fontSize: 11, fontFamily: FONTS.ui, color: C.ink55 },
-  policy: { marginTop: 12, fontSize: 12, letterSpacing: 0.2, fontFamily: FONTS.uiMedium, color: C.ink55 },
-  priceRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12, paddingTop: 14, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-  priceBig: { fontSize: 19, fontFamily: FONTS.uiBold, color: C.ink, fontVariant: ['tabular-nums'] },
-  per: { fontSize: 13, fontFamily: FONTS.ui, color: C.ink55 },
-  priceNote: { fontSize: 11.5, fontFamily: FONTS.ui, color: C.ink55, marginTop: 2 },
-  totalLabel: { fontSize: 9.5, letterSpacing: 1.2, fontFamily: FONTS.uiBold, color: C.ink55 },
-  total: { fontSize: 15, fontFamily: FONTS.uiSemi, color: C.ink, marginTop: 2, fontVariant: ['tabular-nums'] },
+  card: {
+    padding: 10,
+    borderRadius: 24,
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: '#EAECEF',
+    marginBottom: 16,
+    ...shadow.card,
+  },
+  imgWrap: {
+    position: 'relative',
+    width: '100%',
+    borderRadius: 18,
+    overflow: 'hidden',
+  },
+  img: {
+    width: '100%',
+    aspectRatio: 16 / 10,
+    borderRadius: 18,
+  },
+  tagWrap: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    flexDirection: 'row',
+    gap: 6,
+  },
+  statusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    ...shadow.pill,
+  },
+  statusPillText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11,
+    color: C.ink,
+  },
+  favBtn: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: C.pureWhite,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.pill,
+  },
+  body: {
+    paddingHorizontal: 6,
+    paddingTop: 12,
+    paddingBottom: 4,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  name: {
+    flex: 1,
+    fontFamily: FONTS.displayBold,
+    fontSize: 18.5,
+    lineHeight: 23,
+    color: C.ink,
+  },
+  price: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 17,
+    color: C.ink,
+    fontVariant: ['tabular-nums'],
+  },
+  per: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
+  },
+  dot: {
+    color: C.ink40,
+    fontSize: 12,
+  },
+  meta: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 10,
+  },
+  badgePill: {
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    borderRadius: 8,
+    backgroundColor: C.fill,
+  },
+  badgeText: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 11.5,
+    color: C.ink70,
+  },
+  foot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#F0F2F4',
+  },
+  totalSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+  },
+  total: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 15,
+    color: C.ink,
+    fontVariant: ['tabular-nums'],
+  },
+  totalSuffix: {
+    fontFamily: FONTS.ui,
+    fontSize: 11.5,
+    color: C.ink55,
+  },
+  unavailable: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 12.5,
+    color: C.danger,
+    marginTop: 10,
+  },
 });

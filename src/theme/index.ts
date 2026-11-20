@@ -1,58 +1,64 @@
 import { StyleSheet } from 'react-native';
 
-// Design tokens, matched to the Serene Groups app (src/core/constants/theme.ts):
-//   Deep Forest Pine  #123524 / #1B4332   brand, ink, executive cards, primary actions
-//   Champagne Gold    #C8A46A             accents on Pine, crest rings, badges
-//   Warm Alabaster    #FAF8F4             canvas
-//   Ivory             #FFFDF9             cards and inputs, with Stone hairlines #E4DDD0
-//   Stone             #ECE6DA             quiet fills (chips, icon wells)
-//   Snow              #ECEEED             text on Pine
-const PINE = '#123524';
-const FOREST = '#1B4332';
-const GOLD = '#C8A46A';
-const ALABASTER = '#FAF8F4';
-const IVORY = '#FFFDF9';
-const STONE = '#ECE6DA';
-const STONE_LINE = '#E4DDD0';
-const SNOW = '#ECEEED';
+// Design tokens aligned with the Shakuro Hotel Booking Dribbble concept
+// and Serene Heights luxury identity:
+//   Pure White       #FFFFFF             primary cards, active tab pill, sheet backgrounds
+//   Off-White Canvas #F7F8F9 / #F5F6F8   light clean modern canvas
+//   Input Fill       #F4F5F7             search pills, inactive chips, counter wells
+//   Dark Ink / Pine  #161E1A / #123524   primary buttons, floating dock, titles, active chips
+//   Accent Coral     #FF5B5B             favorite heart, notification badge
+//   Amber Star       #F5A623             rating star
+//   Subtle Border    #E8EAEB / #EDEDED   hairlines, chip borders
 
-const pine = (a: number) => `rgba(18, 53, 36, ${a})`;
-const snow = (a: number) => `rgba(236, 238, 237, ${a})`;
-const gold = (a: number) => `rgba(200, 164, 106, ${a})`;
+const PINE = '#161E1A';
+const FOREST = '#123524';
+const GOLD = '#F5A623';
+const CANVAS = '#F7F8FA';
+const CARD_WHITE = '#FFFFFF';
+const FILL_GREY = '#F4F5F7';
+const LINE_GREY = '#E8EAEB';
+const SNOW = '#FFFFFF';
+const CORAL = '#FF5B5B';
+
+const pine = (a: number) => `rgba(22, 30, 26, ${a})`;
+const snow = (a: number) => `rgba(255, 255, 255, ${a})`;
 const white = (a: number) => `rgba(255, 255, 255, ${a})`;
 
-// Token names are kept from the first palette so every screen picks the new scheme up unchanged:
-// sand = canvas, white = card surface, snow = quiet fill, cream* = text on Pine.
 export const C = {
-  sand: ALABASTER,
+  sand: CANVAS,
+  canvas: CANVAS,
   pine: PINE,
-  pineDeep: PINE,
+  pineDeep: '#0D1410',
   forest: FOREST,
-  snow: STONE,
-  white: IVORY,
+  snow: FILL_GREY,
+  white: CARD_WHITE,
   pureWhite: '#FFFFFF',
+  fill: FILL_GREY,
   ink: PINE,
-  ink70: pine(0.78),
-  ink55: pine(0.6),
-  ink40: pine(0.42),
-  line: STONE_LINE,
-  lineStrong: pine(0.2),
+  ink70: pine(0.72),
+  ink55: pine(0.55),
+  ink40: pine(0.38),
+  line: LINE_GREY,
+  lineStrong: pine(0.18),
   cream: SNOW,
   cream70: snow(0.8),
   cream45: snow(0.45),
   gold: GOLD,
-  goldSoft: gold(0.16),
-  goldLine: gold(0.45),
-  positive: '#1D7348',
-  danger: '#B42318',
-  // Glass dock (exact values from the Groups app)
-  dockGlass: 'rgba(255, 253, 249, 0.16)',
-  dockActive: white(0.32),
-  dockBorder: white(0.55),
-  dockInactive: pine(0.78),
+  goldSoft: 'rgba(245, 166, 35, 0.16)',
+  goldLine: 'rgba(245, 166, 35, 0.45)',
+  coral: CORAL,
+  coralSoft: 'rgba(255, 91, 91, 0.12)',
+  positive: '#10B981',
+  danger: '#EF4444',
+  // Floating dock tokens
+  dockBg: '#161E1A',
+  dockGlass: '#161E1A',
+  dockActive: '#FFFFFF',
+  dockBorder: 'rgba(255, 255, 255, 0.12)',
+  dockInactive: 'rgba(255, 255, 255, 0.65)',
 } as const;
 
-// Cormorant Garamond for editorial display, Plus Jakarta Sans for UI and numerals (loaded in app/_layout.tsx).
+// Plus Jakarta Sans for modern mobile UI, Cormorant Garamond for display headlines
 export const FONTS = {
   displayMedium: 'CormorantGaramond_500Medium',
   displayItalic: 'CormorantGaramond_500Medium_Italic',
@@ -66,27 +72,58 @@ export const FONTS = {
 
 export const F = { display: FONTS.display, sans: FONTS.ui };
 
-// radius: buttons & inputs · card: cards & photos · tabBar: height of the floating dock.
-export const S = { gutter: 20, radius: 14, card: 22, photo: 20, tabBar: 64 };
+// Geometries matching the Dribbble concept
+export const S = {
+  gutter: 20,
+  radius: 16,
+  card: 24,
+  photo: 20,
+  pill: 999,
+  tabBar: 64,
+};
 
 /** Bottom padding a tab screen needs so its last item clears the floating dock. */
-export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 10 + 36;
+export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 20;
 
 export const shadow = {
-  card: { shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2 },
+  card: {
+    shadowColor: '#101828',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  cardHover: {
+    shadowColor: '#101828',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.09,
+    shadowRadius: 20,
+    elevation: 6,
+  },
+  dock: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.22,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  pill: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
 } as const;
 
-// One type scale for the whole app:
-//   h1 screen titles · h2 section headings · h3 card titles · body copy · small meta · caps labels · price.
-// Display sizes are tuned for Cormorant's small x-height; numbers use tabular figures.
 export const T = StyleSheet.create({
-  h1: { fontFamily: FONTS.display, fontSize: 36, lineHeight: 40, letterSpacing: -0.4, color: C.ink },
-  h2: { fontFamily: FONTS.display, fontSize: 27, lineHeight: 31, letterSpacing: -0.3, color: C.ink },
-  h3: { fontFamily: FONTS.display, fontSize: 21, lineHeight: 25, color: C.ink },
-  eyebrow: { fontFamily: FONTS.uiSemi, fontSize: 10.5, lineHeight: 14, letterSpacing: 1.6, textTransform: 'uppercase', color: C.ink55 },
-  caps: { fontFamily: FONTS.uiBold, fontSize: 10.5, letterSpacing: 1.6, textTransform: 'uppercase', color: C.ink },
+  h1: { fontFamily: FONTS.displayBold, fontSize: 32, lineHeight: 38, letterSpacing: -0.5, color: C.ink },
+  h2: { fontFamily: FONTS.displayBold, fontSize: 24, lineHeight: 30, letterSpacing: -0.3, color: C.ink },
+  h3: { fontFamily: FONTS.displayBold, fontSize: 20, lineHeight: 25, letterSpacing: -0.2, color: C.ink },
+  eyebrow: { fontFamily: FONTS.uiSemi, fontSize: 13, lineHeight: 17, color: C.ink55 },
+  caps: { fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.2, textTransform: 'uppercase', color: C.ink },
   display: { fontFamily: FONTS.display, color: C.ink },
   body: { fontFamily: FONTS.ui, fontSize: 15, lineHeight: 22, color: C.ink70 },
   small: { fontFamily: FONTS.ui, fontSize: 13, lineHeight: 18, color: C.ink55 },
-  price: { fontFamily: FONTS.uiBold, fontSize: 18, lineHeight: 23, letterSpacing: -0.2, color: C.ink, fontVariant: ['tabular-nums'] },
+  price: { fontFamily: FONTS.uiBold, fontSize: 19, lineHeight: 24, letterSpacing: -0.2, color: C.ink, fontVariant: ['tabular-nums'] },
 });
