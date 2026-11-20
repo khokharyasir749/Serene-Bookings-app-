@@ -45,11 +45,11 @@ export default function SearchCard({ stay, onDates, onGuests, onSearch }: { stay
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: C.pureWhite, borderRadius: 24, padding: 14, borderWidth: 1, borderColor: C.line, ...shadow.card },
+  card: { backgroundColor: C.pureWhite, borderRadius: 24, padding: 16, borderWidth: 1, borderColor: 'rgba(200, 164, 106, 0.3)', ...shadow.cardHover },
   field: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 6 },
   icon: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.goldSoft, alignItems: 'center', justifyContent: 'center' },
   value: { fontFamily: FONTS.uiBold, fontSize: 16, color: C.ink, marginTop: 3 },
-  nightsBadge: { paddingHorizontal: 9, paddingVertical: 3.5, borderRadius: 999, backgroundColor: C.snow, marginRight: 4 },
+  nightsBadge: { paddingHorizontal: 9, paddingVertical: 3.5, borderRadius: 999, backgroundColor: 'rgba(200, 164, 106, 0.16)', borderWidth: 1, borderColor: 'rgba(200, 164, 106, 0.3)', marginRight: 4 },
   nightsText: { fontFamily: FONTS.uiBold, fontSize: 11, color: C.pine },
   div: { height: StyleSheet.hairlineWidth, backgroundColor: C.line, marginLeft: 60, marginVertical: 2 },
 });

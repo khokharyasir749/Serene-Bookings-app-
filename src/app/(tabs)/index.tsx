@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ChevronRight } from '@/components/icons';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -113,6 +114,7 @@ export default function Discover() {
 
   return (
     <View style={{ flex: 1, backgroundColor: C.sand }}>
+      <StatusBar style="light" />
       <ScrollView
         ref={ref}
         style={{ flex: 1 }}
@@ -122,21 +124,22 @@ export default function Discover() {
         onScroll={onScroll}
         scrollEventThrottle={64}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 0 }}
+        contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
       >
-        {/* Serene Brand Header */}
-        <BrandHeader />
-
-        {/* Unified Cinematic Mountain Hero Stage */}
-        <View style={styles.hero}>
+        {/* Full-Bleed Panoramic Mountain Hero Stage */}
+        <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
           <Photo src={SEASONS[season]} style={StyleSheet.absoluteFill} />
-          <Scrim top={0.28} bottom={0.88} />
+          {/* Dual scrim: top scrim for brand header, bottom deep pine scrim for editorial copy */}
+          <Scrim top={0.42} bottom={0.94} />
 
-          {/* Top row inside hero: altitude badge + season switch */}
+          {/* Integrated Luxury Brand Header */}
+          <BrandHeader variant="overPhoto" />
+
+          {/* Ambient Mountain Vital Info & Season Switcher */}
           <View style={styles.heroTopRow}>
             <View style={styles.heroBadge}>
               <View style={styles.livePulse} />
-              <Text style={styles.heroBadgeText}>7,906 FT · NATHIA GALI</Text>
+              <Text style={styles.heroBadgeText}>7,906 FT · PAF AIRBASE ROAD</Text>
             </View>
 
             <View style={styles.seasonSwitch}>
@@ -146,7 +149,7 @@ export default function Discover() {
                 style={[styles.seasonBtn, season === 'summer' && styles.seasonBtnOn]}
                 accessibilityLabel="Summer season">
                 <Text style={[styles.seasonBtnText, season === 'summer' && styles.seasonBtnTextOn]}>
-                  🌲 Summer
+                  ☀️ Summer 18°C
                 </Text>
               </Pressable>
               <Pressable
@@ -155,7 +158,7 @@ export default function Discover() {
                 style={[styles.seasonBtn, season === 'winter' && styles.seasonBtnOn]}
                 accessibilityLabel="Winter season">
                 <Text style={[styles.seasonBtnText, season === 'winter' && styles.seasonBtnTextOn]}>
-                  ❄️ Winter
+                  ❄️ Winter -2°C
                 </Text>
               </Pressable>
             </View>
@@ -166,13 +169,13 @@ export default function Discover() {
           {/* Bottom editorial content inside hero */}
           <View style={styles.heroBottom}>
             <View style={styles.heroKickerRow}>
-              <Text style={styles.heroKicker}>BESPOKE ALPINE RESIDENCES</Text>
+              <Text style={styles.heroKicker}>✦ BESPOKE ALPINE RESIDENCES · NATHIA GALI</Text>
             </View>
             <Text style={styles.heroTitle}>
               Where clouds meet <Text style={styles.heroTitleItalic}>luxury</Text>
             </Text>
             <Text style={styles.heroSub}>
-              Pakistan's premier 5-star mountain sanctuary, beside PAF Airbase Nathia Gali.
+              Pakistan's premier 5-star mountain sanctuary with private ski slope & year-round heated rooftop glass pool.
             </Text>
 
             {/* Micro feature pills inside hero */}
@@ -193,8 +196,8 @@ export default function Discover() {
           </View>
         </View>
 
-        {/* Elevated Search Card */}
-        <View style={{ paddingHorizontal: S.gutter, marginTop: 14 }}>
+        {/* Elevated Overlapping Search Card */}
+        <View style={styles.searchCardWrap}>
           <SearchCard
             stay={stay}
             onDates={() => openStay('dates')}
@@ -538,21 +541,20 @@ function SectionHead({
 
 const styles = StyleSheet.create({
   hero: {
-    marginHorizontal: S.gutter,
-    marginTop: 10,
-    height: 350,
-    borderRadius: 28,
+    width: '100%',
+    height: 485,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
     overflow: 'hidden',
     backgroundColor: C.pine,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.4)',
     ...shadow.cardHover,
   },
   heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 14,
+    paddingHorizontal: S.gutter,
+    marginTop: 14,
   },
   livePulse: {
     width: 6,
@@ -587,7 +589,7 @@ const styles = StyleSheet.create({
   },
   seasonBtn: {
     paddingHorizontal: 10,
-    paddingVertical: 4.5,
+    paddingVertical: 5,
     borderRadius: 999,
   },
   seasonBtnOn: {
@@ -602,8 +604,8 @@ const styles = StyleSheet.create({
     color: C.pine,
   },
   heroBottom: {
-    padding: 20,
-    paddingBottom: 22,
+    paddingHorizontal: 20,
+    paddingBottom: 58,
   },
   heroKickerRow: {
     flexDirection: 'row',
@@ -617,8 +619,8 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontFamily: FONTS.display,
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 32,
+    lineHeight: 36,
     letterSpacing: -0.3,
     color: '#FFFFFF',
     marginTop: 5,
@@ -632,33 +634,38 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     lineHeight: 18,
     color: 'rgba(236, 238, 237, 0.92)',
-    marginTop: 5,
+    marginTop: 6,
   },
   heroFeaturesRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginTop: 12,
+    marginTop: 14,
   },
   heroFeaturePill: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 9,
-    paddingVertical: 4,
+    paddingVertical: 4.5,
     borderRadius: 999,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(0, 0, 0, 0.38)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.3)',
+    borderColor: 'rgba(200, 164, 106, 0.32)',
   },
   heroFeatureText: {
     fontFamily: FONTS.uiSemi,
     fontSize: 10,
     color: '#ECEEED',
   },
+  searchCardWrap: {
+    paddingHorizontal: S.gutter,
+    marginTop: -38,
+    zIndex: 10,
+  },
   chipsScroll: {
     paddingHorizontal: S.gutter,
     gap: 8,
-    marginTop: 16,
+    marginTop: 20,
   },
   chip: {
     flexDirection: 'row',
@@ -686,7 +693,7 @@ const styles = StyleSheet.create({
   glance: {
     flexDirection: 'row',
     marginHorizontal: S.gutter,
-    marginTop: 16,
+    marginTop: 18,
     paddingVertical: 16,
     backgroundColor: C.pine,
     borderRadius: 22,
@@ -723,7 +730,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: S.gutter,
-    marginTop: 32,
+    marginTop: 34,
     marginBottom: 14,
   },
   sectionTitle: {
