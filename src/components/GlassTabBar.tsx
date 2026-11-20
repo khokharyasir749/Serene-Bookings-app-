@@ -197,6 +197,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 9,
     gap: 6,
+    borderWidth: 1,
+    borderColor: C.goldLine,
     ...shadow.pill,
   },
   pillInactive: {
@@ -217,6 +219,8 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: C.goldLine,
     ...shadow.pill,
   },
   topHit: {

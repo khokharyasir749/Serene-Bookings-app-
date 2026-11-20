@@ -10,9 +10,9 @@ import { areaRangeOf, REVIEW_SCORE, type RoomType } from '@/data/catalog';
 import { availability, lowestQuote, money, plural, type Stay } from '@/lib/stay';
 import { C, FONTS, shadow } from '@/theme';
 
-// Shakuro-style "Popular hotels" apartment card:
-// Large rounded photo with top-right floating heart, bold title, star rating + reviews + distance,
-// soft pill badges ("Free cancellation", "Breakfast included"), and bold price per night + stay total.
+// Luxury Serene Heights Residence Card with Dribbble layout:
+// Rounded photo with floating outdoor space badge & gold favorite button,
+// refined typography, icon spec chips, policy pills, and nightly rate + stay total.
 function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
   const router = useRouter();
   const [favorite, setFavorite] = useState(false);
@@ -26,15 +26,16 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
       {/* Photo with floating tags & favorite button */}
       <View style={styles.imgWrap}>
         <Photo src={type.images[0]} style={styles.img} />
+
         {/* Top-left feature pill */}
         <View style={styles.tagWrap}>
           {bookable && av.available <= 3 ? (
-            <View style={styles.statusPill}>
-              <Text style={styles.statusPillText}>Only {av.available} left</Text>
+            <View style={[styles.statusPill, styles.scarcePill]}>
+              <Text style={styles.scarceText}>Only {av.available} left</Text>
             </View>
           ) : (
             <View style={styles.statusPill}>
-              <Ionicons name="sunny-outline" size={11} color={C.ink} style={{ marginRight: 3 }} />
+              <Ionicons name="sunny-outline" size={12} color={C.pine} style={{ marginRight: 4 }} />
               <Text style={styles.statusPillText}>{type.outdoorSpace}</Text>
             </View>
           )}
@@ -53,7 +54,7 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
           <Ionicons
             name={favorite ? 'heart' : 'heart-outline'}
             size={18}
-            color={favorite ? C.coral : C.ink}
+            color={favorite ? C.gold : C.ink}
           />
         </Pressable>
       </View>
@@ -66,10 +67,12 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
             {type.name.replace(' Apartment', '')}
           </Text>
           {bookable && (
-            <Text style={styles.price}>
-              {money(perNight)}
-              <Text style={styles.per}> / night</Text>
-            </Text>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={styles.price}>
+                {money(perNight)}
+                <Text style={styles.per}> / night</Text>
+              </Text>
+            </View>
           )}
         </View>
 
@@ -77,32 +80,53 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
         <View style={styles.metaRow}>
           <Rating score={REVIEW_SCORE.average} count={REVIEW_SCORE.count} size={12.5} />
           <Text style={styles.dot}>·</Text>
-          <Text style={styles.meta} numberOfLines={1}>Nathia Gali · 7,906 ft</Text>
+          <Ionicons name="location-outline" size={13} color={C.gold} />
+          <Text style={styles.meta} numberOfLines={1}>
+            Nathia Gali · 7,906 ft
+          </Text>
         </View>
 
-        {/* Feature Badges Pills */}
+        {/* Spec Chips Row */}
+        <View style={styles.specsRow}>
+          <View style={styles.specChip}>
+            <Ionicons name="resize-outline" size={13} color={C.ink70} />
+            <Text style={styles.specText}>{areaRangeOf(type.slug)}</Text>
+          </View>
+          <View style={styles.specChip}>
+            <Ionicons name="people-outline" size={13} color={C.ink70} />
+            <Text style={styles.specText}>{type.maxOccupancy} guests</Text>
+          </View>
+          <View style={styles.specChip}>
+            <Ionicons name="bed-outline" size={13} color={C.ink70} />
+            <Text style={styles.specText}>{type.bedType}</Text>
+          </View>
+        </View>
+
+        {/* Feature Badges */}
         <View style={styles.badgesRow}>
           <View style={styles.badgePill}>
+            <Ionicons name="checkmark-circle-outline" size={12} color={C.positive} style={{ marginRight: 3 }} />
             <Text style={styles.badgeText}>Free cancellation</Text>
           </View>
           <View style={styles.badgePill}>
-            <Text style={styles.badgeText}>Breakfast included</Text>
-          </View>
-          <View style={styles.badgePill}>
-            <Text style={styles.badgeText}>{areaRangeOf(type.slug)}</Text>
+            <Ionicons name="shield-checkmark-outline" size={12} color={C.gold} style={{ marginRight: 3 }} />
+            <Text style={styles.badgeText}>Pay at property</Text>
           </View>
         </View>
 
         {/* Total or sold out status */}
         {bookable ? (
           <View style={styles.foot}>
-            <Text style={styles.totalSub}>
-              {plural(best.q.nights, 'night')} · {type.maxOccupancy} guests
-            </Text>
-            <Text style={styles.total}>
-              {money(best.q.grandTotal)}
-              <Text style={styles.totalSuffix}> total</Text>
-            </Text>
+            <View>
+              <Text style={styles.totalSub}>
+                {plural(best.q.nights, 'night')} stay · {type.maxOccupancy} guests
+              </Text>
+              <Text style={styles.taxesText}>Taxes & fees included</Text>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={styles.total}>{money(best.q.grandTotal)}</Text>
+              <Text style={styles.totalSuffix}>total</Text>
+            </View>
           </View>
         ) : (
           <Text style={styles.unavailable}>
@@ -147,16 +171,27 @@ const styles = StyleSheet.create({
   statusPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 5.5,
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    borderWidth: 1,
+    borderColor: C.line,
     ...shadow.pill,
   },
   statusPillText: {
     fontFamily: FONTS.uiSemi,
-    fontSize: 11,
-    color: C.ink,
+    fontSize: 11.5,
+    color: C.pine,
+  },
+  scarcePill: {
+    backgroundColor: 'rgba(254, 242, 242, 0.95)',
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  scarceText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 11.5,
+    color: C.danger,
   },
   favBtn: {
     position: 'absolute',
@@ -166,6 +201,8 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: C.line,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.pill,
@@ -183,9 +220,10 @@ const styles = StyleSheet.create({
   },
   name: {
     flex: 1,
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.uiBold,
     fontSize: 18.5,
     lineHeight: 23,
+    letterSpacing: -0.3,
     color: C.ink,
   },
   price: {
@@ -214,47 +252,78 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: C.ink55,
   },
-  badgesRow: {
+  specsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 7,
     marginTop: 10,
   },
-  badgePill: {
+  specChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     paddingHorizontal: 9,
-    paddingVertical: 4.5,
+    paddingVertical: 5,
     borderRadius: 8,
-    backgroundColor: C.fill,
+    backgroundColor: C.sand,
+    borderWidth: 1,
+    borderColor: C.line,
   },
-  badgeText: {
+  specText: {
     fontFamily: FONTS.uiMedium,
     fontSize: 11.5,
     color: C.ink70,
   },
-  foot: {
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+  },
+  badgePill: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+    backgroundColor: C.warmSand,
+  },
+  badgeText: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 11,
+    color: C.ink70,
+  },
+  foot: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
     marginTop: 12,
     paddingTop: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#F0F2F4',
+    borderTopColor: C.line,
   },
   totalSub: {
-    fontFamily: FONTS.ui,
+    fontFamily: FONTS.uiSemi,
     fontSize: 12,
+    color: C.ink,
+  },
+  taxesText: {
+    fontFamily: FONTS.ui,
+    fontSize: 11,
     color: C.ink55,
+    marginTop: 1,
   },
   total: {
     fontFamily: FONTS.uiBold,
-    fontSize: 15,
+    fontSize: 16.5,
     color: C.ink,
     fontVariant: ['tabular-nums'],
   },
   totalSuffix: {
     fontFamily: FONTS.ui,
-    fontSize: 11.5,
+    fontSize: 11,
     color: C.ink55,
+    marginTop: -2,
   },
   unavailable: {
     fontFamily: FONTS.uiMedium,

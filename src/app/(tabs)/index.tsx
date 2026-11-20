@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,8 +12,8 @@ import Scrim from '@/components/Scrim';
 import { useScrollTop } from '@/components/ScrollTop';
 import { Text } from '@/components/Text';
 import { Photo, PressableScale } from '@/components/ui';
-import { FACTS, PROPERTY, ROOM_TYPES, type RoomType } from '@/data/catalog';
-import { fmtShort } from '@/lib/stay';
+import { PROPERTY, REASONS, ROOM_TYPES, type RoomType } from '@/data/catalog';
+import { fmtShort, guestsLabel } from '@/lib/stay';
 import { useBooking } from '@/state/booking';
 import { C, FONTS, S, shadow, T, tabBarSpace } from '@/theme';
 
@@ -50,12 +50,12 @@ const RESORT_HIGHLIGHTS = [
 ];
 
 const FILTER_PILLS = [
-  { key: 'all', label: 'All apartments', active: true, chevron: true },
-  { key: 'terrace', label: 'Private terrace', active: false, chevron: false },
-  { key: 'corner', label: 'Corner views', active: false, chevron: false },
-  { key: 'pool', label: 'Heated pool', active: false, chevron: false },
-  { key: 'dining', label: 'Rooftop dining', active: false, chevron: false },
-];
+  { key: 'all', label: 'All residences', icon: 'sparkles-outline' },
+  { key: 'terrace', label: 'Private terrace', icon: 'sunny-outline' },
+  { key: 'corner', label: 'Corner suites', icon: 'grid-outline' },
+  { key: 'family', label: 'Sleeps 4', icon: 'people-outline' },
+  { key: 'pool', label: 'Heated pool', icon: 'water-outline' },
+] as const;
 
 const EXPERIENCES = PROPERTY.experiences.slice(0, 8);
 
@@ -78,6 +78,19 @@ export default function Discover() {
     router.push({ pathname: '/stay', params: { tab: tab ?? 'dates', next: 'apartments' } });
   };
 
+  const filteredRooms = useMemo(() => {
+    if (selectedFilter === 'terrace') {
+      return ROOM_TYPES.filter((r) => r.outdoorSpace.includes('terrace'));
+    }
+    if (selectedFilter === 'corner') {
+      return ROOM_TYPES.filter((r) => r.slug.includes('corner'));
+    }
+    if (selectedFilter === 'family') {
+      return ROOM_TYPES.filter((r) => r.maxOccupancy >= 4);
+    }
+    return ROOM_TYPES;
+  }, [selectedFilter]);
+
   const userName = user?.firstName ? `${user.firstName}` : 'Guest';
 
   return (
@@ -96,35 +109,44 @@ export default function Discover() {
           paddingBottom: tabBarSpace(insets.bottom),
         }}
       >
-        {/* Serene Brand Lockup */}
+        {/* Serene Brand Lockup with Account Button */}
         <BrandHeader />
 
-        {/* Header: Greeting & Serene Tagline (Notification Bell removed as requested) */}
+        {/* Hero Editorial Header (Notification Bell removed) */}
         <View style={styles.headerRow}>
-          <Text style={styles.greetingTitle}>Welcome, {userName}</Text>
+          <View style={styles.eyebrowPill}>
+            <Ionicons name="sparkles" size={11} color={C.gold} style={{ marginRight: 4 }} />
+            <Text style={styles.eyebrowText}>7,906 FT · NATHIA GALI</Text>
+          </View>
+          <Text style={styles.greetingTitle}>Find your mountain sanctuary</Text>
           <Text style={styles.greetingSub}>
-            Pakistan's first & largest winter resort · 7,906 ft above Islamabad
+            Pakistan's first & largest winter resort, beside PAF Airbase Nathia Gali.
           </Text>
         </View>
 
-        {/* Serene Pill Search Bar */}
+        {/* Elevated Luxury Search Capsule */}
         <View style={styles.searchWrap}>
           <PressableScale onPress={() => openFilter('dates')} scaleTo={0.99} style={styles.searchBar}>
-            <Ionicons name="search-outline" size={20} color={C.gold} style={{ marginLeft: 4 }} />
+            <View style={styles.searchIconWell}>
+              <Ionicons name="search" size={17} color={C.pine} />
+            </View>
             <View style={styles.searchTextWrap}>
-              <Text style={styles.searchPlaceholder} numberOfLines={1}>
+              <Text style={styles.searchPrimary} numberOfLines={1}>
+                Serene Heights Nathia Gali
+              </Text>
+              <Text style={styles.searchSecondary} numberOfLines={1}>
                 {stay.checkIn && stay.checkOut
-                  ? `Nathia Gali · ${fmtShort(stay.checkIn)} – ${fmtShort(stay.checkOut)}`
-                  : 'Serene Heights · Search dates & residences...'}
+                  ? `${fmtShort(stay.checkIn)} – ${fmtShort(stay.checkOut)} · ${guestsLabel(stay.adults, stay.children)}`
+                  : 'Check availability · Choose dates & guests'}
               </Text>
             </View>
             <View style={styles.filterBtn}>
-              <Ionicons name="options-outline" size={17} color={C.pine} />
+              <Ionicons name="options-outline" size={18} color={C.pine} />
             </View>
           </PressableScale>
         </View>
 
-        {/* Filter Chips Row */}
+        {/* Filter Chips Carousel with Icons */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -137,38 +159,33 @@ export default function Discover() {
               <Pressable
                 key={pill.key}
                 onPress={() => {
-                  setSelectedFilter(pill.key);
-                  if (pill.key === 'all') {
-                    openFilter('dates');
-                  } else if (pill.key === 'pool' || pill.key === 'dining') {
+                  if (pill.key === 'pool') {
                     router.push('/amenities');
                   } else {
-                    router.navigate('/apartments');
+                    setSelectedFilter(pill.key);
                   }
                 }}
                 style={({ pressed }) => [
                   styles.chip,
                   isActive ? styles.chipActive : styles.chipInactive,
-                  pressed && { opacity: 0.8 },
+                  pressed && { opacity: 0.85 },
                 ]}
               >
+                <Ionicons
+                  name={pill.icon as any}
+                  size={14}
+                  color={isActive ? C.sand : C.ink70}
+                  style={{ marginRight: 6 }}
+                />
                 <Text style={[styles.chipText, isActive ? styles.chipTextActive : styles.chipTextInactive]}>
                   {pill.label}
                 </Text>
-                {pill.chevron && (
-                  <Ionicons
-                    name="chevron-down"
-                    size={13}
-                    color={isActive ? C.sand : C.ink}
-                    style={{ marginLeft: 3 }}
-                  />
-                )}
               </Pressable>
             );
           })}
         </ScrollView>
 
-        {/* Mountain Highlights / Seasons Carousel */}
+        {/* Mountain Highlights & Seasons Carousel */}
         <View style={styles.sectionHeadRow}>
           <View>
             <Text style={styles.sectionHeadTitle}>Resort highlights</Text>
@@ -194,8 +211,9 @@ export default function Discover() {
             >
               <Photo src={item.image} style={StyleSheet.absoluteFill} />
               <Scrim bottom={0.7} />
-              {/* Top badge pill */}
+              {/* Top frosted badge */}
               <View style={styles.recentBadge}>
+                <Ionicons name="sparkles" size={10} color={C.gold} style={{ marginRight: 4 }} />
                 <Text style={styles.recentBadgeText}>{item.badge}</Text>
               </View>
               <View style={{ flex: 1 }} />
@@ -208,7 +226,7 @@ export default function Discover() {
           ))}
         </ScrollView>
 
-        {/* Serene Resort Glance Bar */}
+        {/* Serene Resort Glance Metric Bar */}
         <View style={styles.glance}>
           <View style={styles.glanceItem}>
             <Text style={styles.glanceNum}>7,906 ft</Text>
@@ -228,10 +246,10 @@ export default function Discover() {
           </View>
         </View>
 
-        {/* Popular Residences (All 5 Serene Apartment Types) */}
+        {/* Curated Residences Showcase */}
         <View style={[styles.sectionHeadRow, { marginTop: 28 }]}>
           <View>
-            <Text style={styles.sectionHeadTitle}>Popular residences</Text>
+            <Text style={styles.sectionHeadTitle}>Curated residences</Text>
             <Text style={styles.sectionHeadSub}>Furnished hotel-apartments with private balconies</Text>
           </View>
           <Pressable onPress={() => router.navigate('/apartments')} hitSlop={8}>
@@ -239,18 +257,18 @@ export default function Discover() {
           </Pressable>
         </View>
 
-        {/* Vertical list of Serene Room Cards */}
+        {/* Room Cards List */}
         <View style={styles.roomsList}>
-          {ROOM_TYPES.map((type) => (
+          {filteredRooms.map((type) => (
             <RoomCard key={type.slug} type={type} stay={stay} />
           ))}
         </View>
 
-        {/* Resort facilities / Experiences carousel */}
+        {/* Resort Facilities & Experiences */}
         <View style={[styles.sectionHeadRow, { marginTop: 20 }]}>
           <View>
             <Text style={styles.sectionHeadTitle}>Resort facilities</Text>
-            <Text style={styles.sectionHeadSub}>Heated pool, dining & wellness at 7,906 ft</Text>
+            <Text style={styles.sectionHeadSub}>Glass-roof pool, dining & wellness at 7,906 ft</Text>
           </View>
           <Pressable onPress={() => router.push('/amenities')} hitSlop={8}>
             <Text style={styles.sectionHeadAction}>50+ facilities</Text>
@@ -264,16 +282,47 @@ export default function Discover() {
           contentContainerStyle={styles.expScroll}
         >
           {EXPERIENCES.map((e) => (
-            <View key={e.title} style={styles.expCard}>
+            <PressableScale
+              key={e.title}
+              onPress={() => router.push('/amenities')}
+              scaleTo={0.97}
+              style={styles.expCard}
+            >
               <Photo src={e.image} style={StyleSheet.absoluteFill} />
               <Scrim bottom={0.65} />
               <View style={{ flex: 1 }} />
               <Text numberOfLines={2} style={styles.expTitle}>
                 {e.title}
               </Text>
-            </View>
+            </PressableScale>
           ))}
         </ScrollView>
+
+        {/* Why Serene Heights Editorial Cards */}
+        <View style={[styles.sectionHeadRow, { marginTop: 26 }]}>
+          <View>
+            <Text style={styles.sectionHeadTitle}>Why Serene Heights</Text>
+            <Text style={styles.sectionHeadSub}>A mountain resort designed for year-round luxury</Text>
+          </View>
+        </View>
+
+        <View style={styles.reasonsList}>
+          {REASONS.map((r, i) => (
+            <View
+              key={r.label}
+              style={[
+                styles.reasonCard,
+                i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+              ]}
+            >
+              <Photo src={r.image} style={styles.reasonPhoto} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.reasonLabel}>{r.label}</Text>
+                <Text style={styles.reasonTitle}>{r.title}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
 
         {/* Luxury Footer */}
         <LuxuryFooter bottomSpace={16} />
@@ -291,11 +340,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: S.gutter,
     marginTop: 20,
   },
+  eyebrowPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: C.warmSand,
+    borderWidth: 1,
+    borderColor: C.line,
+    marginBottom: 8,
+  },
+  eyebrowText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    color: C.ink,
+  },
   greetingTitle: {
     fontFamily: FONTS.display,
-    fontSize: 27,
-    lineHeight: 31,
-    letterSpacing: -0.3,
+    fontSize: 30,
+    lineHeight: 34,
+    letterSpacing: -0.4,
     color: C.ink,
   },
   greetingSub: {
@@ -303,15 +370,15 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     lineHeight: 19,
     color: C.ink70,
-    marginTop: 4,
+    marginTop: 5,
   },
   searchWrap: {
     paddingHorizontal: S.gutter,
     marginTop: 18,
   },
   searchBar: {
-    height: 54,
-    borderRadius: 27,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: C.pureWhite,
     borderWidth: 1,
     borderColor: C.line,
@@ -320,19 +387,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     ...shadow.pill,
   },
+  searchIconWell: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: C.sand,
+    borderWidth: 1,
+    borderColor: C.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   searchTextWrap: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
   },
-  searchPlaceholder: {
-    fontFamily: FONTS.uiMedium,
-    fontSize: 13.5,
-    color: C.ink70,
+  searchPrimary: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    color: C.ink,
+  },
+  searchSecondary: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+    marginTop: 2,
   },
   filterBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: C.warmSand,
     borderWidth: 1,
     borderColor: C.line,
@@ -341,15 +424,15 @@ const styles = StyleSheet.create({
   },
   chipsScroll: {
     paddingHorizontal: S.gutter,
-    paddingTop: 14,
+    paddingTop: 16,
     gap: 8,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 38,
+    height: 40,
     borderRadius: 999,
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
   },
   chipActive: {
     backgroundColor: C.pine,
@@ -399,8 +482,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   recentCard: {
-    width: 170,
-    height: 200,
+    width: 175,
+    height: 205,
     borderRadius: 22,
     overflow: 'hidden',
     backgroundColor: C.snow,
@@ -411,6 +494,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     left: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
@@ -476,8 +561,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   expCard: {
-    width: 150,
-    height: 190,
+    width: 155,
+    height: 195,
     borderRadius: 20,
     overflow: 'hidden',
     padding: 12,
@@ -490,5 +575,38 @@ const styles = StyleSheet.create({
     fontSize: 14.5,
     lineHeight: 18,
     color: C.pureWhite,
+  },
+  reasonsList: {
+    marginHorizontal: S.gutter,
+    backgroundColor: C.pureWhite,
+    borderRadius: S.card,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: C.line,
+    ...shadow.card,
+  },
+  reasonCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingVertical: 14,
+  },
+  reasonPhoto: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+  },
+  reasonLabel: {
+    fontSize: 11.5,
+    color: C.gold,
+    fontFamily: FONTS.uiSemi,
+    letterSpacing: 0.3,
+  },
+  reasonTitle: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 14,
+    lineHeight: 18,
+    color: C.ink,
+    marginTop: 2,
   },
 });
