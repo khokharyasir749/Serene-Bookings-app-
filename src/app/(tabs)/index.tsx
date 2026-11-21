@@ -195,15 +195,16 @@ export default function Discover() {
 
         {/* Resort Architecture & Floor Plans Feature Card */}
         <View style={styles.storyCard}>
-          {/* Architectural Background Photography */}
-          <Photo src="/images/resort/tower-sunset-forest.jpg" style={StyleSheet.absoluteFill} />
+          {/* Architectural Background Photography - Pure & Crystal Clear */}
+          <Photo src="/images/resort/tower-front.jpg" style={StyleSheet.absoluteFill} />
           <LinearGradient
             colors={[
-              'rgba(18, 53, 36, 0.42)',
-              'rgba(12, 38, 26, 0.84)',
-              'rgba(8, 22, 15, 0.97)',
+              'rgba(0, 0, 0, 0)',
+              'rgba(0, 0, 0, 0.05)',
+              'rgba(0, 0, 0, 0.62)',
+              'rgba(0, 0, 0, 0.88)',
             ]}
-            locations={[0, 0.42, 0.98]}
+            locations={[0, 0.44, 0.74, 1]}
             style={StyleSheet.absoluteFill}
           />
 
@@ -213,7 +214,7 @@ export default function Discover() {
               <Text style={styles.storyBadgeText}>ARCHITECTURE & DESIGN</Text>
             </View>
             <View style={styles.storyPillMini}>
-              <Text style={styles.storyPillMiniText}>G1 – 8TH FLOOR · BALCONIES</Text>
+              <Text style={styles.storyPillMiniText}>G1 – 8TH FLOOR</Text>
             </View>
           </View>
 
@@ -348,12 +349,13 @@ export default function Discover() {
                 <Text style={styles.reasonTitle}>{r.title}</Text>
                 <Text numberOfLines={2} style={styles.reasonText}>{r.text}</Text>
               </View>
+              <ChevronRight size={16} color={C.ink55} />
             </View>
           ))}
         </View>
 
         {/* Footer: concierge + contact */}
-        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom)} />
+        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 16} />
       </ScrollView>
     </View>
   );
@@ -650,9 +652,9 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     overflow: 'hidden',
     borderWidth: 1.2,
-    borderColor: 'rgba(200, 164, 106, 0.35)',
+    borderColor: 'rgba(200, 164, 106, 0.4)',
     padding: 22,
-    backgroundColor: C.pine,
+    backgroundColor: '#181A1B',
     ...shadow.cardHover,
   },
   storyHeader: {
@@ -715,12 +717,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 11,
-    paddingVertical: 6.5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.14)',
+    borderColor: 'rgba(255, 255, 255, 0.32)',
   },
   specChipText: {
     fontFamily: FONTS.uiMedium,
@@ -767,7 +769,9 @@ const styles = StyleSheet.create({
     backgroundColor: C.pureWhite,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: C.line,
+    borderColor: 'rgba(200, 164, 106, 0.28)',
+    minHeight: 215,
+    justifyContent: 'space-between',
     ...shadow.card,
   },
   reviewCardTop: {
@@ -860,9 +864,10 @@ const styles = StyleSheet.create({
     backgroundColor: C.pureWhite,
     borderRadius: 24,
     paddingHorizontal: 16,
-    paddingVertical: 4,
+    paddingVertical: 6,
     borderWidth: 1,
     borderColor: C.line,
+    marginBottom: 10,
     ...shadow.card,
   },
   reason: {
@@ -872,8 +877,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   reasonPhoto: {
-    width: 66,
-    height: 66,
+    width: 72,
+    height: 72,
     borderRadius: 16,
   },
   reasonLabel: {
