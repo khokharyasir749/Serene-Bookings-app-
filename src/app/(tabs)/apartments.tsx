@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -130,33 +131,34 @@ export default function Apartments() {
   );
 
   return (
-    <View style={{ flex: 1 }}>
-    <FlatList
-      ref={ref}
-      data={types}
-      extraData={`${filters.join(',')}|${sort}`}
-      keyExtractor={(t) => t.slug}
-      renderItem={renderItem}
-      ListHeaderComponent={header}
-      ItemSeparatorComponent={Gap}
-      ListEmptyComponent={
-        <View style={styles.empty}>
-          <Ionicons name="options-outline" size={22} color={C.pine} />
-          <Text style={[T.h3, { marginTop: 10 }]}>No apartments match</Text>
-          <Text style={[T.small, { marginTop: 4, textAlign: 'center' }]}>Try removing a filter or changing your dates.</Text>
-          <Button label="Reset filters" onPress={reset} style={{ marginTop: 16, alignSelf: 'stretch' }} />
-        </View>
-      }
-      onScroll={onScroll}
-      scrollEventThrottle={64}
-      initialNumToRender={2}
-      maxToRenderPerBatch={2}
-      windowSize={5}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      style={{ flex: 1, backgroundColor: C.sand }}
-      contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 32) }}
-    />
+    <View style={{ flex: 1, backgroundColor: C.sand }}>
+      <StatusBar style="dark" />
+      <FlatList
+        ref={ref}
+        data={types}
+        extraData={`${filters.join(',')}|${sort}`}
+        keyExtractor={(t) => t.slug}
+        renderItem={renderItem}
+        ListHeaderComponent={header}
+        ItemSeparatorComponent={Gap}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Ionicons name="options-outline" size={22} color={C.pine} />
+            <Text style={[T.h3, { marginTop: 10 }]}>No apartments match</Text>
+            <Text style={[T.small, { marginTop: 4, textAlign: 'center' }]}>Try removing a filter or changing your dates.</Text>
+            <Button label="Reset filters" onPress={reset} style={{ marginTop: 16, alignSelf: 'stretch' }} />
+          </View>
+        }
+        onScroll={onScroll}
+        scrollEventThrottle={64}
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, backgroundColor: C.sand }}
+        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 150 }}
+      />
     <Sheet open={sortOpen} onClose={() => setSortOpen(false)} title="Sort stays">
       <View style={{ paddingHorizontal: S.gutter, paddingBottom: 8 }}>
         {SORTS.map((o) => {

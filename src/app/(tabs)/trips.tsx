@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CalendarPlus, ChevronRight } from '@/components/icons';
 import { useState } from 'react';
@@ -27,8 +28,9 @@ export default function Trips() {
   const list = bookings.filter((b) => tabOf(b) === tab);
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView ref={ref} onScroll={onScroll} scrollEventThrottle={64} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 32), paddingHorizontal: S.gutter }} showsVerticalScrollIndicator={false}>
+    <View style={{ flex: 1, backgroundColor: C.sand }}>
+      <StatusBar style="dark" />
+      <ScrollView ref={ref} onScroll={onScroll} scrollEventThrottle={64} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 150, paddingHorizontal: S.gutter }} showsVerticalScrollIndicator={false}>
         <View style={{ marginHorizontal: -S.gutter }}>
           <BrandHeader />
         </View>

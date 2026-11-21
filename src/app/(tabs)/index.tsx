@@ -60,27 +60,27 @@ const EXPERIENCES = [
 
 const EDITORIAL_PILLARS = [
   {
-    badge: '7,906 FT ELEVATION',
+    badge: '7,906 ft Elevation',
     icon: 'trail-sign-outline' as const,
-    kicker: 'REAL MOUNTAIN AIR',
+    kicker: '01 · REAL MOUNTAIN AIR',
     title: '7,906 ft above the noise',
     text: 'Crisp pine forest air, cool summers, snowy winters, and unbroken valley views from every terrace.',
     image: '/images/interiors/window-view.jpg',
     chips: ['Pine Valley Canopy', '2 Hrs from ISB'],
   },
   {
-    badge: 'ALL-YEAR RESORT',
+    badge: 'All-Year Resort',
     icon: 'snow-outline' as const,
-    kicker: 'MADE FOR EVERY SEASON',
+    kicker: '02 · MADE FOR EVERY SEASON',
     title: "Pakistan's first winter resort",
     text: 'Heated glass infinity pool, cedarwood sauna, private snow ski slope, and cloud-level rooftop dining.',
     image: '/images/resort/glass-roof-pool.jpg',
     chips: ['Heated Pool', 'Ski Slope'],
   },
   {
-    badge: 'SERVICED LIVING',
+    badge: 'Serviced Living',
     icon: 'key-outline' as const,
-    kicker: 'FULLY MANAGED LIVING',
+    kicker: '03 · FULLY MANAGED LIVING',
     title: 'A home with a hotel behind it',
     text: 'Daily housekeeping, 24/7 concierge, in-room dining, and underfloor radiant heating throughout.',
     image: '/images/interiors/living-room-wide.jpg',
@@ -95,14 +95,24 @@ export default function Discover() {
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [darkStatus, setDarkStatus] = useState(false);
   const resW = Math.min(312, Math.round(width * 0.78));
-  const reviewW = Math.min(340, Math.round(width * 0.86));
-  const pillarW = Math.min(320, Math.round(width * 0.82));
+  const reviewW = Math.min(315, Math.round(width * 0.80));
 
   useFocusEffect(
     useCallback(() => {
       setScrollEnabled(true);
     }, [])
+  );
+
+  const handleScroll = useCallback(
+    (e: any) => {
+      onScroll(e);
+      const y = e.nativeEvent?.contentOffset?.y ?? 0;
+      if (y > 140 && !darkStatus) setDarkStatus(true);
+      else if (y <= 140 && darkStatus) setDarkStatus(false);
+    },
+    [onScroll, darkStatus]
   );
 
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
@@ -111,17 +121,17 @@ export default function Discover() {
 
   return (
     <View style={{ flex: 1, backgroundColor: C.sand }}>
-      <StatusBar style="light" />
+      <StatusBar style={darkStatus ? 'dark' : 'light'} />
       <ScrollView
         ref={ref}
         style={{ flex: 1 }}
         scrollEnabled={scrollEnabled}
         nestedScrollEnabled
         keyboardShouldPersistTaps="handled"
-        onScroll={onScroll}
+        onScroll={handleScroll}
         scrollEventThrottle={64}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 0, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 36) }}
+        contentContainerStyle={{ paddingTop: 0, paddingBottom: 150 }}
       >
         {/* Full-Bleed Panoramic Mountain Hero Stage */}
         <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
@@ -289,12 +299,19 @@ export default function Discover() {
           </View>
         </View>
 
-        {/* Verified Guest Impressions Carousel */}
+        {/* Verified Guest Impressions Section */}
         <View style={styles.reviewSection}>
-          <SectionHead
-            title="Guest Impressions"
-            sub={`${REVIEW_SCORE.average.toFixed(1)} / 5.0 · Exceptional · ${REVIEW_SCORE.count} verified reviews`}
-          />
+          <View style={styles.reviewsHeaderRow}>
+            <View>
+              <Text style={styles.reviewsEyebrow}>GUEST IMPRESSIONS</Text>
+              <Text style={styles.reviewsTitle}>Moments at Serene Heights</Text>
+            </View>
+            <View style={styles.ratingSummaryPill}>
+              <Ionicons name="star" size={11} color={C.gold} style={{ marginRight: 4 }} />
+              <Text style={styles.ratingSummaryText}>{`${REVIEW_SCORE.average.toFixed(1)} · ${REVIEW_SCORE.count} verified stays`}</Text>
+            </View>
+          </View>
+
           <FlatList
             horizontal
             nestedScrollEnabled
@@ -312,18 +329,18 @@ export default function Discover() {
                       <Ionicons
                         key={k}
                         name={k < item.rating ? 'star' : 'star-outline'}
-                        size={13.5}
+                        size={12.5}
                         color={C.gold}
                       />
                     ))}
                   </View>
                   <View style={styles.verifiedBadge}>
-                    <Ionicons name="shield-checkmark" size={11} color={C.positive} style={{ marginRight: 3.5 }} />
+                    <Ionicons name="shield-checkmark" size={10.5} color={C.positive} style={{ marginRight: 3.5 }} />
                     <Text style={styles.verifiedText}>Verified stay</Text>
                   </View>
                 </View>
 
-                {/* Review Headline & Body with Elegant Line-Height */}
+                {/* Review Headline & Body with Tight 3-Line Un-truncated Copy */}
                 <View style={styles.reviewContent}>
                   <Text style={styles.reviewTitle}>"{item.title}"</Text>
                   <Text numberOfLines={3} style={styles.reviewBody}>{item.body}</Text>
@@ -362,92 +379,103 @@ export default function Discover() {
           />
         </View>
 
-        {/* Why Serene Heights Signature Alpine Editorial Showcase */}
+        {/* Why Serene Heights — Curated Vertical Editorial Showcase */}
         <SectionHead
           title="Why Serene Heights"
           sub="Crafted for year-round alpine luxury"
         />
-        <FlatList
-          horizontal
-          nestedScrollEnabled
-          data={EDITORIAL_PILLARS}
-          keyExtractor={(p) => p.kicker}
-          renderItem={({ item: p, index }) => (
-            <PressableScale
-              onPress={() => router.push('/amenities')}
-              scaleTo={0.98}
-              style={[styles.pillarCard, { width: pillarW }]}
-            >
-              {/* Full-bleed Photo with Cinematic Gradient Scrim */}
-              <Photo src={p.image} style={StyleSheet.absoluteFill} />
+
+        <View style={styles.editorialShowcase}>
+          {/* Flagship 16:10 Hero Feature Card on Top (Pillar 1) */}
+          <PressableScale
+            onPress={() => router.push('/amenities')}
+            scaleTo={0.985}
+            style={styles.heroFeatureCard}
+          >
+            <View style={styles.heroFeaturePhotoWrap}>
+              <Photo src={EDITORIAL_PILLARS[0].image} style={StyleSheet.absoluteFill} />
               <LinearGradient
-                colors={[
-                  'rgba(0, 0, 0, 0.4)',
-                  'transparent',
-                  'rgba(18, 53, 36, 0.55)',
-                  'rgba(10, 28, 18, 0.94)',
-                ]}
-                locations={[0, 0.25, 0.6, 1]}
+                colors={['rgba(0, 0, 0, 0.25)', 'transparent', 'rgba(12, 26, 19, 0.45)']}
+                locations={[0, 0.35, 1]}
                 style={StyleSheet.absoluteFill}
               />
+              {/* Subtle top-left frosted glass pill */}
+              <View style={styles.featureBadge}>
+                <BlurView intensity={65} tint="light" style={StyleSheet.absoluteFill} />
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.45)', 'rgba(255, 255, 255, 0.2)']}
+                  style={StyleSheet.absoluteFill}
+                />
+                <Ionicons name={EDITORIAL_PILLARS[0].icon} size={11} color={C.pine} style={{ marginRight: 4.5 }} />
+                <Text style={styles.featureBadgeText}>{EDITORIAL_PILLARS[0].badge}</Text>
+              </View>
+            </View>
 
-              {/* Floating Top Crystal Badge */}
-              <View style={styles.pillarTopRow}>
-                <View style={styles.pillarBadge}>
-                  <BlurView intensity={70} tint="light" style={StyleSheet.absoluteFill} />
+            {/* Crisp Ivory Card Surface Below Photo */}
+            <View style={styles.heroFeatureBody}>
+              <Text style={styles.featureKicker}>{EDITORIAL_PILLARS[0].kicker}</Text>
+              <Text style={styles.heroFeatureTitle}>{EDITORIAL_PILLARS[0].title}</Text>
+              <Text style={styles.featureDesc}>{EDITORIAL_PILLARS[0].text}</Text>
+
+              <View style={styles.featureChipsRow}>
+                {EDITORIAL_PILLARS[0].chips.map((c) => (
+                  <View key={c} style={styles.featureChip}>
+                    <Ionicons name="sparkles" size={9.5} color={C.gold} style={{ marginRight: 4 }} />
+                    <Text style={styles.featureChipText}>{c}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </PressableScale>
+
+          {/* Secondary Editorial Cards (Pillars 2 & 3) in Stacked Layout */}
+          {EDITORIAL_PILLARS.slice(1).map((p) => (
+            <PressableScale
+              key={p.kicker}
+              onPress={() => router.push('/amenities')}
+              scaleTo={0.985}
+              style={styles.subFeatureCard}
+            >
+              <View style={styles.subFeaturePhotoWrap}>
+                <Photo src={p.image} style={StyleSheet.absoluteFill} />
+                <LinearGradient
+                  colors={['rgba(0, 0, 0, 0.22)', 'transparent', 'rgba(12, 26, 19, 0.4)']}
+                  locations={[0, 0.35, 1]}
+                  style={StyleSheet.absoluteFill}
+                />
+                {/* Subtle top-left frosted glass pill */}
+                <View style={styles.featureBadge}>
+                  <BlurView intensity={65} tint="light" style={StyleSheet.absoluteFill} />
                   <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.38)', 'rgba(255, 255, 255, 0.12)']}
+                    colors={['rgba(255, 255, 255, 0.45)', 'rgba(255, 255, 255, 0.2)']}
                     style={StyleSheet.absoluteFill}
                   />
-                  <Ionicons name={p.icon} size={11} color={C.gold} style={{ marginRight: 4.5 }} />
-                  <Text style={styles.pillarBadgeText}>{p.badge}</Text>
+                  <Ionicons name={p.icon} size={11} color={C.pine} style={{ marginRight: 4.5 }} />
+                  <Text style={styles.featureBadgeText}>{p.badge}</Text>
                 </View>
               </View>
 
-              <View style={{ flex: 1 }} />
+              {/* Crisp Ivory Card Surface Below Photo */}
+              <View style={styles.subFeatureBody}>
+                <Text style={styles.featureKicker}>{p.kicker}</Text>
+                <Text style={styles.subFeatureTitle}>{p.title}</Text>
+                <Text style={styles.featureDesc}>{p.text}</Text>
 
-              {/* Bottom Editorial Content Floating Over Cinematic Photo */}
-              <View style={styles.pillarOverlayContent}>
-                <View style={styles.pillarKickerRow}>
-                  <Text style={styles.pillarKickerIndex}>0{index + 1}</Text>
-                  <View style={styles.pillarKickerDot} />
-                  <Text style={styles.pillarKicker}>{p.kicker}</Text>
-                </View>
-
-                <Text numberOfLines={1} style={styles.pillarTitle}>{p.title}</Text>
-                <Text numberOfLines={2} style={styles.pillarText}>{p.text}</Text>
-
-                {/* Micro spec chips inside sheer crystal glass */}
-                <View style={styles.pillarChipsRow}>
+                <View style={styles.featureChipsRow}>
                   {p.chips.map((c) => (
-                    <View key={c} style={styles.pillarChip}>
+                    <View key={c} style={styles.featureChip}>
                       <Ionicons name="sparkles" size={9.5} color={C.gold} style={{ marginRight: 4 }} />
-                      <Text style={styles.pillarChipText}>{c}</Text>
+                      <Text style={styles.featureChipText}>{c}</Text>
                     </View>
                   ))}
                 </View>
-
-                {/* Sleek action link */}
-                <View style={styles.pillarActionRow}>
-                  <Text style={styles.pillarActionText}>Explore Experience</Text>
-                  <View style={styles.pillarActionIcon}>
-                    <Ionicons name="arrow-forward" size={11} color={C.cream} />
-                  </View>
-                </View>
               </View>
             </PressableScale>
-          )}
-          showsHorizontalScrollIndicator={false}
-          decelerationRate="fast"
-          snapToInterval={pillarW + 14}
-          initialNumToRender={3}
-          windowSize={3}
-          style={{ marginBottom: 12 }}
-          contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
-        />
+          ))}
+        </View>
 
         {/* Footer: concierge + contact */}
-        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 24} />
+        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 32} />
       </ScrollView>
     </View>
   );
@@ -977,29 +1005,71 @@ const styles = StyleSheet.create({
     color: C.gold,
     fontVariant: ['tabular-nums'],
   },
-  pillarCard: {
-    height: 330,
-    borderRadius: 26,
-    overflow: 'hidden',
+  reviewsHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    paddingHorizontal: S.gutter,
+    marginTop: 34,
+    marginBottom: 16,
+  },
+  reviewsEyebrow: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.6,
+    color: C.gold,
+  },
+  reviewsTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 24,
+    lineHeight: 28,
+    color: C.pine,
+    marginTop: 3,
+  },
+  ratingSummaryPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 11,
+    paddingVertical: 5.5,
+    borderRadius: 999,
     backgroundColor: C.pine,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.35)',
-    shadowColor: '#07160E',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 22,
-    elevation: 6,
-    position: 'relative',
-    justifyContent: 'space-between',
+    ...shadow.pill,
   },
-  pillarTopRow: {
-    padding: 14,
-    alignItems: 'flex-start',
-    zIndex: 2,
+  ratingSummaryText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10.5,
+    letterSpacing: 0.5,
+    color: C.cream,
   },
-  pillarBadge: {
-    alignSelf: 'flex-start',
+  editorialShowcase: {
+    paddingHorizontal: S.gutter,
+    gap: 16,
+    marginBottom: 8,
+  },
+  heroFeatureCard: {
+    borderRadius: 24,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.25)',
+    overflow: 'hidden',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 18,
+    elevation: 3,
+  },
+  heroFeaturePhotoWrap: {
+    width: '100%',
+    height: 205,
+    backgroundColor: C.pine,
     position: 'relative',
+  },
+  featureBadge: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 9.5,
@@ -1007,103 +1077,89 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.45)',
+    borderColor: 'rgba(255, 255, 255, 0.55)',
   },
-  pillarBadgeText: {
+  featureBadgeText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 1.1,
-    color: '#FFFFFF',
+    fontSize: 9.5,
+    letterSpacing: 0.8,
+    color: C.pine,
   },
-  pillarOverlayContent: {
-    paddingHorizontal: 18,
-    paddingBottom: 18,
-    zIndex: 2,
+  heroFeatureBody: {
+    padding: 18,
   },
-  pillarKickerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  pillarKickerIndex: {
+  featureKicker: {
     fontFamily: FONTS.uiBold,
-    fontSize: 9,
-    letterSpacing: 1.2,
-    color: C.gold,
-  },
-  pillarKickerDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: C.gold,
-    marginHorizontal: 6,
-  },
-  pillarKicker: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
+    fontSize: 9.5,
     letterSpacing: 1.5,
     color: C.gold,
   },
-  pillarTitle: {
+  heroFeatureTitle: {
     fontFamily: FONTS.display,
-    fontSize: 21,
-    lineHeight: 25,
+    fontSize: 23,
+    lineHeight: 27,
     letterSpacing: -0.2,
-    color: '#FFFFFF',
+    color: C.pine,
     marginTop: 4,
   },
-  pillarText: {
-    fontFamily: FONTS.ui,
-    fontSize: 12,
-    lineHeight: 17,
-    color: 'rgba(245, 242, 235, 0.88)',
-    marginTop: 5,
+  subFeatureTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 20,
+    lineHeight: 24,
+    letterSpacing: -0.1,
+    color: C.pine,
+    marginTop: 4,
   },
-  pillarChipsRow: {
+  featureDesc: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    lineHeight: 19.5,
+    color: C.ink70,
+    marginTop: 6,
+  },
+  featureChipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(200, 164, 106, 0.25)',
-  },
-  pillarChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
-    borderRadius: 7,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.24)',
-  },
-  pillarChipText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 10,
-    color: '#FFFFFF',
-  },
-  pillarActionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 7,
     marginTop: 12,
-    paddingTop: 10,
+    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(200, 164, 106, 0.25)',
+    borderTopColor: C.line,
   },
-  pillarActionText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 9.5,
-    letterSpacing: 1.2,
-    color: C.gold,
-    textTransform: 'uppercase',
-  },
-  pillarActionIcon: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(200, 164, 106, 0.2)',
+  featureChip: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 8.5,
+    paddingVertical: 4,
+    borderRadius: 7,
+    backgroundColor: 'rgba(200, 164, 106, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.22)',
+  },
+  featureChipText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 10.5,
+    color: C.pine,
+  },
+  subFeatureCard: {
+    borderRadius: 24,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.22)',
+    overflow: 'hidden',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 14,
+    elevation: 2,
+  },
+  subFeaturePhotoWrap: {
+    width: '100%',
+    height: 155,
+    backgroundColor: C.pine,
+    position: 'relative',
+  },
+  subFeatureBody: {
+    padding: 18,
   },
 });
