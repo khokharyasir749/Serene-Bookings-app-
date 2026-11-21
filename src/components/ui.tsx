@@ -1,7 +1,7 @@
 import { Image, type ImageStyle } from 'expo-image';
 import { Check, ChevronLeft, Minus, Plus, X } from '@/components/icons';
 import { memo, useEffect, useState, type ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Modal, Pressable, StyleSheet, View, type GestureResponderEvent, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { Text } from '@/components/Text';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,7 +55,23 @@ export const Photo = memo(function Photo({ src, style, contain }: { src: string;
 // Layout props that must sit on the outer Pressable (so `flex`, `alignSelf` and margins work in a row or column).
 const OUTER_KEYS = ['flex', 'flexGrow', 'flexShrink', 'flexBasis', 'alignSelf', 'width', 'margin', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'marginHorizontal', 'marginVertical'] as const;
 
-export function PressableScale({ children, onPress, style, disabled, scaleTo = 0.97 }: { children: ReactNode; onPress?: () => void; style?: StyleProp<ViewStyle>; disabled?: boolean; scaleTo?: number }) {
+export function PressableScale({
+  children,
+  onPress,
+  style,
+  disabled,
+  scaleTo = 0.97,
+  accessibilityRole,
+  accessibilityLabel,
+}: {
+  children: ReactNode;
+  onPress?: (event?: GestureResponderEvent) => void;
+  style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
+  scaleTo?: number;
+  accessibilityRole?: PressableProps['accessibilityRole'];
+  accessibilityLabel?: string;
+}) {
   const s = useSharedValue(1);
   const a = useAnimatedStyle(() => ({ transform: [{ scale: s.get() }] }));
   const flat = (StyleSheet.flatten(style) ?? {}) as Record<string, unknown>;
@@ -67,6 +83,8 @@ export function PressableScale({ children, onPress, style, disabled, scaleTo = 0
     <Pressable
       disabled={disabled}
       onPress={onPress}
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel}
       style={outer as ViewStyle}
       onPressIn={() => s.set(withTiming(scaleTo, { duration: 120 }))}
       onPressOut={() => s.set(withSpring(1, { damping: 18, stiffness: 260 }))}>
