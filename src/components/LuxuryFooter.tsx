@@ -12,153 +12,27 @@ type Glyph = ComponentProps<typeof Ionicons>['name'];
 
 const open = (href: string) => void Linking.openURL(href).catch(() => {});
 
-interface LineMeta {
-  badge?: string;
-  badgeType?: 'live' | 'neutral';
-}
-
-const LINE_METAS: Record<string, LineMeta> = {
-  WhatsApp: { badge: 'Online · 24/7', badgeType: 'live' },
-  Reservations: { badge: 'Direct Line', badgeType: 'neutral' },
-  Email: { badge: 'Concierge Desk', badgeType: 'neutral' },
-};
-
-function ConciergeRow({
-  icon,
-  label,
-  value,
-  href,
-  last,
-}: {
-  icon: Glyph;
-  label: string;
-  value: string;
-  href: string;
-  last?: boolean;
-}) {
-  const meta = LINE_METAS[label];
-  const isWhatsapp = label === 'WhatsApp';
-
-  return (
-    <PressableScale
-      onPress={() => open(href)}
-      scaleTo={0.985}
-      style={[styles.conciergeRow, !last && styles.conciergeRowDivider]}
-      accessibilityRole="link"
-      accessibilityLabel={`${label}: ${value}`}
-    >
-      {/* Luxury Icon Well */}
-      <View style={[styles.iconWell, isWhatsapp && styles.iconWellWa]}>
-        <Ionicons
-          name={icon}
-          size={18}
-          color={isWhatsapp ? '#1D7348' : C.pine}
-        />
-      </View>
-
-      {/* Details Column */}
-      <View style={styles.rowDetails}>
-        <View style={styles.labelRow}>
-          <Text style={styles.rowLabel}>{label.toUpperCase()}</Text>
-          {meta?.badge && (
-            <View style={[styles.badge, meta.badgeType === 'live' ? styles.badgeLive : styles.badgeNeutral]}>
-              {meta.badgeType === 'live' && <View style={styles.liveDot} />}
-              <Text style={[styles.badgeText, meta.badgeType === 'live' ? styles.badgeLiveText : styles.badgeNeutralText]}>
-                {meta.badge}
-              </Text>
-            </View>
-          )}
-        </View>
-        <Text
-          style={[styles.rowValue, value.length > 30 && styles.rowValueSmall]}
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.75}
-        >
-          {value}
-        </Text>
-      </View>
-
-      {/* Trailing Chevron Disc */}
-      <View style={styles.trailingDisc}>
-        <Ionicons name="chevron-forward" size={14} color={C.pine} />
-      </View>
-    </PressableScale>
-  );
-}
-
-/** Luxury Portal Card for web links */
-function PortalCard({
-  icon,
-  label,
-  value,
-  href,
-  primary,
-  subtitle,
-}: {
-  icon: Glyph;
-  label: string;
-  value: string;
-  href: string;
-  primary?: boolean;
-  subtitle: string;
-}) {
-  return (
-    <PressableScale
-      onPress={() => open(href)}
-      scaleTo={0.985}
-      accessibilityRole="link"
-      accessibilityLabel={`${label}: ${value}`}
-      style={[
-        styles.portalCard,
-        primary ? styles.portalCardPrimary : styles.portalCardSecondary,
-      ]}
-    >
-      <View style={[styles.portalIconWell, primary ? styles.portalIconWellPrimary : styles.portalIconWellSecondary]}>
-        <Ionicons name={icon} size={20} color={primary ? C.gold : C.pine} />
-      </View>
-
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.portalLabel, { color: primary ? C.gold : C.ink55 }]}>
-          {label.toUpperCase()}
-        </Text>
-        <Text
-          style={[styles.portalValue, { color: primary ? C.cream : C.pine }]}
-          numberOfLines={1}
-        >
-          {value}
-        </Text>
-        <Text
-          style={[styles.portalSub, { color: primary ? 'rgba(236, 238, 237, 0.65)' : C.ink55 }]}
-          numberOfLines={1}
-        >
-          {subtitle}
-        </Text>
-      </View>
-
-      <View style={[styles.portalArrow, primary ? styles.portalArrowPrimary : styles.portalArrowSecondary]}>
-        <Ionicons
-          name="arrow-up-outline"
-          size={14}
-          color={primary ? C.gold : C.pine}
-          style={{ transform: [{ rotate: '45deg' }] }}
-        />
-      </View>
-    </PressableScale>
-  );
-}
-
-/** Discover's closing section: Flagship Luxury Concierge Lounge & Resort Portals */
+/**
+ * Flagship Alpine Concierge Lounge (Editorial Bento Architecture)
+ * Consolidates Online Reservations, WhatsApp, Phone, Email, Location & Group Portals
+ * into one cohesive, beautifully organized luxury suite.
+ */
 export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
   const currentYear = new Date().getFullYear();
 
+  const bookingSite = CONTACT.sites[0];
+  const groupSite = CONTACT.sites[1];
+  const whatsappLine = CONTACT.lines.find((l) => l.label === 'WhatsApp') ?? CONTACT.lines[0];
+  const phoneLine = CONTACT.lines.find((l) => l.label === 'Reservations') ?? CONTACT.lines[1];
+  const emailLine = CONTACT.lines.find((l) => l.label === 'Email') ?? CONTACT.lines[2];
+
   return (
-    <View style={[styles.wrap, { paddingBottom: bottomSpace + 40 }]}>
+    <View style={[styles.wrap, { paddingBottom: bottomSpace + 50 }]}>
       {/* Editorial Gold Ornament Divider */}
       <View style={styles.ornamentDivider}>
         <View style={styles.dividerLine} />
         <View style={styles.ornamentCenter}>
-          <Ionicons name="sparkles" size={12} color={C.gold} />
+          <Ionicons name="sparkles" size={11} color={C.gold} />
         </View>
         <View style={styles.dividerLine} />
       </View>
@@ -166,70 +40,171 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
       {/* Header with Crest */}
       <View style={styles.head}>
         <View style={styles.crestCircle}>
-          <SereneLogoMark size={46} color={C.pine} snow={C.gold} />
+          <SereneLogoMark size={44} color={C.pine} snow={C.gold} />
         </View>
-        <Text style={styles.eyebrow}>CONCIERGE & PRIVATE INQUIRIES</Text>
+        <Text style={styles.eyebrow}>BESPOKE ALPINE SERVICE</Text>
         <Text style={styles.title}>Reservations & Concierge</Text>
         <Text style={styles.lede}>
-          Dedicated alpine hospitality · Available seven days a week for suite bookings, private dining, and airport transfers.
+          Your dedicated mountain hosts in Nathia Gali, available seven days a week.
         </Text>
       </View>
 
-      {/* Concierge Desk Lounge Card */}
-      <View style={styles.conciergeCard}>
-        {CONTACT.lines.map((l, i) => (
-          <ConciergeRow
-            key={l.label}
-            icon={l.icon as Glyph}
-            label={l.label}
-            value={l.value}
-            href={l.href}
-            last={i === CONTACT.lines.length - 1}
-          />
-        ))}
+      {/* ── FLAGSHIP MASTER CONCIERGE BENTO CARD ── */}
+      <View style={styles.masterCard}>
+        {/* Top Hero: Direct Online Reservation Invitation */}
+        <PressableScale
+          onPress={() => open(bookingSite.href)}
+          scaleTo={0.985}
+          style={styles.heroBookingBanner}
+          accessibilityRole="link"
+          accessibilityLabel={`Book suite online: ${bookingSite.value}`}
+        >
+          <View style={styles.heroBannerHeader}>
+            <View style={styles.heroBadgeRow}>
+              <View style={styles.goldDot} />
+              <Text style={styles.heroKicker}>OFFICIAL BOOKING PORTAL</Text>
+            </View>
+            <View style={styles.ratePill}>
+              <Ionicons name="shield-checkmark" size={10} color={C.gold} style={{ marginRight: 3.5 }} />
+              <Text style={styles.ratePillText}>Best Rates</Text>
+            </View>
+          </View>
+
+          <View style={styles.heroBannerBody}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.heroBannerTitle}>Reserve Your Mountain Suite</Text>
+              <Text style={styles.heroBannerUrl} numberOfLines={1}>
+                {bookingSite.value}
+              </Text>
+            </View>
+            <View style={styles.heroCtaBtn}>
+              <Ionicons name="arrow-forward" size={15} color={C.pine} />
+            </View>
+          </View>
+        </PressableScale>
+
+        {/* Subtle Inset Divider */}
+        <View style={styles.cardDivider} />
+
+        {/* Middle: 2-Column Responsive Concierge Bento Tiles */}
+        <View style={styles.bentoGrid}>
+          {/* Tile 1: WhatsApp Direct */}
+          <PressableScale
+            onPress={() => open(whatsappLine.href)}
+            scaleTo={0.975}
+            style={styles.bentoTile}
+            accessibilityRole="link"
+            accessibilityLabel={`WhatsApp Concierge: ${whatsappLine.value}`}
+          >
+            <View style={styles.tileHeader}>
+              <View style={styles.waDisc}>
+                <Ionicons name="logo-whatsapp" size={16} color="#1D7348" />
+              </View>
+              <View style={styles.liveChip}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveChipText}>24/7</Text>
+              </View>
+            </View>
+            <Text style={styles.tileLabel}>WHATSAPP</Text>
+            <Text style={styles.tileValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+              {whatsappLine.value}
+            </Text>
+            <View style={styles.tileActionRow}>
+              <Text style={styles.tileActionText}>Instant Chat</Text>
+              <Ionicons name="chevron-forward" size={11} color={C.gold} />
+            </View>
+          </PressableScale>
+
+          {/* Tile 2: Phone Reservations */}
+          <PressableScale
+            onPress={() => open(phoneLine.href)}
+            scaleTo={0.975}
+            style={styles.bentoTile}
+            accessibilityRole="link"
+            accessibilityLabel={`Call Reservations: ${phoneLine.value}`}
+          >
+            <View style={styles.tileHeader}>
+              <View style={styles.phoneDisc}>
+                <Ionicons name="call" size={15} color={C.gold} />
+              </View>
+              <View style={styles.deskChip}>
+                <Text style={styles.deskChipText}>Direct</Text>
+              </View>
+            </View>
+            <Text style={styles.tileLabel}>RESERVATIONS</Text>
+            <Text style={styles.tileValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+              {phoneLine.value}
+            </Text>
+            <View style={styles.tileActionRow}>
+              <Text style={styles.tileActionText}>Call Desk</Text>
+              <Ionicons name="chevron-forward" size={11} color={C.gold} />
+            </View>
+          </PressableScale>
+        </View>
+
+        {/* Bottom Sub-Strip: Email & Corporate Portfolio */}
+        <View style={styles.cardDivider} />
+
+        <View style={styles.bottomSubStrip}>
+          {/* Email Action */}
+          <PressableScale
+            onPress={() => open(emailLine.href)}
+            scaleTo={0.98}
+            style={styles.subStripAction}
+            accessibilityRole="link"
+            accessibilityLabel={`Email Concierge: ${emailLine.value}`}
+          >
+            <View style={styles.stripIconWell}>
+              <Ionicons name="mail" size={13} color={C.gold} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.stripLabel}>PRIVATE INQUIRIES</Text>
+              <Text style={styles.stripValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+                {emailLine.value}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={13} color="rgba(200, 164, 106, 0.7)" />
+          </PressableScale>
+
+          {/* Group Portfolio Link */}
+          <PressableScale
+            onPress={() => open(groupSite.href)}
+            scaleTo={0.98}
+            style={styles.groupLinkRow}
+            accessibilityRole="link"
+            accessibilityLabel={`The Serene Group: ${groupSite.value}`}
+          >
+            <Ionicons name="globe-outline" size={12} color="rgba(236, 238, 237, 0.6)" style={{ marginRight: 6 }} />
+            <Text style={styles.groupLinkText}>
+              The Serene Group Portfolio · <Text style={{ color: C.gold }}>{groupSite.value}</Text>
+            </Text>
+            <Ionicons name="arrow-up-outline" size={10} color={C.gold} style={{ transform: [{ rotate: '45deg' }], marginLeft: 3 }} />
+          </PressableScale>
+        </View>
       </View>
 
-      {/* Digital Portals */}
-      <View style={styles.portalsContainer}>
-        <PortalCard
-          icon="calendar-outline"
-          label="Direct Reservation Portal"
-          value={CONTACT.sites[0]?.value ?? 'sereneheightsgroup.com/booking'}
-          href={CONTACT.sites[0]?.href ?? 'https://www.sereneheightsgroup.com/booking'}
-          primary
-          subtitle="Instant suite confirmation · Best guaranteed rates"
-        />
-        <PortalCard
-          icon="business-outline"
-          label="The Serene Hospitality Group"
-          value={CONTACT.sites[1]?.value ?? 'sereneheightsgroup.com'}
-          href={CONTACT.sites[1]?.href ?? 'https://www.sereneheightsgroup.com'}
-          subtitle="Resort masterplans, residences & corporate portfolio"
-        />
-      </View>
-
-      {/* Location Pill */}
+      {/* ── RESORT LOCATION PILL ── */}
       <PressableScale
         onPress={() => open(MAPS_LINK)}
         scaleTo={0.985}
         style={styles.locationPill}
         accessibilityRole="link"
-        accessibilityLabel="View resort location on Google Maps"
+        accessibilityLabel="View Serene Heights location on Google Maps"
       >
-        <Ionicons name="location-outline" size={15} color={C.gold} style={{ marginRight: 6 }} />
+        <Ionicons name="location" size={13} color={C.gold} style={{ marginRight: 5 }} />
         <Text style={styles.locationText} numberOfLines={1}>
-          Kala Bagh Air Base Road · Nathia Gali, Pakistan
+          Kala Bagh Air Base Road · Nathia Gali (7,906 ft)
         </Text>
-        <Ionicons name="open-outline" size={12} color={C.pine} style={{ marginLeft: 6, opacity: 0.65 }} />
+        <Ionicons name="open-outline" size={11} color={C.pine} style={{ marginLeft: 5, opacity: 0.6 }} />
       </PressableScale>
 
-      {/* Social Icons */}
+      {/* ── LUXURY SOCIAL CHANNELS ── */}
       <View style={styles.socialRow}>
         {CONTACT.social.map((s) => (
           <PressableScale
             key={s.label}
             onPress={() => open(s.href)}
-            scaleTo={0.94}
+            scaleTo={0.93}
             style={styles.socialBtn}
             accessibilityRole="link"
             accessibilityLabel={s.label}
@@ -239,7 +214,7 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
         ))}
       </View>
 
-      {/* Resort Heritage & Legal Footnote */}
+      {/* ── RESORT HERITAGE & FOOTNOTE ── */}
       <View style={styles.footerFootnote}>
         <Text style={styles.resortTitle}>SERENE HEIGHTS RESORT & RESIDENCES</Text>
         <Text style={styles.footnoteLine}>
@@ -253,13 +228,13 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
 const styles = StyleSheet.create({
   wrap: {
     marginTop: 56,
-    paddingTop: 32,
+    paddingTop: 28,
     paddingHorizontal: S.gutter,
   },
   ornamentDivider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 36,
+    marginBottom: 32,
   },
   dividerLine: {
     flex: 1,
@@ -273,15 +248,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   crestCircle: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: 'rgba(200, 164, 106, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
     ...shadow.pill,
   },
   eyebrow: {
@@ -303,229 +278,281 @@ const styles = StyleSheet.create({
     color: C.ink55,
     fontFamily: FONTS.ui,
     fontSize: 13,
-    lineHeight: 19.5,
+    lineHeight: 19,
     textAlign: 'center',
-    marginTop: 8,
-    maxWidth: 310,
+    marginTop: 7,
+    maxWidth: 300,
   },
 
-  /* Concierge Card */
-  conciergeCard: {
+  /* ── MASTER CARD ── */
+  masterCard: {
     marginTop: 26,
-    borderRadius: 22,
-    backgroundColor: C.white,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 18,
-    elevation: 3,
-  },
-  conciergeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 13,
-    paddingVertical: 14,
-  },
-  conciergeRowDivider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(200, 164, 106, 0.22)',
-  },
-  iconWell: {
-    width: 42,
-    height: 42,
-    borderRadius: 13,
-    backgroundColor: 'rgba(200, 164, 106, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWellWa: {
-    backgroundColor: 'rgba(29, 115, 72, 0.1)',
-    borderColor: 'rgba(29, 115, 72, 0.25)',
-  },
-  rowDetails: {
-    flex: 1,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-  },
-  rowLabel: {
-    color: C.ink55,
-    fontFamily: FONTS.uiBold,
-    fontSize: 9,
-    letterSpacing: 1.3,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 6.5,
-    paddingVertical: 2,
-    borderRadius: 5,
-  },
-  badgeText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 0.3,
-  },
-  badgeLive: {
-    backgroundColor: 'rgba(29, 115, 72, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(29, 115, 72, 0.22)',
-  },
-  liveDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: '#1D7348',
-    marginRight: 4,
-  },
-  badgeLiveText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    color: '#1D7348',
-    letterSpacing: 0.3,
-  },
-  badgeNeutral: {
-    backgroundColor: 'rgba(200, 164, 106, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.2)',
-  },
-  badgeNeutralText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    color: C.pine,
-    letterSpacing: 0.3,
-  },
-  rowValue: {
-    color: C.pine,
-    fontFamily: FONTS.uiSemi,
-    fontSize: 14,
-    lineHeight: 18,
-    marginTop: 3,
-    fontVariant: ['tabular-nums'],
-  },
-  rowValueSmall: {
-    fontSize: 12,
-  },
-  trailingDisc: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: 'rgba(18, 53, 36, 0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  /* Portals */
-  portalsContainer: {
-    gap: 12,
-    marginTop: 16,
-  },
-  portalCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 13,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  portalCardPrimary: {
+    borderRadius: 24,
     backgroundColor: C.pine,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.35)',
+    padding: 16,
     shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.16,
+    shadowRadius: 22,
+    elevation: 5,
   },
-  portalCardSecondary: {
-    backgroundColor: C.white,
+
+  /* Hero Booking Banner */
+  heroBookingBanner: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.25)',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 14,
-    elevation: 2,
   },
-  portalIconWell: {
-    width: 44,
-    height: 44,
-    borderRadius: 13,
+  heroBannerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  heroBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  goldDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: C.gold,
+    marginRight: 6,
+  },
+  heroKicker: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8.5,
+    letterSpacing: 1.4,
+    color: C.gold,
+  },
+  ratePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(200, 164, 106, 0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.32)',
+  },
+  ratePillText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8.5,
+    color: C.gold,
+    letterSpacing: 0.3,
+  },
+  heroBannerBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  heroBannerTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 19,
+    lineHeight: 23,
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+  },
+  heroBannerUrl: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 11.5,
+    color: 'rgba(236, 238, 237, 0.65)',
+    marginTop: 2.5,
+  },
+  heroCtaBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: C.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  cardDivider: {
+    height: 1,
+    backgroundColor: 'rgba(200, 164, 106, 0.18)',
+    marginVertical: 14,
+  },
+
+  /* 2-Column Bento Grid */
+  bentoGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  bentoTile: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.2)',
+    padding: 12,
+  },
+  tileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  waDisc: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    backgroundColor: 'rgba(29, 115, 72, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(29, 115, 72, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  portalIconWellPrimary: {
+  phoneDisc: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
     backgroundColor: 'rgba(200, 164, 106, 0.16)',
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.3)',
-  },
-  portalIconWellSecondary: {
-    backgroundColor: 'rgba(18, 53, 36, 0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(18, 53, 36, 0.12)',
-  },
-  portalLabel: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 9,
-    letterSpacing: 1.4,
-  },
-  portalValue: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 13.5,
-    lineHeight: 18,
-    marginTop: 2,
-  },
-  portalSub: {
-    fontFamily: FONTS.ui,
-    fontSize: 10.5,
-    lineHeight: 14,
-    marginTop: 1.5,
-  },
-  portalArrow: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  portalArrowPrimary: {
-    backgroundColor: 'rgba(200, 164, 106, 0.2)',
+  liveChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: 'rgba(29, 115, 72, 0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.35)',
+    borderColor: 'rgba(29, 115, 72, 0.35)',
   },
-  portalArrowSecondary: {
-    backgroundColor: 'rgba(18, 53, 36, 0.06)',
+  liveDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#25D366',
+    marginRight: 3.5,
+  },
+  liveChipText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8,
+    color: '#25D366',
+    letterSpacing: 0.3,
+  },
+  deskChip: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: 'rgba(200, 164, 106, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(18, 53, 36, 0.12)',
+    borderColor: 'rgba(200, 164, 106, 0.25)',
+  },
+  deskChipText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8,
+    color: C.gold,
+    letterSpacing: 0.3,
+  },
+  tileLabel: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8.5,
+    letterSpacing: 1.2,
+    color: 'rgba(236, 238, 237, 0.55)',
+  },
+  tileValue: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 12.5,
+    color: '#FFFFFF',
+    marginTop: 2.5,
+    fontVariant: ['tabular-nums'],
+  },
+  tileActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(200, 164, 106, 0.15)',
+  },
+  tileActionText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    color: C.gold,
   },
 
-  /* Location */
+  /* Bottom Sub-Strip */
+  bottomSubStrip: {
+    gap: 10,
+  },
+  subStripAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.18)',
+  },
+  stripIconWell: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: 'rgba(200, 164, 106, 0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stripLabel: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 8,
+    letterSpacing: 1.2,
+    color: C.gold,
+  },
+  stripValue: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11.5,
+    color: '#FFFFFF',
+    marginTop: 1,
+  },
+  groupLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+  },
+  groupLinkText: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 10.5,
+    color: 'rgba(236, 238, 237, 0.7)',
+  },
+
+  /* Location Pill */
   locationPill: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginTop: 22,
-    paddingHorizontal: 15,
-    paddingVertical: 9,
+    marginTop: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: 'rgba(200, 164, 106, 0.1)',
+    backgroundColor: 'rgba(200, 164, 106, 0.09)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.26)',
+    borderColor: 'rgba(200, 164, 106, 0.25)',
     maxWidth: '92%',
   },
   locationText: {
     fontFamily: FONTS.uiSemi,
-    fontSize: 11.5,
+    fontSize: 11,
     color: C.pine,
     letterSpacing: 0.2,
   },
@@ -535,12 +562,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 14,
-    marginTop: 20,
+    marginTop: 18,
   },
   socialBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: C.white,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.28)',
@@ -556,7 +583,7 @@ const styles = StyleSheet.create({
   /* Footnote */
   footerFootnote: {
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 22,
     gap: 4,
   },
   resortTitle: {

@@ -131,7 +131,7 @@ export default function Discover() {
         onScroll={handleScroll}
         scrollEventThrottle={64}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 0, paddingBottom: 150 }}
+        contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
       >
         {/* Full-Bleed Panoramic Mountain Hero Stage */}
         <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
