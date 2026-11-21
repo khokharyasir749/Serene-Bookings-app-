@@ -58,6 +58,36 @@ const EXPERIENCES = [
   },
 ];
 
+const EDITORIAL_PILLARS = [
+  {
+    badge: '7,906 FT ELEVATION',
+    icon: 'trail-sign-outline' as const,
+    kicker: 'REAL MOUNTAIN AIR · GALIYAT',
+    title: '7,906 ft above the noise, two hours from Islamabad',
+    text: 'Set in the pine forests of the Galiyat beside PAF Airbase Nathia Gali, with cool summers, snowy winters and panoramic valley views from every private balcony.',
+    image: '/images/interiors/window-view.jpg',
+    chips: ['Pine Valley Canopy', '2 Hrs from Islamabad', 'Crisp Alpine Breeze'],
+  },
+  {
+    badge: 'ALL-YEAR RESORT',
+    icon: 'snow-outline' as const,
+    kicker: 'MADE FOR EVERY SEASON',
+    title: "Pakistan's first winter resort, open all year round",
+    text: 'An indoor temperature-controlled infinity pool under glass, cedarwood sauna and spa, snow ski slope, mini golf, archery, and panoramic rooftop dining—all a short walk from your suite.',
+    image: '/images/resort/glass-roof-pool.jpg',
+    chips: ['Heated Glass Pool', 'Private Ski Slope', 'Panoramic Dining'],
+  },
+  {
+    badge: 'SERVICED LIVING',
+    icon: 'key-outline' as const,
+    kicker: 'FULLY MANAGED RESIDENCES',
+    title: 'A furnished mountain home, with a luxury hotel behind it',
+    text: 'Daily housekeeping, 24/7 front desk and concierge, in-residence room service, and underfloor radiant heating throughout. Arrive, unpack, and settle into effortless alpine comfort.',
+    image: '/images/interiors/living-room-wide.jpg',
+    chips: ['24/7 Concierge', 'Underfloor Heating', 'Daily Housekeeping'],
+  },
+];
+
 export default function Discover() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -271,6 +301,9 @@ export default function Discover() {
             keyExtractor={(r) => r.id}
             renderItem={({ item }) => (
               <View style={[styles.reviewCard, { width: reviewW }]}>
+                {/* Decorative Watermark Quote */}
+                <Text style={styles.quoteWatermark}>“</Text>
+
                 {/* Header: Stars + Verified Badge */}
                 <View style={styles.reviewCardTop}>
                   <View style={{ flexDirection: 'row', gap: 3 }}>
@@ -290,8 +323,10 @@ export default function Discover() {
                 </View>
 
                 {/* Review Headline & Body */}
-                <Text style={styles.reviewTitle}>"{item.title}"</Text>
-                <Text style={styles.reviewBody}>{item.body}</Text>
+                <View style={{ marginVertical: 8 }}>
+                  <Text style={styles.reviewTitle}>"{item.title}"</Text>
+                  <Text numberOfLines={3} style={styles.reviewBody}>{item.body}</Text>
+                </View>
 
                 {/* Author Monogram + Info + Rating Score Badge */}
                 <View style={styles.reviewFooter}>
@@ -325,27 +360,47 @@ export default function Discover() {
           />
         </View>
 
-        {/* Why Serene Heights Editorial Cards */}
+        {/* Why Serene Heights Editorial Showcase */}
         <SectionHead
           title="Why Serene Heights"
           sub="Crafted for year-round alpine luxury"
         />
-        <View style={styles.reasons}>
-          {REASONS.map((r, i) => (
-            <View
-              key={r.label}
-              style={[
-                styles.reason,
-                i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-              ]}
-            >
-              <Photo src={r.image} style={styles.reasonPhoto} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.reasonLabel}>{r.label.toUpperCase()}</Text>
-                <Text style={styles.reasonTitle}>{r.title}</Text>
-                <Text numberOfLines={2} style={styles.reasonText}>{r.text}</Text>
+        <View style={styles.pillarsContainer}>
+          {EDITORIAL_PILLARS.map((p) => (
+            <View key={p.kicker} style={styles.pillarCard}>
+              {/* Cinematic Header Photography */}
+              <View style={styles.pillarPhotoWrap}>
+                <Photo src={p.image} style={StyleSheet.absoluteFill} />
+                <Scrim bottom={0.45} />
+
+                {/* Floating Crystal Badge on Image */}
+                <View style={styles.pillarBadge}>
+                  <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill} />
+                  <LinearGradient
+                    colors={['rgba(255, 255, 255, 0.18)', 'rgba(0, 0, 0, 0.35)']}
+                    style={StyleSheet.absoluteFill}
+                  />
+                  <Ionicons name={p.icon} size={12} color={C.gold} style={{ marginRight: 5 }} />
+                  <Text style={styles.pillarBadgeText}>{p.badge}</Text>
+                </View>
               </View>
-              <ChevronRight size={16} color={C.ink55} />
+
+              {/* Content Body */}
+              <View style={styles.pillarBody}>
+                <Text style={styles.pillarKicker}>{p.kicker}</Text>
+                <Text style={styles.pillarTitle}>{p.title}</Text>
+                <Text style={styles.pillarText}>{p.text}</Text>
+
+                {/* Micro spec chips */}
+                <View style={styles.pillarChipsRow}>
+                  {p.chips.map((c) => (
+                    <View key={c} style={styles.pillarChip}>
+                      <Ionicons name="checkmark-circle" size={11.5} color={C.gold} style={{ marginRight: 4 }} />
+                      <Text style={styles.pillarChipText}>{c}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
             </View>
           ))}
         </View>
@@ -753,14 +808,25 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   reviewCard: {
-    padding: 18,
+    padding: 20,
     backgroundColor: C.pureWhite,
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
-    minHeight: 215,
+    borderColor: 'rgba(200, 164, 106, 0.32)',
+    minHeight: 220,
     justifyContent: 'space-between',
-    ...shadow.card,
+    position: 'relative',
+    overflow: 'hidden',
+    ...shadow.cardHover,
+  },
+  quoteWatermark: {
+    position: 'absolute',
+    top: 6,
+    right: 14,
+    fontFamily: FONTS.display,
+    fontSize: 54,
+    lineHeight: 54,
+    color: 'rgba(200, 164, 106, 0.16)',
   },
   reviewCardTop: {
     flexDirection: 'row',
@@ -847,46 +913,90 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: C.gold,
   },
-  reasons: {
-    marginHorizontal: S.gutter,
-    backgroundColor: C.pureWhite,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: C.line,
-    marginBottom: 10,
-    ...shadow.card,
+  pillarsContainer: {
+    paddingHorizontal: S.gutter,
+    gap: 16,
+    marginBottom: 12,
   },
-  reason: {
+  pillarCard: {
+    borderRadius: 26,
+    overflow: 'hidden',
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.3)',
+    ...shadow.cardHover,
+  },
+  pillarPhotoWrap: {
+    width: '100%',
+    height: 180,
+    backgroundColor: C.pine,
+    position: 'relative',
+    padding: 14,
+    justifyContent: 'flex-start',
+  },
+  pillarBadge: {
+    alignSelf: 'flex-start',
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    paddingVertical: 14,
+    paddingHorizontal: 11,
+    paddingVertical: 5.5,
+    borderRadius: 999,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
-  reasonPhoto: {
-    width: 72,
-    height: 72,
-    borderRadius: 16,
-  },
-  reasonLabel: {
+  pillarBadgeText: {
+    fontFamily: FONTS.uiBold,
     fontSize: 9.5,
+    letterSpacing: 1.1,
+    color: '#FFFFFF',
+  },
+  pillarBody: {
+    padding: 20,
+  },
+  pillarKicker: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10,
     letterSpacing: 1.5,
     color: C.gold,
-    fontFamily: FONTS.uiBold,
   },
-  reasonTitle: {
+  pillarTitle: {
     fontFamily: FONTS.display,
-    fontSize: 16.5,
-    lineHeight: 20,
-    color: C.ink,
-    marginTop: 2,
+    fontSize: 22,
+    lineHeight: 27,
+    color: C.pine,
+    marginTop: 5,
   },
-  reasonText: {
+  pillarText: {
     fontFamily: FONTS.ui,
-    fontSize: 12,
-    lineHeight: 16.5,
-    color: C.ink55,
-    marginTop: 3,
+    fontSize: 13.5,
+    lineHeight: 20,
+    color: C.ink70,
+    marginTop: 8,
+  },
+  pillarChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 7,
+    marginTop: 14,
+    paddingTop: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.line,
+  },
+  pillarChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    backgroundColor: 'rgba(200, 164, 106, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.22)',
+  },
+  pillarChipText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11,
+    color: C.pine,
   },
 });
