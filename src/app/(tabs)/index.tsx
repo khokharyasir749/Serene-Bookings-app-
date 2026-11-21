@@ -66,6 +66,7 @@ export default function Discover() {
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const resW = Math.min(312, Math.round(width * 0.78));
+  const reviewW = Math.min(320, Math.round(width * 0.82));
 
   useFocusEffect(
     useCallback(() => {
@@ -192,81 +193,140 @@ export default function Discover() {
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
         />
 
-        {/* Resort Architecture & Floor Plans Story Card */}
+        {/* Resort Architecture & Floor Plans Feature Card */}
         <View style={styles.storyCard}>
+          {/* Architectural Background Photography */}
+          <Photo src="/images/resort/tower-sunset-forest.jpg" style={StyleSheet.absoluteFill} />
+          <LinearGradient
+            colors={[
+              'rgba(18, 53, 36, 0.42)',
+              'rgba(12, 38, 26, 0.84)',
+              'rgba(8, 22, 15, 0.97)',
+            ]}
+            locations={[0, 0.42, 0.98]}
+            style={StyleSheet.absoluteFill}
+          />
+
           <View style={styles.storyHeader}>
             <View style={styles.storyBadge}>
-              <Ionicons name="business-outline" size={13} color={C.gold} style={{ marginRight: 5 }} />
+              <Ionicons name="business-outline" size={12.5} color={C.gold} style={{ marginRight: 6 }} />
               <Text style={styles.storyBadgeText}>ARCHITECTURE & DESIGN</Text>
             </View>
             <View style={styles.storyPillMini}>
-              <Text style={styles.storyPillMiniText}>G1 – 8TH FLOOR</Text>
+              <Text style={styles.storyPillMiniText}>G1 – 8TH FLOOR · BALCONIES</Text>
             </View>
           </View>
+
           <Text style={styles.storyTitle}>Every residence with a mountain terrace</Text>
           <Text style={styles.storyBody}>
             Serene Heights combines the privacy of a fully furnished mountain home with the bespoke amenities of a 5-star resort. Underfloor heating, soundproofing, and panoramic pine valley views across G1 to 8th floors.
           </Text>
 
+          {/* Frosted Architectural Specification Chips */}
           <View style={styles.storyHighlights}>
-            <View style={styles.storyHighItem}>
-              <Ionicons name="checkmark-circle" size={14} color={C.gold} />
-              <Text style={styles.storyHighText}>Italian designer finishings</Text>
+            <View style={styles.specChip}>
+              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
+              <Text style={styles.specChipText}>Italian designer finishings</Text>
             </View>
-            <View style={styles.storyHighItem}>
-              <Ionicons name="checkmark-circle" size={14} color={C.gold} />
-              <Text style={styles.storyHighText}>Soundproof triple-glazed glass</Text>
+            <View style={styles.specChip}>
+              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
+              <Text style={styles.specChipText}>Soundproof triple-glazed glass</Text>
+            </View>
+            <View style={styles.specChip}>
+              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
+              <Text style={styles.specChipText}>Underfloor radiant heating</Text>
+            </View>
+            <View style={styles.specChip}>
+              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
+              <Text style={styles.specChipText}>Valley-facing private balconies</Text>
             </View>
           </View>
 
-          <Pressable
+          {/* Luxury CTA Button */}
+          <PressableScale
             onPress={() => router.push('/floor-plans')}
-            style={({ pressed }) => [styles.storyBtn, pressed && { opacity: 0.9 }]}>
+            scaleTo={0.975}
+            style={styles.storyBtn}
+          >
+            <LinearGradient
+              colors={['#D8B882', '#BE9559']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
             <Text style={styles.storyBtnText}>Explore floor plans & layouts</Text>
-            <Ionicons name="arrow-forward" size={14} color={C.pine} />
-          </Pressable>
+            <View style={styles.storyBtnArrow}>
+              <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
+            </View>
+          </PressableScale>
         </View>
 
-        {/* Verified Guest Impressions */}
-        {featuredReview && (
-          <View style={styles.reviewSection}>
-            <SectionHead
-              title="Guest Impressions"
-              sub={`${REVIEW_SCORE.average.toFixed(1)} / 5.0 · Exceptional · ${REVIEW_SCORE.count} verified reviews`}
-            />
-            <View style={styles.reviewCard}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={{ flexDirection: 'row', gap: 3 }}>
-                  {Array.from({ length: 5 }).map((_, k) => (
-                    <Ionicons
-                      key={k}
-                      name={k < featuredReview.rating ? 'star' : 'star-outline'}
-                      size={15}
-                      color={C.gold}
-                    />
-                  ))}
+        {/* Verified Guest Impressions Carousel */}
+        <View style={styles.reviewSection}>
+          <SectionHead
+            title="Guest Impressions"
+            sub={`${REVIEW_SCORE.average.toFixed(1)} / 5.0 · Exceptional · ${REVIEW_SCORE.count} verified reviews`}
+          />
+          <FlatList
+            horizontal
+            nestedScrollEnabled
+            data={REVIEWS}
+            keyExtractor={(r) => r.id}
+            renderItem={({ item }) => (
+              <View style={[styles.reviewCard, { width: reviewW }]}>
+                {/* Header: Stars + Verified Badge */}
+                <View style={styles.reviewCardTop}>
+                  <View style={{ flexDirection: 'row', gap: 3 }}>
+                    {Array.from({ length: 5 }).map((_, k) => (
+                      <Ionicons
+                        key={k}
+                        name={k < item.rating ? 'star' : 'star-outline'}
+                        size={14}
+                        color={C.gold}
+                      />
+                    ))}
+                  </View>
+                  <View style={styles.verifiedBadge}>
+                    <Ionicons name="shield-checkmark" size={12} color={C.positive} style={{ marginRight: 4 }} />
+                    <Text style={styles.verifiedText}>Verified stay</Text>
+                  </View>
                 </View>
-                <View style={styles.verifiedBadge}>
-                  <Ionicons name="shield-checkmark" size={12} color={C.positive} style={{ marginRight: 4 }} />
-                  <Text style={styles.verifiedText}>Verified stay</Text>
+
+                {/* Review Headline & Body */}
+                <Text style={styles.reviewTitle}>"{item.title}"</Text>
+                <Text style={styles.reviewBody}>{item.body}</Text>
+
+                {/* Author Monogram + Info + Rating Score Badge */}
+                <View style={styles.reviewFooter}>
+                  <View style={styles.reviewAuthorBlock}>
+                    <View style={styles.authorAvatar}>
+                      <Text style={styles.authorAvatarText}>
+                        {item.author.split(' ').map((n) => n[0]).join('')}
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text numberOfLines={1} style={styles.reviewAuthor}>
+                        {item.author} · {item.country}
+                      </Text>
+                      <Text numberOfLines={1} style={styles.reviewRoom}>{item.roomType}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.scorePill}>
+                    <Text style={styles.scorePillText}>
+                      {item.rating.toFixed(1)}
+                    </Text>
+                  </View>
                 </View>
               </View>
-              <Text style={styles.reviewTitle}>"{featuredReview.title}"</Text>
-              <Text style={styles.reviewBody}>{featuredReview.body}</Text>
-              <View style={styles.reviewFooter}>
-                <View>
-                  <Text style={styles.reviewAuthor}>
-                    {featuredReview.author} · {featuredReview.country}
-                  </Text>
-                  <Text style={styles.reviewRoom}>{featuredReview.stayed}</Text>
-                </View>
-                <View style={styles.scorePill}>
-                  <Text style={styles.scorePillText}>5.0</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        )}
+            )}
+            showsHorizontalScrollIndicator={false}
+            decelerationRate="fast"
+            snapToInterval={reviewW + 14}
+            initialNumToRender={2}
+            windowSize={3}
+            contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
+          />
+        </View>
 
         {/* Why Serene Heights Editorial Cards */}
         <SectionHead
@@ -286,6 +346,7 @@ export default function Discover() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.reasonLabel}>{r.label.toUpperCase()}</Text>
                 <Text style={styles.reasonTitle}>{r.title}</Text>
+                <Text numberOfLines={2} style={styles.reasonText}>{r.text}</Text>
               </View>
             </View>
           ))}
@@ -588,11 +649,12 @@ const styles = StyleSheet.create({
   storyCard: {
     marginHorizontal: S.gutter,
     marginTop: 32,
+    borderRadius: 28,
+    overflow: 'hidden',
+    borderWidth: 1.2,
+    borderColor: 'rgba(200, 164, 106, 0.35)',
     padding: 22,
-    borderRadius: 24,
     backgroundColor: C.pine,
-    borderWidth: 1,
-    borderColor: C.goldLine,
     ...shadow.cardHover,
   },
   storyHeader: {
@@ -603,78 +665,106 @@ const styles = StyleSheet.create({
   storyBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 3.5,
+    paddingHorizontal: 11,
+    paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(200, 164, 106, 0.16)',
+    backgroundColor: 'rgba(200, 164, 106, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.4)',
   },
   storyBadgeText: {
     fontFamily: FONTS.uiBold,
     fontSize: 9.5,
-    letterSpacing: 1.2,
+    letterSpacing: 1.3,
     color: C.gold,
   },
   storyPillMini: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 999,
     backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.22)',
   },
   storyPillMiniText: {
     fontFamily: FONTS.uiBold,
     fontSize: 8.5,
-    letterSpacing: 1,
-    color: C.cream70,
+    letterSpacing: 1.1,
+    color: C.cream,
   },
   storyTitle: {
     fontFamily: FONTS.display,
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 25,
+    lineHeight: 30,
     color: C.cream,
-    marginTop: 12,
+    marginTop: 14,
+    letterSpacing: 0.2,
   },
   storyBody: {
     fontFamily: FONTS.ui,
-    fontSize: 13,
-    lineHeight: 19,
-    color: C.cream70,
-    marginTop: 6,
+    fontSize: 13.5,
+    lineHeight: 20,
+    color: 'rgba(255, 253, 249, 0.82)',
+    marginTop: 8,
   },
   storyHighlights: {
-    gap: 6,
-    marginTop: 12,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 16,
   },
-  storyHighItem: {
+  specChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 6.5,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.14)',
   },
-  storyHighText: {
+  specChipText: {
     fontFamily: FONTS.uiMedium,
     fontSize: 12,
     color: C.cream,
   },
   storyBtn: {
+    position: 'relative',
+    marginTop: 20,
+    borderRadius: 999,
+    overflow: 'hidden',
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: 6,
-    marginTop: 18,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: C.gold,
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#E6CFAB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   storyBtnText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 12.5,
+    fontSize: 13,
+    letterSpacing: 0.3,
     color: C.pine,
+  },
+  storyBtnArrow: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: 'rgba(18, 53, 36, 0.88)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   reviewSection: {
     marginTop: 6,
   },
   reviewCard: {
-    marginHorizontal: S.gutter,
     padding: 18,
     backgroundColor: C.pureWhite,
     borderRadius: 22,
@@ -682,11 +772,16 @@ const styles = StyleSheet.create({
     borderColor: C.line,
     ...shadow.card,
   },
+  reviewCardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 3.5,
     borderRadius: 999,
     backgroundColor: 'rgba(29, 115, 72, 0.08)',
   },
@@ -704,8 +799,8 @@ const styles = StyleSheet.create({
   },
   reviewBody: {
     fontFamily: FONTS.ui,
-    fontSize: 13.5,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 19.5,
     color: C.ink70,
     marginTop: 6,
   },
@@ -718,6 +813,28 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.line,
   },
+  reviewAuthorBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    flex: 1,
+    marginRight: 8,
+  },
+  authorAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(200, 164, 106, 0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.35)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  authorAvatarText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 11,
+    color: C.pine,
+  },
   reviewAuthor: {
     fontFamily: FONTS.uiBold,
     fontSize: 12,
@@ -725,8 +842,9 @@ const styles = StyleSheet.create({
   },
   reviewRoom: {
     fontFamily: FONTS.ui,
-    fontSize: 11.5,
+    fontSize: 11,
     color: C.ink55,
+    marginTop: 1,
   },
   scorePill: {
     paddingHorizontal: 8,
@@ -742,8 +860,9 @@ const styles = StyleSheet.create({
   reasons: {
     marginHorizontal: S.gutter,
     backgroundColor: C.pureWhite,
-    borderRadius: 22,
+    borderRadius: 24,
     paddingHorizontal: 16,
+    paddingVertical: 4,
     borderWidth: 1,
     borderColor: C.line,
     ...shadow.card,
@@ -755,9 +874,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   reasonPhoto: {
-    width: 62,
-    height: 62,
-    borderRadius: 14,
+    width: 66,
+    height: 66,
+    borderRadius: 16,
   },
   reasonLabel: {
     fontSize: 9.5,
@@ -766,10 +885,17 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.uiBold,
   },
   reasonTitle: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 14,
-    lineHeight: 18,
+    fontFamily: FONTS.display,
+    fontSize: 16.5,
+    lineHeight: 20,
     color: C.ink,
+    marginTop: 2,
+  },
+  reasonText: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    lineHeight: 16.5,
+    color: C.ink55,
     marginTop: 3,
   },
 });
