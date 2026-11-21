@@ -187,7 +187,7 @@ export default function Discover() {
           )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
-          snapToInterval={236 + 14}
+          snapToInterval={240 + 14}
           initialNumToRender={3}
           windowSize={3}
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
@@ -195,22 +195,22 @@ export default function Discover() {
 
         {/* Resort Architecture & Floor Plans Feature Card */}
         <View style={styles.storyCard}>
-          {/* Architectural Background Photography - Pure & Crystal Clear */}
-          <Photo src="/images/resort/tower-front.jpg" style={StyleSheet.absoluteFill} />
+          {/* Architectural Background Photography: Portrait Facade at Night */}
+          <Photo src="/images/resort/night-facade-portrait.jpg" style={StyleSheet.absoluteFill} />
           <LinearGradient
             colors={[
-              'rgba(0, 0, 0, 0)',
-              'rgba(0, 0, 0, 0.05)',
-              'rgba(0, 0, 0, 0.62)',
-              'rgba(0, 0, 0, 0.88)',
+              'rgba(0, 0, 0, 0.35)',
+              'transparent',
+              'rgba(0, 0, 0, 0.45)',
             ]}
-            locations={[0, 0.44, 0.74, 1]}
+            locations={[0, 0.35, 1]}
             style={StyleSheet.absoluteFill}
           />
 
+          {/* Top badges in crystal glass */}
           <View style={styles.storyHeader}>
             <View style={styles.storyBadge}>
-              <Ionicons name="business-outline" size={12.5} color={C.gold} style={{ marginRight: 6 }} />
+              <Ionicons name="business-outline" size={12} color={C.gold} style={{ marginRight: 6 }} />
               <Text style={styles.storyBadgeText}>ARCHITECTURE & DESIGN</Text>
             </View>
             <View style={styles.storyPillMini}>
@@ -218,48 +218,44 @@ export default function Discover() {
             </View>
           </View>
 
-          <Text style={styles.storyTitle}>Every residence with a mountain terrace</Text>
-          <Text style={styles.storyBody}>
-            Serene Heights combines the privacy of a fully furnished mountain home with the bespoke amenities of a 5-star resort. Underfloor heating, soundproofing, and panoramic pine valley views across G1 to 8th floors.
-          </Text>
+          <View style={{ flex: 1 }} />
 
-          {/* Frosted Architectural Specification Chips */}
-          <View style={styles.storyHighlights}>
-            <View style={styles.specChip}>
-              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
-              <Text style={styles.specChipText}>Italian designer finishings</Text>
-            </View>
-            <View style={styles.specChip}>
-              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
-              <Text style={styles.specChipText}>Soundproof triple-glazed glass</Text>
-            </View>
-            <View style={styles.specChip}>
-              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
-              <Text style={styles.specChipText}>Underfloor radiant heating</Text>
-            </View>
-            <View style={styles.specChip}>
-              <Ionicons name="checkmark-circle" size={13} color={C.gold} />
-              <Text style={styles.specChipText}>Valley-facing private balconies</Text>
-            </View>
-          </View>
-
-          {/* Luxury CTA Button */}
-          <PressableScale
-            onPress={() => router.push('/floor-plans')}
-            scaleTo={0.975}
-            style={styles.storyBtn}
-          >
-            <LinearGradient
-              colors={['#D8B882', '#BE9559']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+          {/* Bottom Crystal Clear Glass Dock with Limited Text */}
+          <View style={styles.archGlassDock}>
+            <BlurView
+              intensity={70}
+              tint="dark"
               style={StyleSheet.absoluteFill}
             />
-            <Text style={styles.storyBtnText}>Explore floor plans & layouts</Text>
-            <View style={styles.storyBtnArrow}>
-              <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
-            </View>
-          </PressableScale>
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.14)', 'rgba(10, 16, 12, 0.55)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.crystalHighlight} />
+
+            <Text style={styles.storyTitle}>Residences & Alpine Terraces</Text>
+            <Text style={styles.storySubtitle}>5 luxury layouts · Italian finishes · Underfloor heating</Text>
+
+            {/* Luxury CTA Button */}
+            <PressableScale
+              onPress={() => router.push('/floor-plans')}
+              scaleTo={0.975}
+              style={styles.storyBtn}
+            >
+              <LinearGradient
+                colors={['#D8B882', '#BE9559']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+              <Text style={styles.storyBtnText}>Explore Floor Plans & Layouts</Text>
+              <View style={styles.storyBtnArrow}>
+                <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
+              </View>
+            </PressableScale>
+          </View>
         </View>
 
         {/* Verified Guest Impressions Carousel */}
@@ -590,7 +586,7 @@ const styles = StyleSheet.create({
     ...shadow.cardHover,
   },
   expCard: {
-    width: 236,
+    width: 240,
     height: 300,
     borderRadius: 24,
     overflow: 'hidden',
@@ -631,10 +627,10 @@ const styles = StyleSheet.create({
   crystalTitle: {
     flex: 1,
     fontFamily: FONTS.display,
-    fontSize: 16.5,
-    lineHeight: 20,
+    fontSize: 15.5,
+    lineHeight: 19,
     color: C.pine,
-    marginRight: 8,
+    marginRight: 6,
   },
   crystalArrow: {
     width: 28,
@@ -649,12 +645,13 @@ const styles = StyleSheet.create({
   storyCard: {
     marginHorizontal: S.gutter,
     marginTop: 32,
+    height: 410,
     borderRadius: 28,
     overflow: 'hidden',
     borderWidth: 1.2,
     borderColor: 'rgba(200, 164, 106, 0.4)',
-    padding: 22,
-    backgroundColor: '#181A1B',
+    padding: 14,
+    backgroundColor: '#121416',
     ...shadow.cardHover,
   },
   storyHeader: {
@@ -692,71 +689,62 @@ const styles = StyleSheet.create({
     letterSpacing: 1.1,
     color: C.cream,
   },
+  archGlassDock: {
+    position: 'relative',
+    borderRadius: 22,
+    overflow: 'hidden',
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 255, 255, 0.28)',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 14,
+    elevation: 6,
+  },
   storyTitle: {
     fontFamily: FONTS.display,
-    fontSize: 25,
-    lineHeight: 30,
-    color: C.cream,
-    marginTop: 14,
+    fontSize: 22,
+    lineHeight: 26,
+    color: '#FFFFFF',
     letterSpacing: 0.2,
   },
-  storyBody: {
+  storySubtitle: {
     fontFamily: FONTS.ui,
-    fontSize: 13.5,
-    lineHeight: 20,
-    color: 'rgba(255, 253, 249, 0.82)',
-    marginTop: 8,
-  },
-  storyHighlights: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 16,
-  },
-  specChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.32)',
-  },
-  specChipText: {
-    fontFamily: FONTS.uiMedium,
-    fontSize: 12,
-    color: C.cream,
+    fontSize: 12.5,
+    lineHeight: 17,
+    color: 'rgba(255, 253, 249, 0.8)',
+    marginTop: 4,
   },
   storyBtn: {
     position: 'relative',
-    marginTop: 20,
+    marginTop: 14,
     borderRadius: 999,
     overflow: 'hidden',
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingVertical: 11,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: '#E6CFAB',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 3,
   },
   storyBtnText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 13,
+    fontSize: 12.5,
     letterSpacing: 0.3,
     color: C.pine,
   },
   storyBtnArrow: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: 'rgba(18, 53, 36, 0.88)',
     alignItems: 'center',
     justifyContent: 'center',
