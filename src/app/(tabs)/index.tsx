@@ -342,6 +342,7 @@ export default function Discover() {
                     </View>
                   </View>
                   <View style={styles.scorePill}>
+                    <Ionicons name="star" size={10} color={C.gold} style={{ marginRight: 3.5 }} />
                     <Text style={styles.scorePillText}>
                       {item.rating.toFixed(1)}
                     </Text>
@@ -358,7 +359,7 @@ export default function Discover() {
           />
         </View>
 
-        {/* Why Serene Heights Compact Editorial Carousel */}
+        {/* Why Serene Heights Signature Alpine Editorial Showcase */}
         <SectionHead
           title="Why Serene Heights"
           sub="Crafted for year-round alpine luxury"
@@ -368,42 +369,68 @@ export default function Discover() {
           nestedScrollEnabled
           data={EDITORIAL_PILLARS}
           keyExtractor={(p) => p.kicker}
-          renderItem={({ item: p }) => (
-            <View style={[styles.pillarCard, { width: pillarW }]}>
-              {/* Compact Header Photography */}
+          renderItem={({ item: p, index }) => (
+            <PressableScale
+              onPress={() => router.push('/amenities')}
+              scaleTo={0.98}
+              style={[styles.pillarCard, { width: pillarW }]}
+            >
+              {/* Photo Showcase with Seamless Deep Pine Scrim Blend */}
               <View style={styles.pillarPhotoWrap}>
                 <Photo src={p.image} style={StyleSheet.absoluteFill} />
-                <Scrim bottom={0.45} />
+                <LinearGradient
+                  colors={[
+                    'rgba(0, 0, 0, 0.3)',
+                    'transparent',
+                    'rgba(18, 53, 36, 0.65)',
+                    C.pine,
+                  ]}
+                  locations={[0, 0.35, 0.8, 1]}
+                  style={StyleSheet.absoluteFill}
+                />
 
-                {/* Floating Inset Crystal Badge on Image */}
+                {/* Floating Inset Crystal Glass Badge */}
                 <View style={styles.pillarBadge}>
-                  <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill} />
+                  <BlurView intensity={65} tint="dark" style={StyleSheet.absoluteFill} />
                   <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.22)', 'rgba(0, 0, 0, 0.4)']}
+                    colors={['rgba(255, 255, 255, 0.24)', 'rgba(0, 0, 0, 0.45)']}
                     style={StyleSheet.absoluteFill}
                   />
-                  <Ionicons name={p.icon} size={10} color={C.gold} style={{ marginRight: 4 }} />
+                  <Ionicons name={p.icon} size={11} color={C.gold} style={{ marginRight: 4.5 }} />
                   <Text style={styles.pillarBadgeText}>{p.badge}</Text>
                 </View>
               </View>
 
-              {/* Compact Content Body with Ample Breathing Room */}
+              {/* Deep Pine & Champagne Gold Editorial Body */}
               <View style={styles.pillarBody}>
-                <Text style={styles.pillarKicker}>{p.kicker}</Text>
+                <View style={styles.pillarKickerRow}>
+                  <Text style={styles.pillarKickerIndex}>0{index + 1}</Text>
+                  <View style={styles.pillarKickerDot} />
+                  <Text style={styles.pillarKicker}>{p.kicker}</Text>
+                </View>
+
                 <Text numberOfLines={1} style={styles.pillarTitle}>{p.title}</Text>
                 <Text numberOfLines={3} style={styles.pillarText}>{p.text}</Text>
 
-                {/* Micro spec chips */}
+                {/* Micro spec chips with champagne gold accents */}
                 <View style={styles.pillarChipsRow}>
                   {p.chips.map((c) => (
                     <View key={c} style={styles.pillarChip}>
-                      <Ionicons name="checkmark-circle" size={10} color={C.gold} style={{ marginRight: 3.5 }} />
+                      <Ionicons name="sparkles" size={9.5} color={C.gold} style={{ marginRight: 4 }} />
                       <Text style={styles.pillarChipText}>{c}</Text>
                     </View>
                   ))}
                 </View>
+
+                {/* Sleek Bottom Action Link */}
+                <View style={styles.pillarActionRow}>
+                  <Text style={styles.pillarActionText}>Explore Experience</Text>
+                  <View style={styles.pillarActionIcon}>
+                    <Ionicons name="arrow-forward" size={11} color={C.cream} />
+                  </View>
+                </View>
               </View>
-            </View>
+            </PressableScale>
           )}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
@@ -861,8 +888,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   reviewTitle: {
-    fontFamily: FONTS.display,
-    fontSize: 17,
+    fontFamily: FONTS.displayItalic,
+    fontSize: 17.5,
     lineHeight: 22,
     color: C.pine,
     letterSpacing: -0.1,
@@ -923,9 +950,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 8.5,
-    paddingVertical: 4.5,
+    paddingVertical: 4,
     borderRadius: 8,
     backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.3)',
   },
   scorePillText: {
     fontFamily: FONTS.uiBold,
@@ -936,18 +965,18 @@ const styles = StyleSheet.create({
   pillarCard: {
     borderRadius: 24,
     overflow: 'hidden',
-    backgroundColor: C.pureWhite,
+    backgroundColor: C.pine,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
-    elevation: 3,
+    borderColor: 'rgba(200, 164, 106, 0.32)',
+    shadowColor: '#07160E',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.16,
+    shadowRadius: 18,
+    elevation: 5,
   },
   pillarPhotoWrap: {
     width: '100%',
-    height: 145,
+    height: 155,
     backgroundColor: C.pine,
     position: 'relative',
     padding: 12,
@@ -958,8 +987,8 @@ const styles = StyleSheet.create({
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
+    paddingHorizontal: 8.5,
+    paddingVertical: 4,
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
@@ -968,32 +997,49 @@ const styles = StyleSheet.create({
   pillarBadgeText: {
     fontFamily: FONTS.uiBold,
     fontSize: 8,
-    letterSpacing: 0.9,
+    letterSpacing: 1,
     color: '#FFFFFF',
   },
   pillarBody: {
     paddingHorizontal: 18,
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: 14,
+    paddingBottom: 18,
+  },
+  pillarKickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pillarKickerIndex: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9,
+    letterSpacing: 1.2,
+    color: C.gold,
+  },
+  pillarKickerDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: C.gold,
+    marginHorizontal: 6,
   },
   pillarKicker: {
     fontFamily: FONTS.uiBold,
     fontSize: 8.5,
-    letterSpacing: 1.4,
+    letterSpacing: 1.5,
     color: C.gold,
   },
   pillarTitle: {
     fontFamily: FONTS.display,
-    fontSize: 18,
-    lineHeight: 22,
-    color: C.pine,
-    marginTop: 3,
+    fontSize: 19,
+    lineHeight: 23,
+    color: '#FFFDF9',
+    marginTop: 4,
   },
   pillarText: {
     fontFamily: FONTS.ui,
     fontSize: 12,
     lineHeight: 17,
-    color: C.ink70,
+    color: 'rgba(245, 242, 235, 0.82)',
     marginTop: 6,
     minHeight: 34,
   },
@@ -1004,21 +1050,45 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: C.line,
+    borderTopColor: 'rgba(200, 164, 106, 0.22)',
   },
   pillarChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 7.5,
+    paddingHorizontal: 8,
     paddingVertical: 3.5,
     borderRadius: 7,
-    backgroundColor: 'rgba(200, 164, 106, 0.08)',
+    backgroundColor: 'rgba(200, 164, 106, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.22)',
+    borderColor: 'rgba(200, 164, 106, 0.28)',
   },
   pillarChipText: {
     fontFamily: FONTS.uiSemi,
     fontSize: 10,
-    color: C.pine,
+    color: '#FAF8F4',
+  },
+  pillarActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(200, 164, 106, 0.22)',
+  },
+  pillarActionText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    color: C.gold,
+    textTransform: 'uppercase',
+  },
+  pillarActionIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(200, 164, 106, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
