@@ -382,7 +382,6 @@ const ResidenceCard = memo(function ResidenceCard({
           <BlurView
             intensity={60}
             tint="light"
-            blurMethod="dimezisBlurView"
             style={StyleSheet.absoluteFill}
           />
           <LinearGradient
@@ -425,7 +424,6 @@ const ExperienceCard = memo(function ExperienceCard({
           <BlurView
             intensity={60}
             tint="light"
-            blurMethod="dimezisBlurView"
             style={StyleSheet.absoluteFill}
           />
           <LinearGradient
