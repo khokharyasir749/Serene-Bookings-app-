@@ -14,10 +14,10 @@ type Props = {
 };
 
 /** Crystal glass, as in the Serene Groups app: a light blur, a faint ivory tint and a white specular hairline. */
-export default function GlassSurface({ blurTarget, radius, intensity = 28, style, children }: Props) {
+export default function GlassSurface({ blurTarget, radius, intensity = 55, style, children }: Props) {
   return (
     <View style={[styles.shell, { borderRadius: radius }, style]}>
-      <BlurView blurTarget={blurTarget} blurMethod="dimezisBlurView" tint="light" intensity={intensity} style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
+      <BlurView blurTarget={blurTarget} tint="light" intensity={intensity} style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
       <View style={[StyleSheet.absoluteFill, styles.tint, { borderRadius: radius }]} />
       {children}
     </View>
@@ -25,6 +25,6 @@ export default function GlassSurface({ blurTarget, radius, intensity = 28, style
 }
 
 const styles = StyleSheet.create({
-  shell: { overflow: 'hidden', borderWidth: 1, borderColor: C.dockBorder },
-  tint: { backgroundColor: C.dockGlass },
+  shell: { overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.92)' },
+  tint: { backgroundColor: 'rgba(255, 255, 255, 0.76)' },
 });

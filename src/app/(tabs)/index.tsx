@@ -302,6 +302,9 @@ export default function Discover() {
             keyExtractor={(r) => r.id}
             renderItem={({ item }) => (
               <View style={[styles.reviewCard, { width: reviewW }]}>
+                {/* Subtle Editorial Pull-Quote Watermark */}
+                <Text style={styles.quoteWatermark}>“</Text>
+
                 {/* Header: Stars + Tiny Elegant Verified Badge */}
                 <View style={styles.reviewCardTop}>
                   <View style={styles.starsRow}>
@@ -375,25 +378,25 @@ export default function Discover() {
               scaleTo={0.98}
               style={[styles.pillarCard, { width: pillarW }]}
             >
-              {/* Photo Showcase with Seamless Deep Pine Scrim Blend */}
-              <View style={styles.pillarPhotoWrap}>
-                <Photo src={p.image} style={StyleSheet.absoluteFill} />
-                <LinearGradient
-                  colors={[
-                    'rgba(0, 0, 0, 0.3)',
-                    'transparent',
-                    'rgba(18, 53, 36, 0.65)',
-                    C.pine,
-                  ]}
-                  locations={[0, 0.35, 0.8, 1]}
-                  style={StyleSheet.absoluteFill}
-                />
+              {/* Full-bleed Photo with Cinematic Gradient Scrim */}
+              <Photo src={p.image} style={StyleSheet.absoluteFill} />
+              <LinearGradient
+                colors={[
+                  'rgba(0, 0, 0, 0.4)',
+                  'transparent',
+                  'rgba(18, 53, 36, 0.55)',
+                  'rgba(10, 28, 18, 0.94)',
+                ]}
+                locations={[0, 0.25, 0.6, 1]}
+                style={StyleSheet.absoluteFill}
+              />
 
-                {/* Floating Inset Crystal Glass Badge */}
+              {/* Floating Top Crystal Badge */}
+              <View style={styles.pillarTopRow}>
                 <View style={styles.pillarBadge}>
-                  <BlurView intensity={65} tint="dark" style={StyleSheet.absoluteFill} />
+                  <BlurView intensity={70} tint="light" style={StyleSheet.absoluteFill} />
                   <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.24)', 'rgba(0, 0, 0, 0.45)']}
+                    colors={['rgba(255, 255, 255, 0.38)', 'rgba(255, 255, 255, 0.12)']}
                     style={StyleSheet.absoluteFill}
                   />
                   <Ionicons name={p.icon} size={11} color={C.gold} style={{ marginRight: 4.5 }} />
@@ -401,8 +404,10 @@ export default function Discover() {
                 </View>
               </View>
 
-              {/* Deep Pine & Champagne Gold Editorial Body */}
-              <View style={styles.pillarBody}>
+              <View style={{ flex: 1 }} />
+
+              {/* Bottom Editorial Content Floating Over Cinematic Photo */}
+              <View style={styles.pillarOverlayContent}>
                 <View style={styles.pillarKickerRow}>
                   <Text style={styles.pillarKickerIndex}>0{index + 1}</Text>
                   <View style={styles.pillarKickerDot} />
@@ -410,9 +415,9 @@ export default function Discover() {
                 </View>
 
                 <Text numberOfLines={1} style={styles.pillarTitle}>{p.title}</Text>
-                <Text numberOfLines={3} style={styles.pillarText}>{p.text}</Text>
+                <Text numberOfLines={2} style={styles.pillarText}>{p.text}</Text>
 
-                {/* Micro spec chips with champagne gold accents */}
+                {/* Micro spec chips inside sheer crystal glass */}
                 <View style={styles.pillarChipsRow}>
                   {p.chips.map((c) => (
                     <View key={c} style={styles.pillarChip}>
@@ -422,7 +427,7 @@ export default function Discover() {
                   ))}
                 </View>
 
-                {/* Sleek Bottom Action Link */}
+                {/* Sleek action link */}
                 <View style={styles.pillarActionRow}>
                   <Text style={styles.pillarActionText}>Explore Experience</Text>
                   <View style={styles.pillarActionIcon}>
@@ -851,12 +856,22 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(200, 164, 106, 0.28)',
     minHeight: 216,
     justifyContent: 'space-between',
+    position: 'relative',
     overflow: 'hidden',
     shadowColor: '#123524',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 14,
     elevation: 3,
+  },
+  quoteWatermark: {
+    position: 'absolute',
+    top: 32,
+    right: 18,
+    fontFamily: FONTS.display,
+    fontSize: 68,
+    lineHeight: 68,
+    color: 'rgba(200, 164, 106, 0.08)',
   },
   reviewCardTop: {
     flexDirection: 'row',
@@ -963,32 +978,32 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   pillarCard: {
-    borderRadius: 24,
+    height: 330,
+    borderRadius: 26,
     overflow: 'hidden',
     backgroundColor: C.pine,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.32)',
+    borderColor: 'rgba(200, 164, 106, 0.35)',
     shadowColor: '#07160E',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
-    elevation: 5,
-  },
-  pillarPhotoWrap: {
-    width: '100%',
-    height: 155,
-    backgroundColor: C.pine,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 22,
+    elevation: 6,
     position: 'relative',
-    padding: 12,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  pillarTopRow: {
+    padding: 14,
+    alignItems: 'flex-start',
+    zIndex: 2,
   },
   pillarBadge: {
     alignSelf: 'flex-start',
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8.5,
-    paddingVertical: 4,
+    paddingHorizontal: 9.5,
+    paddingVertical: 4.5,
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
@@ -996,14 +1011,14 @@ const styles = StyleSheet.create({
   },
   pillarBadgeText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 8,
-    letterSpacing: 1,
+    fontSize: 8.5,
+    letterSpacing: 1.1,
     color: '#FFFFFF',
   },
-  pillarBody: {
+  pillarOverlayContent: {
     paddingHorizontal: 18,
-    paddingTop: 14,
     paddingBottom: 18,
+    zIndex: 2,
   },
   pillarKickerRow: {
     flexDirection: 'row',
@@ -1030,27 +1045,27 @@ const styles = StyleSheet.create({
   },
   pillarTitle: {
     fontFamily: FONTS.display,
-    fontSize: 19,
-    lineHeight: 23,
-    color: '#FFFDF9',
+    fontSize: 21,
+    lineHeight: 25,
+    letterSpacing: -0.2,
+    color: '#FFFFFF',
     marginTop: 4,
   },
   pillarText: {
     fontFamily: FONTS.ui,
     fontSize: 12,
     lineHeight: 17,
-    color: 'rgba(245, 242, 235, 0.82)',
-    marginTop: 6,
-    minHeight: 34,
+    color: 'rgba(245, 242, 235, 0.88)',
+    marginTop: 5,
   },
   pillarChipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
-    marginTop: 12,
-    paddingTop: 12,
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(200, 164, 106, 0.22)',
+    borderTopColor: 'rgba(200, 164, 106, 0.25)',
   },
   pillarChip: {
     flexDirection: 'row',
@@ -1058,27 +1073,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3.5,
     borderRadius: 7,
-    backgroundColor: 'rgba(200, 164, 106, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
+    borderColor: 'rgba(255, 255, 255, 0.24)',
   },
   pillarChipText: {
     fontFamily: FONTS.uiSemi,
     fontSize: 10,
-    color: '#FAF8F4',
+    color: '#FFFFFF',
   },
   pillarActionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 14,
-    paddingTop: 12,
+    marginTop: 12,
+    paddingTop: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(200, 164, 106, 0.22)',
+    borderTopColor: 'rgba(200, 164, 106, 0.25)',
   },
   pillarActionText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 10,
+    fontSize: 9.5,
     letterSpacing: 1.2,
     color: C.gold,
     textTransform: 'uppercase',

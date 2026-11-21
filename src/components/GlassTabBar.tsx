@@ -62,8 +62,8 @@ export function DockBridge(props: DockProps) {
 function Item({ icon, label, focused, onPress }: { icon: Glyph; label: string; focused: boolean; onPress: () => void }) {
   const scale = useRef(new Animated.Value(1)).current;
   const to = (v: number) => Animated.spring(scale, { toValue: v, speed: 40, bounciness: 6, useNativeDriver: true }).start();
-  const iconColor = focused ? C.gold : C.dockInactive;
-  const textColor = focused ? '#FFFFFF' : C.dockInactive;
+  const iconColor = focused ? C.pine : C.dockInactive;
+  const textColor = focused ? C.pine : C.dockInactive;
   return (
     <Pressable onPress={onPress} onPressIn={() => to(0.92)} onPressOut={() => to(1)} accessibilityRole="tab" accessibilityState={{ selected: focused }} accessibilityLabel={label} style={styles.item}>
       <Animated.View style={[styles.pill, focused && styles.pillOn, { transform: [{ scale }] }]}>
@@ -86,7 +86,7 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { bottom: insets.bottom + 10 }]}>
       <View style={styles.dockShadow}>
-        <GlassSurface blurTarget={blurTarget} radius={DOCK_RADIUS} intensity={40} style={styles.dock}>
+        <GlassSurface blurTarget={blurTarget} radius={DOCK_RADIUS} intensity={60} style={styles.dock}>
           {state.routes.map((r, i) => {
             const icon = ICON[r.name];
             if (!icon) return null;
@@ -98,7 +98,7 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
       </View>
       {showTop && (
         <View style={styles.topShadow}>
-          <GlassSurface blurTarget={blurTarget} radius={16} intensity={40} style={styles.top}>
+          <GlassSurface blurTarget={blurTarget} radius={16} intensity={60} style={styles.top}>
             <Pressable onPress={scrollActiveToTop} style={styles.topHit} accessibilityRole="button" accessibilityLabel="Scroll to top">
               <Ionicons name="chevron-up-outline" size={15} color={C.pine} />
             </Pressable>
@@ -118,6 +118,6 @@ const styles = StyleSheet.create({
   dock: { flexDirection: 'row', alignItems: 'center', height: S.tabBar, paddingHorizontal: 8 },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   pill: { alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 8, minWidth: 66, height: 48, borderRadius: 999, borderWidth: 1, borderColor: 'transparent' },
-  pillOn: { backgroundColor: C.pine, borderColor: 'rgba(200, 164, 106, 0.4)', ...shadow.pill },
+  pillOn: { backgroundColor: 'rgba(255, 255, 255, 0.95)', borderColor: 'rgba(255, 255, 255, 0.95)', ...shadow.pill },
   label: { fontSize: 10, fontFamily: FONTS.uiBold, letterSpacing: 1.2 },
 });
