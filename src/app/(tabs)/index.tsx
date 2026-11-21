@@ -96,8 +96,8 @@ export default function Discover() {
   const { ref, onScroll } = useScrollTop();
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const resW = Math.min(312, Math.round(width * 0.78));
-  const reviewW = Math.min(320, Math.round(width * 0.82));
-  const pillarW = Math.min(276, Math.round(width * 0.72));
+  const reviewW = Math.min(340, Math.round(width * 0.86));
+  const pillarW = Math.min(320, Math.round(width * 0.82));
 
   useFocusEffect(
     useCallback(() => {
@@ -121,7 +121,7 @@ export default function Discover() {
         onScroll={onScroll}
         scrollEventThrottle={64}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
+        contentContainerStyle={{ paddingTop: 0, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 36) }}
       >
         {/* Full-Bleed Panoramic Mountain Hero Stage */}
         <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
@@ -302,34 +302,31 @@ export default function Discover() {
             keyExtractor={(r) => r.id}
             renderItem={({ item }) => (
               <View style={[styles.reviewCard, { width: reviewW }]}>
-                {/* Decorative Watermark Quote */}
-                <Text style={styles.quoteWatermark}>“</Text>
-
-                {/* Header: Stars + Verified Badge */}
+                {/* Header: Stars + Tiny Elegant Verified Badge */}
                 <View style={styles.reviewCardTop}>
-                  <View style={{ flexDirection: 'row', gap: 3 }}>
+                  <View style={styles.starsRow}>
                     {Array.from({ length: 5 }).map((_, k) => (
                       <Ionicons
                         key={k}
                         name={k < item.rating ? 'star' : 'star-outline'}
-                        size={14}
+                        size={13.5}
                         color={C.gold}
                       />
                     ))}
                   </View>
                   <View style={styles.verifiedBadge}>
-                    <Ionicons name="shield-checkmark" size={12} color={C.positive} style={{ marginRight: 4 }} />
+                    <Ionicons name="shield-checkmark" size={11} color={C.positive} style={{ marginRight: 3.5 }} />
                     <Text style={styles.verifiedText}>Verified stay</Text>
                   </View>
                 </View>
 
-                {/* Review Headline & Body */}
-                <View style={{ marginVertical: 8 }}>
+                {/* Review Headline & Body with Elegant Line-Height */}
+                <View style={styles.reviewContent}>
                   <Text style={styles.reviewTitle}>"{item.title}"</Text>
                   <Text numberOfLines={3} style={styles.reviewBody}>{item.body}</Text>
                 </View>
 
-                {/* Author Monogram + Info + Rating Score Badge */}
+                {/* Author Monogram + Info + Rating Score Badge Vertically Centered */}
                 <View style={styles.reviewFooter}>
                   <View style={styles.reviewAuthorBlock}>
                     <View style={styles.authorAvatar}>
@@ -378,29 +375,29 @@ export default function Discover() {
                 <Photo src={p.image} style={StyleSheet.absoluteFill} />
                 <Scrim bottom={0.45} />
 
-                {/* Floating Crystal Badge on Image */}
+                {/* Floating Inset Crystal Badge on Image */}
                 <View style={styles.pillarBadge}>
                   <BlurView intensity={50} tint="dark" style={StyleSheet.absoluteFill} />
                   <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.18)', 'rgba(0, 0, 0, 0.35)']}
+                    colors={['rgba(255, 255, 255, 0.22)', 'rgba(0, 0, 0, 0.4)']}
                     style={StyleSheet.absoluteFill}
                   />
-                  <Ionicons name={p.icon} size={11} color={C.gold} style={{ marginRight: 4 }} />
+                  <Ionicons name={p.icon} size={10} color={C.gold} style={{ marginRight: 4 }} />
                   <Text style={styles.pillarBadgeText}>{p.badge}</Text>
                 </View>
               </View>
 
-              {/* Compact Content Body */}
+              {/* Compact Content Body with Ample Breathing Room */}
               <View style={styles.pillarBody}>
                 <Text style={styles.pillarKicker}>{p.kicker}</Text>
                 <Text numberOfLines={1} style={styles.pillarTitle}>{p.title}</Text>
-                <Text numberOfLines={2} style={styles.pillarText}>{p.text}</Text>
+                <Text numberOfLines={3} style={styles.pillarText}>{p.text}</Text>
 
                 {/* Micro spec chips */}
                 <View style={styles.pillarChipsRow}>
                   {p.chips.map((c) => (
                     <View key={c} style={styles.pillarChip}>
-                      <Ionicons name="checkmark-circle" size={10.5} color={C.gold} style={{ marginRight: 3.5 }} />
+                      <Ionicons name="checkmark-circle" size={10} color={C.gold} style={{ marginRight: 3.5 }} />
                       <Text style={styles.pillarChipText}>{c}</Text>
                     </View>
                   ))}
@@ -413,12 +410,12 @@ export default function Discover() {
           snapToInterval={pillarW + 14}
           initialNumToRender={3}
           windowSize={3}
-          style={{ marginBottom: 16 }}
+          style={{ marginBottom: 12 }}
           contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
         />
 
         {/* Footer: concierge + contact */}
-        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 16} />
+        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 24} />
       </ScrollView>
     </View>
   );
@@ -824,51 +821,56 @@ const styles = StyleSheet.create({
     backgroundColor: C.pureWhite,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.32)',
-    minHeight: 220,
+    borderColor: 'rgba(200, 164, 106, 0.28)',
+    minHeight: 216,
     justifyContent: 'space-between',
-    position: 'relative',
     overflow: 'hidden',
-    ...shadow.cardHover,
-  },
-  quoteWatermark: {
-    position: 'absolute',
-    top: 6,
-    right: 14,
-    fontFamily: FONTS.display,
-    fontSize: 54,
-    lineHeight: 54,
-    color: 'rgba(200, 164, 106, 0.16)',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    elevation: 3,
   },
   reviewCardTop: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  starsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
   verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
+    paddingHorizontal: 7.5,
+    paddingVertical: 3,
     borderRadius: 999,
-    backgroundColor: 'rgba(29, 115, 72, 0.08)',
+    backgroundColor: 'rgba(29, 115, 72, 0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(29, 115, 72, 0.16)',
   },
   verifiedText: {
     fontFamily: FONTS.uiSemi,
-    fontSize: 10.5,
+    fontSize: 9.5,
+    letterSpacing: 0.2,
     color: C.positive,
+  },
+  reviewContent: {
+    marginVertical: 10,
   },
   reviewTitle: {
     fontFamily: FONTS.display,
-    fontSize: 20,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 22,
     color: C.pine,
-    marginTop: 10,
+    letterSpacing: -0.1,
   },
   reviewBody: {
     fontFamily: FONTS.ui,
-    fontSize: 13,
-    lineHeight: 19.5,
+    fontSize: 12.5,
+    lineHeight: 18.5,
     color: C.ink70,
     marginTop: 6,
   },
@@ -877,24 +879,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 14,
-    paddingTop: 10,
+    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.line,
   },
   reviewAuthorBlock: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 9,
+    gap: 10,
     flex: 1,
-    marginRight: 8,
+    marginRight: 10,
   },
   authorAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(200, 164, 106, 0.16)',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(200, 164, 106, 0.14)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.35)',
+    borderColor: 'rgba(200, 164, 106, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -904,19 +906,24 @@ const styles = StyleSheet.create({
     color: C.pine,
   },
   reviewAuthor: {
-    fontFamily: FONTS.uiBold,
+    fontFamily: FONTS.uiSemi,
     fontSize: 12,
+    lineHeight: 16,
     color: C.pine,
   },
   reviewRoom: {
     fontFamily: FONTS.ui,
-    fontSize: 11,
+    fontSize: 10.5,
+    lineHeight: 14,
     color: C.ink55,
-    marginTop: 1,
+    marginTop: 1.5,
   },
   scorePill: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8.5,
+    paddingVertical: 4.5,
     borderRadius: 8,
     backgroundColor: C.pine,
   },
@@ -924,26 +931,26 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.uiBold,
     fontSize: 11,
     color: C.gold,
-  },
-  pillarsContainer: {
-    paddingHorizontal: S.gutter,
-    gap: 16,
-    marginBottom: 12,
+    fontVariant: ['tabular-nums'],
   },
   pillarCard: {
-    borderRadius: 22,
+    borderRadius: 24,
     overflow: 'hidden',
     backgroundColor: C.pureWhite,
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.28)',
-    ...shadow.cardHover,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    elevation: 3,
   },
   pillarPhotoWrap: {
     width: '100%',
-    height: 130,
+    height: 145,
     backgroundColor: C.pine,
     position: 'relative',
-    padding: 10,
+    padding: 12,
     justifyContent: 'flex-start',
   },
   pillarBadge: {
@@ -951,26 +958,28 @@ const styles = StyleSheet.create({
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderColor: 'rgba(255, 255, 255, 0.45)',
   },
   pillarBadgeText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 1,
+    fontSize: 8,
+    letterSpacing: 0.9,
     color: '#FFFFFF',
   },
   pillarBody: {
-    padding: 14,
+    paddingHorizontal: 18,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
   pillarKicker: {
     fontFamily: FONTS.uiBold,
-    fontSize: 9,
-    letterSpacing: 1.3,
+    fontSize: 8.5,
+    letterSpacing: 1.4,
     color: C.gold,
   },
   pillarTitle: {
@@ -978,37 +987,38 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 22,
     color: C.pine,
-    marginTop: 4,
+    marginTop: 3,
   },
   pillarText: {
     fontFamily: FONTS.ui,
     fontSize: 12,
-    lineHeight: 16.5,
+    lineHeight: 17,
     color: C.ink70,
-    marginTop: 5,
+    marginTop: 6,
+    minHeight: 34,
   },
   pillarChipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
-    marginTop: 10,
-    paddingTop: 10,
+    marginTop: 12,
+    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.line,
   },
   pillarChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: 'rgba(200, 164, 106, 0.1)',
+    paddingHorizontal: 7.5,
+    paddingVertical: 3.5,
+    borderRadius: 7,
+    backgroundColor: 'rgba(200, 164, 106, 0.08)',
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.22)',
   },
   pillarChipText: {
     fontFamily: FONTS.uiSemi,
-    fontSize: 10.5,
+    fontSize: 10,
     color: C.pine,
   },
 });

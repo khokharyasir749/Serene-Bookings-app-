@@ -28,7 +28,7 @@ export default function Trips() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView ref={ref} onScroll={onScroll} scrollEventThrottle={64} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: tabBarSpace(insets.bottom), paddingHorizontal: S.gutter }} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={ref} onScroll={onScroll} scrollEventThrottle={64} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 32), paddingHorizontal: S.gutter }} showsVerticalScrollIndicator={false}>
         <View style={{ marginHorizontal: -S.gutter }}>
           <BrandHeader />
         </View>

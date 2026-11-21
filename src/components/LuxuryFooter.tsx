@@ -53,8 +53,8 @@ function SiteButton({ icon, label, value, href, primary }: { icon: Glyph; label:
 /** Discover's closing section: light, full-bleed and centred — crest, heading, contact lines, both sites as buttons, social. */
 export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
   return (
-    // Extra bottom space keeps the © line clear of the floating scroll-to-top arrow that sits above the dock.
-    <View style={[styles.wrap, { paddingBottom: bottomSpace + 28 }]}>
+    // Extra bottom space keeps the footer and © line generously clear of the floating dock and scroll-to-top arrow.
+    <View style={[styles.wrap, { paddingBottom: bottomSpace + 40 }]}>
       <View style={styles.head}>
         <SereneLogoMark size={44} />
         <Text style={styles.title}>Reservations & Concierge</Text>
@@ -86,10 +86,10 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { marginTop: 36, paddingTop: 30, paddingHorizontal: S.gutter, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+  wrap: { marginTop: 48, paddingTop: 36, paddingHorizontal: S.gutter, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
   head: { alignItems: 'center' },
-  title: { color: C.ink, fontFamily: FONTS.display, fontSize: 27, lineHeight: 31, textAlign: 'center', marginTop: 14 },
-  lede: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 13.5, lineHeight: 19, textAlign: 'center', marginTop: 6, maxWidth: 280 },
+  title: { color: C.pine, fontFamily: FONTS.display, fontSize: 26, lineHeight: 30, textAlign: 'center', marginTop: 14 },
+  lede: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 13, lineHeight: 18.5, textAlign: 'center', marginTop: 6, maxWidth: 280 },
   group: { marginTop: 22, borderRadius: 20, backgroundColor: C.pureWhite, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12 },
   rowLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },

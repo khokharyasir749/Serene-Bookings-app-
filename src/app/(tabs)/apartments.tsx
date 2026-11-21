@@ -155,7 +155,7 @@ export default function Apartments() {
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: C.sand }}
-      contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: tabBarSpace(insets.bottom) }}
+      contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 32) }}
     />
     <Sheet open={sortOpen} onClose={() => setSortOpen(false)} title="Sort stays">
       <View style={{ paddingHorizontal: S.gutter, paddingBottom: 8 }}>
