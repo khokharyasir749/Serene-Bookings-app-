@@ -62,29 +62,29 @@ const EDITORIAL_PILLARS = [
   {
     badge: '7,906 FT ELEVATION',
     icon: 'trail-sign-outline' as const,
-    kicker: 'REAL MOUNTAIN AIR · GALIYAT',
-    title: '7,906 ft above the noise, two hours from Islamabad',
-    text: 'Set in the pine forests of the Galiyat beside PAF Airbase Nathia Gali, with cool summers, snowy winters and panoramic valley views from every private balcony.',
+    kicker: 'REAL MOUNTAIN AIR',
+    title: '7,906 ft above the noise',
+    text: 'Crisp pine forest air, cool summers, snowy winters, and unbroken valley views from every terrace.',
     image: '/images/interiors/window-view.jpg',
-    chips: ['Pine Valley Canopy', '2 Hrs from Islamabad', 'Crisp Alpine Breeze'],
+    chips: ['Pine Valley Canopy', '2 Hrs from ISB'],
   },
   {
     badge: 'ALL-YEAR RESORT',
     icon: 'snow-outline' as const,
     kicker: 'MADE FOR EVERY SEASON',
-    title: "Pakistan's first winter resort, open all year round",
-    text: 'An indoor temperature-controlled infinity pool under glass, cedarwood sauna and spa, snow ski slope, mini golf, archery, and panoramic rooftop dining—all a short walk from your suite.',
+    title: "Pakistan's first winter resort",
+    text: 'Heated glass infinity pool, cedarwood sauna, private snow ski slope, and cloud-level rooftop dining.',
     image: '/images/resort/glass-roof-pool.jpg',
-    chips: ['Heated Glass Pool', 'Private Ski Slope', 'Panoramic Dining'],
+    chips: ['Heated Pool', 'Ski Slope'],
   },
   {
     badge: 'SERVICED LIVING',
     icon: 'key-outline' as const,
-    kicker: 'FULLY MANAGED RESIDENCES',
-    title: 'A furnished mountain home, with a luxury hotel behind it',
-    text: 'Daily housekeeping, 24/7 front desk and concierge, in-residence room service, and underfloor radiant heating throughout. Arrive, unpack, and settle into effortless alpine comfort.',
+    kicker: 'FULLY MANAGED LIVING',
+    title: 'A home with a hotel behind it',
+    text: 'Daily housekeeping, 24/7 concierge, in-room dining, and underfloor radiant heating throughout.',
     image: '/images/interiors/living-room-wide.jpg',
-    chips: ['24/7 Concierge', 'Underfloor Heating', 'Daily Housekeeping'],
+    chips: ['24/7 Concierge', 'Heated Floors'],
   },
 ];
 
@@ -97,6 +97,7 @@ export default function Discover() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const resW = Math.min(312, Math.round(width * 0.78));
   const reviewW = Math.min(320, Math.round(width * 0.82));
+  const pillarW = Math.min(276, Math.round(width * 0.72));
 
   useFocusEffect(
     useCallback(() => {
@@ -360,15 +361,19 @@ export default function Discover() {
           />
         </View>
 
-        {/* Why Serene Heights Editorial Showcase */}
+        {/* Why Serene Heights Compact Editorial Carousel */}
         <SectionHead
           title="Why Serene Heights"
           sub="Crafted for year-round alpine luxury"
         />
-        <View style={styles.pillarsContainer}>
-          {EDITORIAL_PILLARS.map((p) => (
-            <View key={p.kicker} style={styles.pillarCard}>
-              {/* Cinematic Header Photography */}
+        <FlatList
+          horizontal
+          nestedScrollEnabled
+          data={EDITORIAL_PILLARS}
+          keyExtractor={(p) => p.kicker}
+          renderItem={({ item: p }) => (
+            <View style={[styles.pillarCard, { width: pillarW }]}>
+              {/* Compact Header Photography */}
               <View style={styles.pillarPhotoWrap}>
                 <Photo src={p.image} style={StyleSheet.absoluteFill} />
                 <Scrim bottom={0.45} />
@@ -380,30 +385,37 @@ export default function Discover() {
                     colors={['rgba(255, 255, 255, 0.18)', 'rgba(0, 0, 0, 0.35)']}
                     style={StyleSheet.absoluteFill}
                   />
-                  <Ionicons name={p.icon} size={12} color={C.gold} style={{ marginRight: 5 }} />
+                  <Ionicons name={p.icon} size={11} color={C.gold} style={{ marginRight: 4 }} />
                   <Text style={styles.pillarBadgeText}>{p.badge}</Text>
                 </View>
               </View>
 
-              {/* Content Body */}
+              {/* Compact Content Body */}
               <View style={styles.pillarBody}>
                 <Text style={styles.pillarKicker}>{p.kicker}</Text>
-                <Text style={styles.pillarTitle}>{p.title}</Text>
-                <Text style={styles.pillarText}>{p.text}</Text>
+                <Text numberOfLines={1} style={styles.pillarTitle}>{p.title}</Text>
+                <Text numberOfLines={2} style={styles.pillarText}>{p.text}</Text>
 
                 {/* Micro spec chips */}
                 <View style={styles.pillarChipsRow}>
                   {p.chips.map((c) => (
                     <View key={c} style={styles.pillarChip}>
-                      <Ionicons name="checkmark-circle" size={11.5} color={C.gold} style={{ marginRight: 4 }} />
+                      <Ionicons name="checkmark-circle" size={10.5} color={C.gold} style={{ marginRight: 3.5 }} />
                       <Text style={styles.pillarChipText}>{c}</Text>
                     </View>
                   ))}
                 </View>
               </View>
             </View>
-          ))}
-        </View>
+          )}
+          showsHorizontalScrollIndicator={false}
+          decelerationRate="fast"
+          snapToInterval={pillarW + 14}
+          initialNumToRender={3}
+          windowSize={3}
+          style={{ marginBottom: 16 }}
+          contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
+        />
 
         {/* Footer: concierge + contact */}
         <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 16} />
@@ -919,19 +931,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   pillarCard: {
-    borderRadius: 26,
+    borderRadius: 22,
     overflow: 'hidden',
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.3)',
+    borderColor: 'rgba(200, 164, 106, 0.28)',
     ...shadow.cardHover,
   },
   pillarPhotoWrap: {
     width: '100%',
-    height: 180,
+    height: 130,
     backgroundColor: C.pine,
     position: 'relative',
-    padding: 14,
+    padding: 10,
     justifyContent: 'flex-start',
   },
   pillarBadge: {
@@ -939,8 +951,8 @@ const styles = StyleSheet.create({
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 11,
-    paddingVertical: 5.5,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
@@ -948,55 +960,55 @@ const styles = StyleSheet.create({
   },
   pillarBadgeText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 9.5,
-    letterSpacing: 1.1,
+    fontSize: 8.5,
+    letterSpacing: 1,
     color: '#FFFFFF',
   },
   pillarBody: {
-    padding: 20,
+    padding: 14,
   },
   pillarKicker: {
     fontFamily: FONTS.uiBold,
-    fontSize: 10,
-    letterSpacing: 1.5,
+    fontSize: 9,
+    letterSpacing: 1.3,
     color: C.gold,
   },
   pillarTitle: {
     fontFamily: FONTS.display,
-    fontSize: 22,
-    lineHeight: 27,
+    fontSize: 18,
+    lineHeight: 22,
     color: C.pine,
-    marginTop: 5,
+    marginTop: 4,
   },
   pillarText: {
     fontFamily: FONTS.ui,
-    fontSize: 13.5,
-    lineHeight: 20,
+    fontSize: 12,
+    lineHeight: 16.5,
     color: C.ink70,
-    marginTop: 8,
+    marginTop: 5,
   },
   pillarChipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 7,
-    marginTop: 14,
-    paddingTop: 14,
+    gap: 6,
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.line,
   },
   pillarChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
     backgroundColor: 'rgba(200, 164, 106, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(200, 164, 106, 0.22)',
   },
   pillarChipText: {
     fontFamily: FONTS.uiSemi,
-    fontSize: 11,
+    fontSize: 10.5,
     color: C.pine,
   },
 });
