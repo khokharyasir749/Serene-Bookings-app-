@@ -95,14 +95,11 @@ export default function Apartments() {
     <View>
       <BrandHeader />
       <View style={{ paddingHorizontal: S.gutter, marginTop: 22 }}>
-        <View style={styles.eyebrowRow}>
-          <View style={styles.goldDot} />
-          <Text style={styles.eyebrowText}>
-            {fmtShort(stay.checkIn)} – {fmtShort(stay.checkOut)} · {guestsLabel(stay.adults, stay.children).toUpperCase()}
-          </Text>
-        </View>
-        <Text style={styles.headerTitle}>{nights}-Night Alpine {plural(nights, 'Stay', 'Stays')}</Text>
-        <Text style={styles.headerSub}>Serene Heights, Nathia Gali · taxes & resort amenities included</Text>
+        <Text style={styles.eyebrowText}>
+          {`${fmtShort(stay.checkIn)} – ${fmtShort(stay.checkOut)} · ${guestsLabel(stay.adults, stay.children)}`.toUpperCase()}
+        </Text>
+        <Text style={styles.headerTitle}>Available Residences</Text>
+        <Text style={styles.headerSub}>Serene Heights, Nathia Gali · taxes included</Text>
         <View style={{ marginTop: 16 }}>
           <StayBar stay={stay} onPress={() => router.push('/stay')} />
         </View>
@@ -127,7 +124,7 @@ export default function Apartments() {
         <Pressable onPress={() => setSortOpen(true)} hitSlop={6} style={styles.sortPill} accessibilityRole="button" accessibilityLabel={`Sort: ${sortLabel}`}>
           <Ionicons name="swap-vertical" size={13} color={C.pine} />
           <Text style={styles.sortPillText} numberOfLines={1}>{sortLabel}</Text>
-          <Ionicons name="chevron-down" size={12} color={C.gold} />
+          <Ionicons name="chevron-down" size={12} color={C.ink55} />
         </Pressable>
       </View>
     </View>
@@ -193,25 +190,13 @@ const Gap = () => <View style={{ height: 20 }} />;
 function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} hitSlop={4} style={[styles.chip, on && styles.chipOn]} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
-      {on && <Ionicons name="checkmark" size={13} color={C.gold} />}
+      {on && <Ionicons name="checkmark" size={13} color={C.cream} />}
       <Text style={[styles.chipText, on && styles.chipTextOn]}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  eyebrowRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  goldDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: C.gold,
-    marginRight: 6,
-  },
   eyebrowText: {
     fontFamily: FONTS.uiBold,
     fontSize: 9.5,
@@ -220,11 +205,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontFamily: FONTS.display,
-    fontSize: 34,
-    lineHeight: 38,
-    letterSpacing: -0.4,
+    fontSize: 32,
+    lineHeight: 36,
+    letterSpacing: -0.3,
     color: C.pine,
-    marginTop: 2,
+    marginTop: 3,
   },
   headerSub: {
     fontFamily: FONTS.ui,
@@ -243,30 +228,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
     paddingHorizontal: 14,
-    height: 36,
+    height: 35,
     borderRadius: 999,
-    backgroundColor: C.white,
+    backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
+    borderColor: C.line,
   },
   chipOn: {
     backgroundColor: C.pine,
-    borderColor: 'rgba(200, 164, 106, 0.4)',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 3,
+    borderColor: C.pine,
   },
   chipText: {
     fontSize: 12.5,
     fontFamily: FONTS.uiSemi,
-    color: C.pine,
+    color: C.ink,
   },
   chipTextOn: {
     color: C.cream,
@@ -278,15 +253,10 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: 12,
     borderRadius: 999,
-    backgroundColor: C.white,
+    backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
+    borderColor: C.line,
     maxWidth: 200,
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
   },
   sortPillText: {
     flexShrink: 1,
@@ -295,7 +265,7 @@ const styles = StyleSheet.create({
     color: C.pine,
   },
   count: {
-    fontSize: 15,
+    fontSize: 14.5,
     fontFamily: FONTS.uiBold,
     color: C.pine,
     fontVariant: ['tabular-nums'],
@@ -309,7 +279,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 6,
-    backgroundColor: 'rgba(200, 164, 106, 0.12)',
+    backgroundColor: 'rgba(18, 53, 36, 0.08)',
   },
   reset: {
     fontSize: 11.5,

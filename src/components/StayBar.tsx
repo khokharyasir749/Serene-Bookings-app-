@@ -4,11 +4,10 @@ import { Text } from '@/components/Text';
 
 import { PressableScale } from '@/components/ui';
 import { fmtDay, plural, type Stay } from '@/lib/stay';
-import { C, FONTS, shadow } from '@/theme';
+import { C, FONTS } from '@/theme';
 
 /**
- * Luxury StayBar: Dates & Guests search pill
- * Warm Ivory surface, Champagne Gold icon accents, and Deep Forest Pine search button.
+ * Clean & Minimalist StayBar: Quiet monochrome luxury, zero clashing colors.
  */
 export default function StayBar({ stay, onPress }: { stay: Stay; onPress: () => void }) {
   return (
@@ -17,13 +16,11 @@ export default function StayBar({ stay, onPress }: { stay: Stay; onPress: () => 
       scaleTo={0.985}
       style={styles.bar}
       accessibilityRole="button"
-      accessibilityLabel={`Stay dates: ${fmtDay(stay.checkIn)} to ${fmtDay(stay.checkOut)}, guests: ${stay.adults + stay.children}`}
+      accessibilityLabel={`Dates: ${fmtDay(stay.checkIn)} to ${fmtDay(stay.checkOut)}, Guests: ${stay.adults + stay.children}`}
     >
       {/* Dates Cell */}
-      <View style={[styles.cell, { flex: 1.25 }]}>
-        <View style={styles.iconWell}>
-          <Ionicons name="calendar-outline" size={15} color={C.gold} />
-        </View>
+      <View style={[styles.cell, { flex: 1.2 }]}>
+        <Ionicons name="calendar-outline" size={17} color={C.pine} style={styles.icon} />
         <View style={styles.textWrap}>
           <Text style={styles.label}>DATES</Text>
           <Text style={styles.val} numberOfLines={1}>
@@ -36,9 +33,7 @@ export default function StayBar({ stay, onPress }: { stay: Stay; onPress: () => 
 
       {/* Guests Cell */}
       <View style={[styles.cell, { flex: 1 }]}>
-        <View style={styles.iconWell}>
-          <Ionicons name="people-outline" size={15} color={C.gold} />
-        </View>
+        <Ionicons name="people-outline" size={17} color={C.pine} style={styles.icon} />
         <View style={styles.textWrap}>
           <Text style={styles.label}>GUESTS</Text>
           <Text style={styles.val} numberOfLines={1}>
@@ -59,33 +54,28 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 12,
+    paddingLeft: 16,
     paddingRight: 6,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: C.white,
+    backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.32)',
+    borderColor: C.line,
     shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.07,
-    shadowRadius: 14,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   cell: {
     minWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     paddingVertical: 5,
   },
-  iconWell: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(200, 164, 106, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  icon: {
+    opacity: 0.75,
   },
   textWrap: {
     flex: 1,
@@ -94,7 +84,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 9,
     fontFamily: FONTS.uiBold,
-    letterSpacing: 1.3,
+    letterSpacing: 1.2,
     color: C.ink55,
   },
   val: {
@@ -106,21 +96,16 @@ const styles = StyleSheet.create({
   divider: {
     width: 1,
     height: 24,
-    marginHorizontal: 8,
-    backgroundColor: 'rgba(200, 164, 106, 0.25)',
+    marginHorizontal: 10,
+    backgroundColor: C.line,
   },
   go: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6,
     backgroundColor: C.pine,
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
 });
