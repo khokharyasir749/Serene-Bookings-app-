@@ -1,23 +1,22 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CalendarPlus, ChevronRight } from '@/components/icons';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Text } from '@/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BrandHeader from '@/components/BrandHeader';
 import FindBooking from '@/components/FindBooking';
 import { useScrollTop } from '@/components/ScrollTop';
 import Segmented from '@/components/Segmented';
+import SereneLogoMark from '@/components/SereneLogoMark';
 import StatusPill from '@/components/StatusPill';
-import { Button, Photo, PressableScale } from '@/components/ui';
+import { Text } from '@/components/Text';
+import { Photo, PressableScale } from '@/components/ui';
 import { fmtShort, guestsLabel, money, plural } from '@/lib/stay';
 import { tabOf, useBooking, type Tab } from '@/state/booking';
-import { C, F, FONTS, S, T, shadow, tabBarSpace } from '@/theme';
+import { C, FONTS, S } from '@/theme';
 
-// "My bookings" from the web account page.
 export default function Trips() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -27,37 +26,61 @@ export default function Trips() {
   const [tab, setTab] = useState<Tab>('upcoming');
   const list = bookings.filter((b) => tabOf(b) === tab);
 
+  const upcomingCount = bookings.filter((b) => tabOf(b) === 'upcoming').length;
+
   return (
     <View style={{ flex: 1, backgroundColor: C.sand }}>
       <StatusBar style="dark" />
-      <ScrollView ref={ref} onScroll={onScroll} scrollEventThrottle={64} contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 150, paddingHorizontal: S.gutter }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        ref={ref}
+        onScroll={onScroll}
+        scrollEventThrottle={64}
+        contentContainerStyle={{
+          paddingTop: insets.top + 8,
+          paddingBottom: 150,
+          paddingHorizontal: S.gutter,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ marginHorizontal: -S.gutter }}>
           <BrandHeader />
         </View>
-        <Text style={[T.eyebrow, { marginTop: 24 }]}>{user ? `${user.firstName} ${user.lastName}` : 'Your stays'}</Text>
-        <Text style={[T.h1, { marginTop: 4 }]}>Trips</Text>
-        <Text style={[T.small, { marginTop: 4 }]}>
-          {plural(bookings.filter((b) => tabOf(b) === 'upcoming').length, 'upcoming stay')} · {plural(bookings.length, 'booking')} in total
-        </Text>
 
+        {/* ── Editorial Header ── */}
+        <View style={styles.header}>
+          <Text style={styles.eyebrow}>
+            {user ? `${user.firstName} ${user.lastName}`.toUpperCase() : 'YOUR RESERVATIONS'}
+          </Text>
+          <Text style={styles.title}>Trips & Stays</Text>
+          <Text style={styles.sub}>
+            {`${plural(upcomingCount, 'upcoming stay')} · ${plural(bookings.length, 'booking')} in total`}
+          </Text>
+        </View>
+
+        {/* ── Guest Sync Banner (Replaces redundant second sign-in box) ── */}
         {!user && (
-          <View style={styles.signin}>
-            <View style={styles.signinIcon}>
-              <Ionicons name="person-outline" size={20} color={C.pine} />
+          <PressableScale
+            onPress={() => router.push('/login')}
+            scaleTo={0.99}
+            style={styles.guestBanner}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in to sync your bookings"
+          >
+            <View style={styles.guestBannerLeft}>
+              <Ionicons name="sparkles-outline" size={15} color={C.pine} style={{ marginRight: 8 }} />
+              <Text style={styles.guestBannerText}>
+                Sign in to save and access all your reservations
+              </Text>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[T.h3, { fontSize: 18, lineHeight: 22 }]} numberOfLines={1}>Keep your trips</Text>
-              <Text style={[T.small, { marginTop: 1 }]} numberOfLines={2}>Sign in to save every booking.</Text>
-            </View>
-            <Pressable onPress={() => router.push('/login')} style={({ pressed }) => [styles.signinBtn, pressed && { opacity: 0.85 }]} accessibilityRole="button">
-              <Text style={styles.signinBtnText}>Sign in</Text>
-            </Pressable>
-          </View>
+            <Ionicons name="arrow-forward" size={13} color={C.pine} />
+          </PressableScale>
         )}
 
+        {/* ── Booking Lookup Component ── */}
         <FindBooking autoOpen={lookup === '1'} />
 
-        <View style={{ marginTop: 16, marginBottom: 20 }}>
+        {/* ── Segmented Control ── */}
+        <View style={styles.segmentWrap}>
           <Segmented
             value={tab}
             onChange={setTab}
@@ -69,39 +92,79 @@ export default function Trips() {
           />
         </View>
 
+        {/* ── Main Content: Empty State or Booking List ── */}
         {list.length === 0 ? (
-          <View style={styles.empty}>
-            <View style={styles.emptyIcon}>
-              <CalendarPlus size={22} color={C.pine} strokeWidth={1.5} />
+          <View style={styles.emptyCard}>
+            <View style={styles.emptyCrestCircle}>
+              <SereneLogoMark size={40} color={C.pine} snow={C.sand} />
             </View>
-            <Text style={[T.h2, { marginTop: 16 }]}>
-              {tab === 'upcoming' ? 'No upcoming stays' : tab === 'past' ? 'No past stays yet' : 'No cancelled bookings'}
+
+            <Text style={styles.emptyTitle}>
+              {tab === 'upcoming'
+                ? 'No Upcoming Stays'
+                : tab === 'past'
+                  ? 'No Past Stays Yet'
+                  : 'No Cancelled Bookings'}
             </Text>
+
+            <Text style={styles.emptyLede}>
+              {tab === 'upcoming'
+                ? 'When you reserve an apartment at Serene Heights, your itinerary, check-in instructions, and concierge bookings will appear here.'
+                : 'Your completed mountain stays will be archived here for quick rebooking.'}
+            </Text>
+
             {tab === 'upcoming' && (
-              <>
-                <Text style={[T.small, { textAlign: 'center', marginTop: 6 }]}>When you book, your stays appear here.</Text>
-                <Button label="Plan a stay" style={{ marginTop: 22, alignSelf: 'stretch' }} onPress={() => router.push({ pathname: '/stay', params: { tab: 'dates', next: 'apartments' } })} />
-              </>
+              <PressableScale
+                onPress={() =>
+                  router.push({
+                    pathname: '/stay',
+                    params: { tab: 'dates', next: 'apartments' },
+                  })
+                }
+                scaleTo={0.98}
+                style={styles.planBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Plan a stay"
+              >
+                <Text style={styles.planBtnText}>Explore Available Residences</Text>
+                <Ionicons name="arrow-forward" size={13} color={C.cream} style={{ marginLeft: 6 }} />
+              </PressableScale>
             )}
           </View>
         ) : (
-          <View style={{ gap: 14 }}>
+          <View style={styles.bookingList}>
             {list.map((b) => (
-              <PressableScale key={b.reference} onPress={() => router.push(`/booking/${b.reference}`)} scaleTo={0.98} style={styles.card}>
+              <PressableScale
+                key={b.reference}
+                onPress={() => router.push(`/booking/${b.reference}`)}
+                scaleTo={0.985}
+                style={styles.bookingCard}
+                accessibilityRole="button"
+                accessibilityLabel={`Booking ${b.reference}: ${b.type.name}`}
+              >
                 <Photo src={b.type.images[0]} style={styles.thumb} />
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={styles.bookingDetails}>
+                  <View style={styles.statusRow}>
                     <StatusPill tab={tabOf(b)} />
+                    <Text style={styles.refText}>{`#${b.reference}`}</Text>
                   </View>
-                  <Text numberOfLines={2} style={[T.h3, { marginTop: 7 }]}>{b.type.name}</Text>
-                  <Text style={[T.small, { fontSize: 12.5, marginTop: 3 }]}>
-                    {fmtShort(b.stay.checkIn)} – {fmtShort(b.stay.checkOut)} · {plural(b.price.nights, 'night')}
+
+                  <Text numberOfLines={1} style={styles.suiteName}>
+                    {b.type.name}
                   </Text>
-                  <Text style={[T.small, { fontSize: 12.5 }]}>
-                    {guestsLabel(b.stay.adults, b.stay.children)} · {money(b.price.grandTotal)}
+
+                  <Text style={styles.bookingMeta}>
+                    {`${fmtShort(b.stay.checkIn)} – ${fmtShort(b.stay.checkOut)} · ${plural(b.price.nights, 'night')}`}
+                  </Text>
+
+                  <Text style={styles.bookingPrice}>
+                    {`${money(b.price.grandTotal)} · ${guestsLabel(b.stay.adults, b.stay.children)}`}
                   </Text>
                 </View>
-                <ChevronRight size={18} color={C.ink40} strokeWidth={1.75} />
+
+                <View style={styles.cardChevron}>
+                  <Ionicons name="chevron-forward" size={15} color={C.ink55} />
+                </View>
               </PressableScale>
             ))}
           </View>
@@ -112,13 +175,191 @@ export default function Trips() {
 }
 
 const styles = StyleSheet.create({
-  signin: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 18, padding: 14, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, ...shadow.card },
-  signinIcon: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
-  signinBtn: { paddingHorizontal: 16, height: 36, borderRadius: 999, backgroundColor: C.pine, justifyContent: 'center' },
-  signinBtnText: { color: C.cream, fontFamily: FONTS.uiBold, fontSize: 13 },
-  empty: { alignItems: 'center', padding: 28, backgroundColor: C.white, borderRadius: S.card },
-  emptyIcon: { width: 56, height: 56, borderRadius: 28, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
-  card: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12, backgroundColor: C.white, borderRadius: S.card },
-  thumb: { width: 92, height: 92, borderRadius: 16 },
-  name: { fontFamily: F.display, fontSize: 17, lineHeight: 21, color: C.ink, marginTop: 7 },
+  header: {
+    marginTop: 22,
+    marginBottom: 4,
+  },
+  eyebrow: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.5,
+    color: C.ink55,
+  },
+  title: {
+    fontFamily: FONTS.display,
+    fontSize: 34,
+    lineHeight: 38,
+    letterSpacing: -0.3,
+    color: C.pine,
+    marginTop: 3,
+  },
+  sub: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    lineHeight: 18,
+    color: C.ink55,
+    marginTop: 4,
+  },
+
+  /* Guest Sync Banner */
+  guestBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 14,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: C.line,
+  },
+  guestBannerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    paddingRight: 8,
+  },
+  guestBannerText: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 12,
+    color: C.pine,
+    flex: 1,
+  },
+
+  /* Segmented Wrap */
+  segmentWrap: {
+    marginTop: 18,
+    marginBottom: 18,
+  },
+
+  /* Empty State */
+  emptyCard: {
+    alignItems: 'center',
+    paddingVertical: 36,
+    paddingHorizontal: 24,
+    backgroundColor: C.pureWhite,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: C.line,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  emptyCrestCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(18, 53, 36, 0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 23,
+    lineHeight: 27,
+    letterSpacing: -0.2,
+    color: C.pine,
+    textAlign: 'center',
+  },
+  emptyLede: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    lineHeight: 19,
+    color: C.ink55,
+    textAlign: 'center',
+    marginTop: 8,
+    maxWidth: 290,
+  },
+  planBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+    backgroundColor: C.pine,
+    borderRadius: 999,
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  planBtnText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 13,
+    color: C.cream,
+    letterSpacing: 0.2,
+  },
+
+  /* Active Booking Cards */
+  bookingList: {
+    gap: 12,
+  },
+  bookingCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: C.pureWhite,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: C.line,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  thumb: {
+    width: 84,
+    height: 84,
+    borderRadius: 14,
+    backgroundColor: C.pine,
+  },
+  bookingDetails: {
+    flex: 1,
+    marginLeft: 14,
+    marginRight: 6,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  refText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 10.5,
+    color: C.ink55,
+    letterSpacing: 0.5,
+  },
+  suiteName: {
+    fontFamily: FONTS.display,
+    fontSize: 18,
+    lineHeight: 22,
+    color: C.pine,
+    marginTop: 4,
+  },
+  bookingMeta: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+    marginTop: 3,
+  },
+  bookingPrice: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 12,
+    color: C.pine,
+    marginTop: 2,
+    fontVariant: ['tabular-nums'],
+  },
+  cardChevron: {
+    width: 26,
+    height: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
