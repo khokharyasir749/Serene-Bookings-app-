@@ -1,48 +1,126 @@
-import { CalendarDays, Search, Users } from '@/components/icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@/components/Text';
 
 import { PressableScale } from '@/components/ui';
 import { fmtDay, plural, type Stay } from '@/lib/stay';
-import { C, F } from '@/theme';
+import { C, FONTS, shadow } from '@/theme';
 
-// The search summary pill (dates · guests). Columns flex and truncate so they never collide.
+/**
+ * Luxury StayBar: Dates & Guests search pill
+ * Warm Ivory surface, Champagne Gold icon accents, and Deep Forest Pine search button.
+ */
 export default function StayBar({ stay, onPress }: { stay: Stay; onPress: () => void }) {
   return (
-    <PressableScale onPress={onPress} scaleTo={0.985} style={styles.bar}>
-      <View style={[styles.cell, { flex: 1.3 }]}>
-        <CalendarDays size={16} color={C.ink55} strokeWidth={1.5} />
-        <View style={styles.text}>
-          <Text style={styles.label}>Dates</Text>
+    <PressableScale
+      onPress={onPress}
+      scaleTo={0.985}
+      style={styles.bar}
+      accessibilityRole="button"
+      accessibilityLabel={`Stay dates: ${fmtDay(stay.checkIn)} to ${fmtDay(stay.checkOut)}, guests: ${stay.adults + stay.children}`}
+    >
+      {/* Dates Cell */}
+      <View style={[styles.cell, { flex: 1.25 }]}>
+        <View style={styles.iconWell}>
+          <Ionicons name="calendar-outline" size={15} color={C.gold} />
+        </View>
+        <View style={styles.textWrap}>
+          <Text style={styles.label}>DATES</Text>
           <Text style={styles.val} numberOfLines={1}>
             {fmtDay(stay.checkIn)} – {fmtDay(stay.checkOut)}
           </Text>
         </View>
       </View>
-      <View style={styles.div} />
+
+      <View style={styles.divider} />
+
+      {/* Guests Cell */}
       <View style={[styles.cell, { flex: 1 }]}>
-        <Users size={16} color={C.ink55} strokeWidth={1.5} />
-        <View style={styles.text}>
-          <Text style={styles.label}>Guests</Text>
+        <View style={styles.iconWell}>
+          <Ionicons name="people-outline" size={15} color={C.gold} />
+        </View>
+        <View style={styles.textWrap}>
+          <Text style={styles.label}>GUESTS</Text>
           <Text style={styles.val} numberOfLines={1}>
             {stay.adults + stay.children} · {plural(stay.rooms, 'apt')}
           </Text>
         </View>
       </View>
+
+      {/* Search Button */}
       <View style={styles.go}>
-        <Search size={17} color={C.sand} strokeWidth={1.75} />
+        <Ionicons name="search" size={16} color={C.cream} />
       </View>
     </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: 'row', alignItems: 'center', paddingLeft: 14, paddingRight: 6, paddingVertical: 6, borderRadius: 999, backgroundColor: C.white, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
-  cell: { minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 6 },
-  text: { flex: 1, minWidth: 0 },
-  label: { fontSize: 10.5, fontWeight: '600', letterSpacing: 1.2, color: C.ink55, textTransform: 'uppercase' },
-  val: { fontFamily: F.display, fontSize: 14, color: C.ink, marginTop: 2 },
-  div: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', marginHorizontal: 10, marginVertical: 6, backgroundColor: C.lineStrong },
-  go: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', marginLeft: 8, backgroundColor: C.pine },
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 12,
+    paddingRight: 6,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.32)',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  cell: {
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 5,
+  },
+  iconWell: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(200, 164, 106, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  label: {
+    fontSize: 9,
+    fontFamily: FONTS.uiBold,
+    letterSpacing: 1.3,
+    color: C.ink55,
+  },
+  val: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 13,
+    color: C.pine,
+    marginTop: 1.5,
+  },
+  divider: {
+    width: 1,
+    height: 24,
+    marginHorizontal: 8,
+    backgroundColor: 'rgba(200, 164, 106, 0.25)',
+  },
+  go: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 6,
+    backgroundColor: C.pine,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+  },
 });
-

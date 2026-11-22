@@ -94,12 +94,15 @@ export default function Apartments() {
   const header = (
     <View>
       <BrandHeader />
-      <View style={{ paddingHorizontal: S.gutter, marginTop: 24 }}>
-        <Text style={T.eyebrow}>
-          {fmtShort(stay.checkIn)} – {fmtShort(stay.checkOut)} · {guestsLabel(stay.adults, stay.children)}
-        </Text>
-        <Text style={[T.h1, { marginTop: 4 }]}>{nights}-Night Stays</Text>
-        <Text style={[T.small, { marginTop: 4 }]}>Serene Heights, Nathia Gali · taxes included</Text>
+      <View style={{ paddingHorizontal: S.gutter, marginTop: 22 }}>
+        <View style={styles.eyebrowRow}>
+          <View style={styles.goldDot} />
+          <Text style={styles.eyebrowText}>
+            {fmtShort(stay.checkIn)} – {fmtShort(stay.checkOut)} · {guestsLabel(stay.adults, stay.children).toUpperCase()}
+          </Text>
+        </View>
+        <Text style={styles.headerTitle}>{nights}-Night Alpine {plural(nights, 'Stay', 'Stays')}</Text>
+        <Text style={styles.headerSub}>Serene Heights, Nathia Gali · taxes & resort amenities included</Text>
         <View style={{ marginTop: 16 }}>
           <StayBar stay={stay} onPress={() => router.push('/stay')} />
         </View>
@@ -111,20 +114,20 @@ export default function Apartments() {
         ))}
       </ScrollView>
       <View style={styles.summary}>
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Text style={styles.count}>
-            {types.length} <Text style={styles.countOf}>of {ROOM_TYPES.length} stays</Text>
+            {types.length} <Text style={styles.countOf}>of {ROOM_TYPES.length} residences</Text>
           </Text>
           {changed && (
-            <Pressable onPress={reset} hitSlop={8}>
+            <Pressable onPress={reset} hitSlop={8} style={styles.resetPill}>
               <Text style={styles.reset}>Reset</Text>
             </Pressable>
           )}
         </View>
         <Pressable onPress={() => setSortOpen(true)} hitSlop={6} style={styles.sortPill} accessibilityRole="button" accessibilityLabel={`Sort: ${sortLabel}`}>
-          <Ionicons name="swap-vertical-outline" size={14} color={C.pine} />
+          <Ionicons name="swap-vertical" size={13} color={C.pine} />
           <Text style={styles.sortPillText} numberOfLines={1}>{sortLabel}</Text>
-          <Ionicons name="chevron-down-outline" size={13} color={C.ink55} />
+          <Ionicons name="chevron-down" size={12} color={C.gold} />
         </Pressable>
       </View>
     </View>
@@ -185,29 +188,163 @@ export default function Apartments() {
   );
 }
 
-const Gap = () => <View style={{ height: 32 }} />;
+const Gap = () => <View style={{ height: 20 }} />;
 
 function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} hitSlop={4} style={[styles.chip, on && styles.chipOn]} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
-      {on && <Ionicons name="checkmark-outline" size={14} color={C.cream} />}
-      <Text style={[styles.chipText, on && { color: C.cream }]}>{label}</Text>
+      {on && <Ionicons name="checkmark" size={13} color={C.gold} />}
+      <Text style={[styles.chipText, on && styles.chipTextOn]}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  chipRow: { paddingHorizontal: S.gutter, gap: 8, marginTop: 16 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, height: 38, borderRadius: 999, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },
-  chipOn: { backgroundColor: C.pine, borderColor: C.pine },
-  chipText: { fontSize: 13, fontFamily: FONTS.uiSemi, color: C.ink },
-  sortPill: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingHorizontal: 12, borderRadius: 999, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong, maxWidth: 200 },
-  sortPillText: { flexShrink: 1, fontSize: 12.5, fontFamily: FONTS.uiSemi, color: C.ink },
-  count: { fontSize: 15, fontFamily: FONTS.uiBold, color: C.ink, fontVariant: ['tabular-nums'] },
-  countOf: { fontSize: 13, fontFamily: FONTS.ui, color: C.ink55 },
-  option: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  optionText: { flex: 1, fontSize: 15, fontFamily: FONTS.uiMedium, color: C.ink },
-  summary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: S.gutter, marginTop: 16, marginBottom: 16 },
-  reset: { fontSize: 13, fontFamily: FONTS.uiBold, color: C.pine, textDecorationLine: 'underline' },
-  empty: { marginHorizontal: S.gutter, padding: 24, borderRadius: S.card, backgroundColor: C.pureWhite, alignItems: 'center' },
+  eyebrowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  goldDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: C.gold,
+    marginRight: 6,
+  },
+  eyebrowText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.5,
+    color: C.ink55,
+  },
+  headerTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 34,
+    lineHeight: 38,
+    letterSpacing: -0.4,
+    color: C.pine,
+    marginTop: 2,
+  },
+  headerSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    lineHeight: 18,
+    color: C.ink55,
+    marginTop: 4,
+  },
+  chipRow: {
+    paddingHorizontal: S.gutter,
+    gap: 8,
+    marginTop: 18,
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 14,
+    height: 36,
+    borderRadius: 999,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.28)',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  chipOn: {
+    backgroundColor: C.pine,
+    borderColor: 'rgba(200, 164, 106, 0.4)',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  chipText: {
+    fontSize: 12.5,
+    fontFamily: FONTS.uiSemi,
+    color: C.pine,
+  },
+  chipTextOn: {
+    color: C.cream,
+  },
+  sortPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    height: 34,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.28)',
+    maxWidth: 200,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  sortPillText: {
+    flexShrink: 1,
+    fontSize: 12,
+    fontFamily: FONTS.uiSemi,
+    color: C.pine,
+  },
+  count: {
+    fontSize: 15,
+    fontFamily: FONTS.uiBold,
+    color: C.pine,
+    fontVariant: ['tabular-nums'],
+  },
+  countOf: {
+    fontSize: 12.5,
+    fontFamily: FONTS.ui,
+    color: C.ink55,
+  },
+  resetPill: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: 'rgba(200, 164, 106, 0.12)',
+  },
+  reset: {
+    fontSize: 11.5,
+    fontFamily: FONTS.uiBold,
+    color: C.pine,
+  },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.line,
+  },
+  optionText: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: FONTS.uiMedium,
+    color: C.ink,
+  },
+  summary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: S.gutter,
+    marginTop: 18,
+    marginBottom: 16,
+  },
+  empty: {
+    marginHorizontal: S.gutter,
+    padding: 24,
+    borderRadius: 22,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 164, 106, 0.25)',
+    alignItems: 'center',
+  },
 });
