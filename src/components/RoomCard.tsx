@@ -11,8 +11,8 @@ import { availability, lowestQuote, money, plural, type Stay } from '@/lib/stay'
 import { C, FONTS } from '@/theme';
 
 /**
- * Editorial Luxury RoomCard: Minimalist, clean, limited info, zero color clutter.
- * Benchmarking Aman & One&Only: Crisp photography, elegant serif title, single meta line, clean price.
+ * Editorial Luxury RoomCard:
+ * Pure typographical hierarchy, zero icon clutter, flawless layout and spacing.
  */
 function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
   const router = useRouter();
@@ -23,7 +23,8 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
 
   const areaStr = areaRangeOf(type.slug).replace(' sq ft', '');
   const bedStr = type.bedType.replace(/^1 /, '').replace(' + sofa bed', ' + sofa');
-  const metaLine = `${type.outdoorSpace} · ${areaStr} sq ft · Up to ${type.maxOccupancy} guests`;
+  // Clean meta line with NO redundant repetition of outdoor space:
+  const metaLine = `${areaStr} sq ft  ·  ${bedStr}  ·  Up to ${type.maxOccupancy} guests`;
 
   return (
     <PressableScale
@@ -33,18 +34,18 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
       accessibilityRole="button"
       accessibilityLabel={`${type.name}, ${money(perNight)} per night`}
     >
-      {/* ── 16:10 Landscape Photography ── */}
+      {/* ── 16:10 Editorial Landscape Photography ── */}
       <View style={styles.photoWrap}>
         <Photo src={type.images[0]} style={StyleSheet.absoluteFill} />
 
-        {/* Minimalist Frosted Rating Badge (Top-Right) */}
+        {/* Minimalist Frosted Rating Pill (Top-Right) */}
         <View style={styles.ratingBadge}>
           <BlurView intensity={70} tint="light" style={StyleSheet.absoluteFill} />
           <Ionicons name="star" size={10.5} color={C.pine} style={{ marginRight: 3.5 }} />
           <Text style={styles.ratingText}>{REVIEW_SCORE.average.toFixed(1)}</Text>
         </View>
 
-        {/* Subtle Scarcity (Only if 3 or less left) */}
+        {/* Scarcity Pill (Only if 3 or less remaining) */}
         {bookable && av.available <= 3 && (
           <View style={styles.scarcityBadge}>
             <BlurView intensity={70} tint="light" style={StyleSheet.absoluteFill} />
@@ -53,19 +54,19 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
         )}
       </View>
 
-      {/* ── Minimalist Clean Body ── */}
+      {/* ── Bespoke Editorial Card Body ── */}
       <View style={styles.body}>
         {/* Eyebrow */}
         <Text style={styles.kicker}>
           {`ONE-BEDROOM · ${type.outdoorSpace.toUpperCase()}`}
         </Text>
 
-        {/* Title */}
+        {/* Title: Rich Cormorant Garamond Serif */}
         <Text style={styles.title} numberOfLines={2}>
           {type.name}
         </Text>
 
-        {/* Single Clean Editorial Meta Line (Zero cluttered boxes) */}
+        {/* Clean Editorial Meta Line (Area · Bed · Capacity) */}
         <Text style={styles.metaLine} numberOfLines={1}>
           {metaLine}
         </Text>
@@ -75,11 +76,11 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
         {/* Pricing & Reservation Row */}
         {bookable ? (
           <View style={styles.priceRow}>
-            <View>
-              <Text style={styles.priceBig}>
-                {money(perNight)}
+            <View style={styles.priceCol}>
+              <View style={styles.priceMainRow}>
+                <Text style={styles.priceBig}>{money(perNight)}</Text>
                 <Text style={styles.pricePer}> / night</Text>
-              </Text>
+              </View>
               <Text style={styles.priceTotal}>
                 {`${money(best.q.grandTotal)} total · ${plural(best.q.nights, 'night')} incl. taxes`}
               </Text>
@@ -87,7 +88,7 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
 
             <View style={styles.reserveBtn}>
               <Text style={styles.reserveBtnText}>Reserve</Text>
-              <Ionicons name="arrow-forward" size={12} color={C.cream} style={{ marginLeft: 4 }} />
+              <Ionicons name="arrow-forward" size={13} color={C.cream} style={{ marginLeft: 6 }} />
             </View>
           </View>
         ) : (
@@ -107,14 +108,14 @@ export default memo(RoomCard);
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 20,
+    borderRadius: 22,
     backgroundColor: C.pureWhite,
     borderWidth: 1,
-    borderColor: C.line,
+    borderColor: 'rgba(18, 53, 36, 0.1)',
     overflow: 'hidden',
     shadowColor: '#123524',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.05,
     shadowRadius: 14,
     elevation: 2,
   },
@@ -130,12 +131,12 @@ const styles = StyleSheet.create({
     right: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8.5,
-    paddingVertical: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.65)',
+    borderColor: 'rgba(255, 255, 255, 0.7)',
   },
   ratingText: {
     fontFamily: FONTS.uiBold,
@@ -149,12 +150,12 @@ const styles = StyleSheet.create({
     left: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8.5,
-    paddingVertical: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
     borderRadius: 999,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.65)',
+    borderColor: 'rgba(255, 255, 255, 0.7)',
   },
   scarcityText: {
     fontFamily: FONTS.uiSemi,
@@ -162,70 +163,89 @@ const styles = StyleSheet.create({
     color: C.pine,
   },
   body: {
-    padding: 16,
+    paddingHorizontal: 18,
+    paddingTop: 16,
+    paddingBottom: 18,
   },
   kicker: {
     fontFamily: FONTS.uiBold,
-    fontSize: 9,
-    letterSpacing: 1.4,
+    fontSize: 9.5,
+    letterSpacing: 1.6,
     color: C.ink55,
   },
   title: {
     fontFamily: FONTS.display,
-    fontSize: 22,
-    lineHeight: 26,
-    letterSpacing: -0.2,
+    fontSize: 24,
+    lineHeight: 28,
+    letterSpacing: -0.3,
     color: C.pine,
-    marginTop: 3,
+    marginTop: 4,
   },
   metaLine: {
     fontFamily: FONTS.ui,
-    fontSize: 12.5,
+    fontSize: 13,
+    lineHeight: 18,
     color: C.ink55,
     marginTop: 6,
   },
   divider: {
     height: 1,
-    backgroundColor: C.line,
-    marginTop: 14,
-    marginBottom: 12,
+    backgroundColor: 'rgba(18, 53, 36, 0.08)',
+    marginTop: 15,
+    marginBottom: 14,
   },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  priceCol: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  priceMainRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
   priceBig: {
     fontFamily: FONTS.uiBold,
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 20,
+    lineHeight: 24,
     color: C.pine,
     fontVariant: ['tabular-nums'],
   },
   pricePer: {
     fontFamily: FONTS.ui,
-    fontSize: 12,
+    fontSize: 12.5,
     color: C.ink55,
+    marginLeft: 3,
   },
   priceTotal: {
     fontFamily: FONTS.ui,
-    fontSize: 11,
+    fontSize: 11.5,
+    lineHeight: 16,
     color: C.ink55,
-    marginTop: 2,
+    marginTop: 2.5,
   },
   reserveBtn: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: C.pine,
     borderRadius: 999,
-    paddingHorizontal: 15,
-    paddingVertical: 8.5,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 3,
   },
   reserveBtnText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 12,
+    fontSize: 13,
     color: C.cream,
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
   },
   soldOutWrap: {
     flexDirection: 'row',
