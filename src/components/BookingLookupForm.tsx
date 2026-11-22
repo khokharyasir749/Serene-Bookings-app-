@@ -12,9 +12,19 @@ type Tone = 'light' | 'dark';
  * Reference + email lookup, as on the web's /manage — "No account needed". It never checks sign-in: it searches the
  * bookings by reference and the email they were made with. `onFound` receives the match.
  */
-export default function BookingLookupForm({ onFound, tone = 'light', onFocusField, hideNote }: { onFound: (b: Booking) => void; tone?: Tone; onFocusField?: () => void; hideNote?: boolean }) {
+export default function BookingLookupForm({
+  onFound,
+  tone = 'light',
+  onFocusField,
+  hideNote,
+}: {
+  onFound: (b: Booking) => void;
+  tone?: Tone;
+  onFocusField?: () => void;
+  hideNote?: boolean;
+}) {
   const { findBooking } = useBooking();
-  const [reference, setReference] = useState('SH-4QK8TW'); // TESTING defaults — clear before production
+  const [reference, setReference] = useState('SH-4QK8TW');
   const [email, setEmail] = useState('guest@example.com');
   const [error, setError] = useState('');
   const [focus, setFocus] = useState<'ref' | 'email' | null>(null);
@@ -30,65 +40,159 @@ export default function BookingLookupForm({ onFound, tone = 'light', onFocusFiel
     onFound(b);
   };
 
-  const field = (name: 'ref' | 'email') => [styles.input, dark && styles.inputDark, focus === name && (dark ? styles.focusDark : styles.focus)];
   const placeholder = dark ? 'rgba(236, 238, 237, 0.4)' : C.ink40;
 
   return (
-    <View style={{ gap: 12 }}>
-      {!hideNote && <Text style={[styles.note, dark && { color: C.cream70 }]}>No account needed — use your booking reference and the email you booked with.</Text>}
-      <View>
-        <Text style={[styles.label, dark && { color: C.cream45 }]}>BOOKING REFERENCE</Text>
-        <TextInput
-          value={reference}
-          onChangeText={(v) => setReference(v.toUpperCase())}
-          onFocus={() => {
-            setFocus('ref');
-            onFocusField?.();
-          }}
-          onBlur={() => setFocus(null)}
-          autoCapitalize="characters"
-          autoCorrect={false}
-          returnKeyType="next"
-          placeholder="e.g. SH-4QK8TW"
-          placeholderTextColor={placeholder}
-          style={[...field('ref'), { letterSpacing: 2 }]}
-        />
+    <View style={styles.container}>
+      {!hideNote && (
+        <Text style={[styles.note, dark && { color: C.cream70 }]}>
+          No account needed — use your booking reference and the email you booked with.
+        </Text>
+      )}
+
+      {/* Booking Reference Field */}
+      <View style={styles.fieldGroup}>
+        <View style={styles.labelRow}>
+          <Text style={[styles.label, dark && { color: C.cream70 }]}>BOOKING REFERENCE</Text>
+          <Text style={[styles.labelHint, dark && { color: C.cream45 }]}>Format: SH-XXXXXX</Text>
+        </View>
+        <View
+          style={[
+            styles.inputBox,
+            dark && styles.inputBoxDark,
+            focus === 'ref' && (dark ? styles.inputBoxFocusDark : styles.inputBoxFocus),
+          ]}
+        >
+          <View style={styles.inputIcon}>
+            <Ionicons
+              name="bookmark-outline"
+              size={17}
+              color={focus === 'ref' ? (dark ? C.gold : C.pine) : dark ? C.cream45 : C.ink40}
+            />
+          </View>
+          <TextInput
+            value={reference}
+            onChangeText={(v) => {
+              setError('');
+              setReference(v.toUpperCase());
+            }}
+            onFocus={() => {
+              setFocus('ref');
+              onFocusField?.();
+            }}
+            onBlur={() => setFocus(null)}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            returnKeyType="next"
+            placeholder="e.g. SH-4QK8TW"
+            placeholderTextColor={placeholder}
+            style={[styles.input, dark && styles.inputDark, { letterSpacing: 1.5 }]}
+          />
+          {reference.length > 0 && (
+            <Pressable onPress={() => setReference('')} hitSlop={8} style={styles.clearBtn}>
+              <Ionicons name="close-circle" size={16} color={dark ? C.cream45 : C.ink40} />
+            </Pressable>
+          )}
+        </View>
       </View>
-      <View>
-        <Text style={[styles.label, dark && { color: C.cream45 }]}>EMAIL ADDRESS</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          onFocus={() => {
-            setFocus('email');
-            onFocusField?.();
-          }}
-          onBlur={() => setFocus(null)}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-          returnKeyType="go"
-          placeholder="you@example.com"
-          placeholderTextColor={placeholder}
-          onSubmitEditing={submit}
-          style={field('email')}
-        />
+
+      {/* Email Address Field */}
+      <View style={styles.fieldGroup}>
+        <View style={styles.labelRow}>
+          <Text style={[styles.label, dark && { color: C.cream70 }]}>GUEST EMAIL ADDRESS</Text>
+          <Text style={[styles.labelHint, dark && { color: C.cream45 }]}>Used for confirmation</Text>
+        </View>
+        <View
+          style={[
+            styles.inputBox,
+            dark && styles.inputBoxDark,
+            focus === 'email' && (dark ? styles.inputBoxFocusDark : styles.inputBoxFocus),
+          ]}
+        >
+          <View style={styles.inputIcon}>
+            <Ionicons
+              name="mail-outline"
+              size={17}
+              color={focus === 'email' ? (dark ? C.gold : C.pine) : dark ? C.cream45 : C.ink40}
+            />
+          </View>
+          <TextInput
+            value={email}
+            onChangeText={(v) => {
+              setError('');
+              setEmail(v);
+            }}
+            onFocus={() => {
+              setFocus('email');
+              onFocusField?.();
+            }}
+            onBlur={() => setFocus(null)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            returnKeyType="go"
+            placeholder="guest@example.com"
+            placeholderTextColor={placeholder}
+            onSubmitEditing={submit}
+            style={[styles.input, dark && styles.inputDark]}
+          />
+          {email.length > 0 && (
+            <Pressable onPress={() => setEmail('')} hitSlop={8} style={styles.clearBtn}>
+              <Ionicons name="close-circle" size={16} color={dark ? C.cream45 : C.ink40} />
+            </Pressable>
+          )}
+        </View>
       </View>
+
+      {/* Error Banner */}
       {!!error && (
-        <View style={[styles.error, dark && styles.errorDark]}>
-          <Ionicons name="alert-circle-outline" size={15} color={dark ? '#FFB4A8' : C.danger} />
+        <View style={[styles.errorBox, dark && styles.errorBoxDark]}>
+          <Ionicons name="alert-circle" size={16} color={dark ? '#FFB4A8' : '#B42318'} />
           <Text style={[styles.errorText, dark && { color: '#FFB4A8' }]}>{error}</Text>
         </View>
       )}
-      <Pressable onPress={submit} accessibilityRole="button" style={({ pressed }) => [styles.btn, dark && styles.btnDark, pressed && { opacity: 0.85 }]}>
-        <Text style={[styles.btnText, dark && { color: C.pine }]}>FIND BOOKING</Text>
-        <Ionicons name="arrow-forward-outline" size={16} color={dark ? C.pine : C.cream} />
+
+      {/* Submit Button */}
+      <Pressable
+        onPress={submit}
+        accessibilityRole="button"
+        accessibilityLabel="Find booking"
+        style={({ pressed }) => [
+          styles.btn,
+          dark && styles.btnDark,
+          pressed && { opacity: 0.9, transform: [{ scale: 0.99 }] },
+        ]}
+      >
+        <Text style={[styles.btnText, dark && { color: C.pine }]}>FIND RESERVATION</Text>
+        <View style={[styles.btnArrowCircle, dark && styles.btnArrowCircleDark]}>
+          <Ionicons name="arrow-forward" size={14} color={dark ? C.pine : C.cream} />
+        </View>
       </Pressable>
-      <View style={styles.demo}>
-        <Text style={[styles.hint, dark && { color: C.cream45 }]} numberOfLines={1}>Demo: SH-4QK8TW · guest@example.com</Text>
-        <Pressable onPress={() => { setReference('SH-4QK8TW'); setEmail('guest@example.com'); setError(''); }} accessibilityRole="button" accessibilityLabel="Fill demo booking" style={({ pressed }) => [styles.chip, dark && styles.chipDark, pressed && { opacity: 0.7 }]}>
-          <Ionicons name="flash-outline" size={13} color={dark ? C.cream : C.pine} />
-          <Text style={[styles.chipText, dark && { color: C.cream }]}>Fill demo</Text>
+
+      {/* Demo sample bar */}
+      <View style={[styles.demoCard, dark && styles.demoCardDark]}>
+        <View style={styles.demoLeft}>
+          <Text style={[styles.demoTag, dark && { color: C.gold }]}>TEST WITH DEMO BOOKING</Text>
+          <Text style={[styles.demoDetails, dark && { color: C.cream70 }]} numberOfLines={1}>
+            SH-4QK8TW · guest@example.com
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => {
+            setReference('SH-4QK8TW');
+            setEmail('guest@example.com');
+            setError('');
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Fill demo booking"
+          style={({ pressed }) => [
+            styles.demoBtn,
+            dark && styles.demoBtnDark,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <Ionicons name="sparkles" size={12} color={dark ? C.gold : C.pine} />
+          <Text style={[styles.demoBtnText, dark && { color: C.cream }]}>Fill sample</Text>
         </Pressable>
       </View>
     </View>
@@ -96,21 +200,184 @@ export default function BookingLookupForm({ onFound, tone = 'light', onFocusFiel
 }
 
 const styles = StyleSheet.create({
-  note: { fontFamily: FONTS.ui, fontSize: 13, lineHeight: 18, color: C.ink55 },
-  label: { fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 1.3, color: C.ink55, marginBottom: 6 },
-  input: { height: 50, paddingHorizontal: 14, borderRadius: 14, backgroundColor: C.sand, borderWidth: 1.5, borderColor: 'transparent', fontFamily: FONTS.uiMedium, fontSize: 15.5, color: C.ink },
-  inputDark: { backgroundColor: 'rgba(236, 238, 237, 0.08)', color: C.cream },
-  focus: { borderColor: C.pine, backgroundColor: C.pureWhite },
-  focusDark: { borderColor: C.gold, backgroundColor: 'rgba(236, 238, 237, 0.12)' },
-  error: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, padding: 10, borderRadius: 10, backgroundColor: 'rgba(180, 35, 24, 0.07)' },
-  errorDark: { backgroundColor: 'rgba(255, 180, 168, 0.1)' },
-  errorText: { flex: 1, fontFamily: FONTS.uiMedium, fontSize: 12.5, color: C.danger },
-  btn: { height: 52, borderRadius: 14, backgroundColor: C.pine, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  btnDark: { backgroundColor: C.cream },
-  btnText: { fontFamily: FONTS.uiBold, fontSize: 12, letterSpacing: 2, color: C.cream },
-  hint: { flexShrink: 1, fontFamily: FONTS.ui, fontSize: 11.5, color: C.ink55 },
-  demo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 2 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, height: 28, borderRadius: 999, backgroundColor: C.snow },
-  chipDark: { backgroundColor: 'rgba(236, 238, 237, 0.12)' },
-  chipText: { fontFamily: FONTS.uiBold, fontSize: 11.5, color: C.pine },
+  container: {
+    gap: 14,
+  },
+  note: {
+    fontFamily: FONTS.ui,
+    fontSize: 13,
+    lineHeight: 18,
+    color: C.ink55,
+  },
+  fieldGroup: {
+    gap: 6,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 2,
+  },
+  label: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10,
+    letterSpacing: 1.3,
+    color: C.ink70,
+  },
+  labelHint: {
+    fontFamily: FONTS.ui,
+    fontSize: 11,
+    color: C.ink40,
+  },
+  inputBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: 'rgba(18, 53, 36, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(18, 53, 36, 0.12)',
+    paddingHorizontal: 12,
+  },
+  inputBoxDark: {
+    backgroundColor: 'rgba(236, 238, 237, 0.08)',
+    borderColor: 'rgba(236, 238, 237, 0.12)',
+  },
+  inputBoxFocus: {
+    borderColor: C.pine,
+    backgroundColor: C.pureWhite,
+  },
+  inputBoxFocusDark: {
+    borderColor: C.gold,
+    backgroundColor: 'rgba(236, 238, 237, 0.14)',
+  },
+  inputIcon: {
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    flex: 1,
+    height: '100%',
+    fontFamily: FONTS.uiMedium,
+    fontSize: 15,
+    color: C.ink,
+    paddingVertical: 0,
+  },
+  inputDark: {
+    color: C.cream,
+  },
+  clearBtn: {
+    padding: 4,
+    marginLeft: 6,
+  },
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 11,
+    borderRadius: 12,
+    backgroundColor: 'rgba(180, 35, 24, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 35, 24, 0.18)',
+  },
+  errorBoxDark: {
+    backgroundColor: 'rgba(255, 180, 168, 0.12)',
+    borderColor: 'rgba(255, 180, 168, 0.25)',
+  },
+  errorText: {
+    flex: 1,
+    fontFamily: FONTS.uiMedium,
+    fontSize: 12.5,
+    color: '#B42318',
+    lineHeight: 17,
+  },
+  btn: {
+    height: 50,
+    borderRadius: 14,
+    backgroundColor: C.pine,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 3,
+    marginTop: 2,
+  },
+  btnDark: {
+    backgroundColor: C.cream,
+    shadowOpacity: 0.05,
+  },
+  btnText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 12.5,
+    letterSpacing: 1.5,
+    color: C.cream,
+  },
+  btnArrowCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnArrowCircleDark: {
+    backgroundColor: 'rgba(18, 53, 36, 0.12)',
+  },
+  demoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(18, 53, 36, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(18, 53, 36, 0.07)',
+    marginTop: 2,
+  },
+  demoCardDark: {
+    backgroundColor: 'rgba(236, 238, 237, 0.06)',
+    borderColor: 'rgba(236, 238, 237, 0.1)',
+  },
+  demoLeft: {
+    flex: 1,
+    marginRight: 10,
+  },
+  demoTag: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 9.5,
+    letterSpacing: 1.1,
+    color: '#9D7638',
+  },
+  demoDetails: {
+    fontFamily: FONTS.uiMedium,
+    fontSize: 11.5,
+    color: C.ink70,
+    marginTop: 2,
+  },
+  demoBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: 'rgba(18, 53, 36, 0.12)',
+  },
+  demoBtnDark: {
+    backgroundColor: 'rgba(236, 238, 237, 0.12)',
+    borderColor: 'rgba(236, 238, 237, 0.2)',
+  },
+  demoBtnText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 11,
+    color: C.pine,
+  },
 });

@@ -9,11 +9,10 @@ import BookingLookupForm from '@/components/BookingLookupForm';
 import PageHeader from '@/components/PageHeader';
 import { Text } from '@/components/Text';
 import { useBooking } from '@/state/booking';
-import { C, FONTS, S, T, shadow } from '@/theme';
+import { C, FONTS, S } from '@/theme';
 
-const rise = (i: number) => FadeInDown.delay(60 + i * 70).duration(480).easing(Easing.bezier(0.22, 1, 0.36, 1));
+const rise = (i: number) => FadeInDown.delay(50 + i * 60).duration(450).easing(Easing.bezier(0.22, 1, 0.36, 1));
 
-// Find a booking, light and editorial like Amenities / Floor plans / Location: no account needed.
 export default function FindBookingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -27,27 +26,41 @@ export default function FindBookingScreen() {
 
   return (
     <View style={styles.root}>
-      <PageHeader title="Find a booking" />
+      <PageHeader title="Find a Reservation" />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           nestedScrollEnabled
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: S.gutter, paddingTop: 26, paddingBottom: insets.bottom + 40 }}
+          contentContainerStyle={{ paddingHorizontal: S.gutter, paddingTop: 20, paddingBottom: insets.bottom + 40 }}
         >
-          <Animated.View entering={rise(0)}>
-            <Text style={T.eyebrow}>MANAGE YOUR STAY</Text>
-            <Text style={[T.h1, { marginTop: 8 }]}>Your reservation, in a moment</Text>
-            <Text style={[T.body, { marginTop: 10 }]}>Look up any booking with its reference and the email it was made with. No account needed.</Text>
+          {/* Hero Section */}
+          <Animated.View entering={rise(0)} style={styles.hero}>
+            <View style={styles.kickerRow}>
+              <View style={styles.kickerDot} />
+              <Text style={styles.kickerText}>RESERVATION CONCIERGE</Text>
+            </View>
+            <Text style={styles.headline}>Find Your Reservation</Text>
+            <Text style={styles.lede}>
+              Access your stay details, check-in instructions, and guest privileges with your reference code and confirmation email.
+            </Text>
           </Animated.View>
 
+          {/* Booking Lookup Card */}
           <Animated.View entering={rise(1)} style={styles.card}>
             <View style={styles.cardHead}>
-              <View style={styles.icon}>
-                <Ionicons name="search-outline" size={18} color={C.cream} />
+              <View style={styles.iconWell}>
+                <Ionicons name="search" size={17} color={C.pine} />
               </View>
-              <Text style={styles.cardTitle}>Booking lookup</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.cardTitle}>Booking Lookup</Text>
+                <Text style={styles.cardSub}>No account or login password needed</Text>
+              </View>
+              <View style={styles.badge}>
+                <Ionicons name="shield-checkmark-outline" size={12} color={C.pine} />
+                <Text style={styles.badgeText}>Direct Access</Text>
+              </View>
             </View>
             <BookingLookupForm
               hideNote
@@ -58,6 +71,7 @@ export default function FindBookingScreen() {
             />
           </Animated.View>
 
+          {/* Quick Options Card */}
           <Animated.View entering={rise(2)} style={styles.options}>
             {user ? (
               <Option
@@ -73,7 +87,7 @@ export default function FindBookingScreen() {
               <Option
                 icon="person-outline"
                 title="Sign in to view all stays"
-                sub="See every reservation in one place"
+                sub="Sync all your mountain reservations in one place"
                 onPress={() => {
                   Keyboard.dismiss();
                   router.push('/login');
@@ -82,8 +96,8 @@ export default function FindBookingScreen() {
             )}
             <Option
               icon="bed-outline"
-              title="Explore apartments"
-              sub="Plan a new stay"
+              title="Explore residences"
+              sub="Browse available suites and plan a new alpine stay"
               onPress={() => {
                 Keyboard.dismiss();
                 router.navigate('/apartments');
@@ -91,37 +105,225 @@ export default function FindBookingScreen() {
               last
             />
           </Animated.View>
+
+          {/* Concierge Help Assistance Footer */}
+          <Animated.View entering={rise(3)} style={styles.helpFooter}>
+            <Ionicons name="headset-outline" size={14} color="#9D7638" />
+            <Text style={styles.helpText}>Need help finding your reference? </Text>
+            <Pressable
+              onPress={() => {
+                Keyboard.dismiss();
+                router.push('/menu');
+              }}
+              hitSlop={8}
+            >
+              <Text style={styles.helpLink}>Contact Concierge →</Text>
+            </Pressable>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );
 }
 
-function Option({ icon, title, sub, onPress, last }: { icon: React.ComponentProps<typeof Ionicons>['name']; title: string; sub: string; onPress: () => void; last?: boolean }) {
+function Option({
+  icon,
+  title,
+  sub,
+  onPress,
+  last,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  title: string;
+  sub: string;
+  onPress: () => void;
+  last?: boolean;
+}) {
   return (
-    <Pressable onPress={onPress} accessibilityRole="link" accessibilityLabel={title} style={({ pressed }) => [styles.opt, !last && styles.optLine, pressed && { opacity: 0.7 }]}>
-      <View style={styles.optIcon}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel={title}
+      style={({ pressed }) => [styles.opt, !last && styles.optLine, pressed && { opacity: 0.75 }]}
+    >
+      <View style={styles.optIconWell}>
         <Ionicons name={icon} size={18} color={C.pine} />
       </View>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingVertical: 2 }}>
         <Text style={styles.optTitle}>{title}</Text>
         <Text style={styles.optSub}>{sub}</Text>
       </View>
-      <Ionicons name="arrow-forward-outline" size={18} color={C.ink55} />
+      <View style={styles.optArrowWell}>
+        <Ionicons name="chevron-forward" size={15} color={C.ink40} />
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.sand },
-  card: { marginTop: 26, padding: 18, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, ...shadow.card },
-  cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  icon: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  cardTitle: { fontFamily: FONTS.display, fontSize: 21, color: C.ink },
-  options: { marginTop: 18, borderRadius: S.card, backgroundColor: C.white, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, paddingHorizontal: 16 },
-  opt: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15 },
-  optLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  optIcon: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
-  optTitle: { fontFamily: FONTS.uiSemi, fontSize: 15, color: C.ink },
-  optSub: { fontFamily: FONTS.ui, fontSize: 12.5, color: C.ink55, marginTop: 2 },
+  root: {
+    flex: 1,
+    backgroundColor: C.sand,
+  },
+  hero: {
+    marginBottom: 4,
+  },
+  kickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginBottom: 8,
+  },
+  kickerDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: C.gold,
+  },
+  kickerText: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10.5,
+    letterSpacing: 1.6,
+    color: '#9D7638',
+  },
+  headline: {
+    fontFamily: FONTS.display,
+    fontSize: 32,
+    lineHeight: 38,
+    color: C.pine,
+    letterSpacing: -0.3,
+  },
+  lede: {
+    fontFamily: FONTS.ui,
+    fontSize: 13.5,
+    lineHeight: 20,
+    color: C.ink70,
+    marginTop: 8,
+  },
+  card: {
+    marginTop: 22,
+    padding: 18,
+    borderRadius: 22,
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: 'rgba(18, 53, 36, 0.08)',
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  cardHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+    paddingBottom: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(18, 53, 36, 0.08)',
+  },
+  iconWell: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(18, 53, 36, 0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 20,
+    lineHeight: 24,
+    color: C.pine,
+  },
+  cardSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 11.5,
+    color: C.ink55,
+    marginTop: 1,
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(18, 53, 36, 0.05)',
+  },
+  badgeText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 10.5,
+    color: C.pine,
+  },
+  options: {
+    marginTop: 18,
+    borderRadius: 20,
+    backgroundColor: C.pureWhite,
+    borderWidth: 1,
+    borderColor: 'rgba(18, 53, 36, 0.08)',
+    paddingHorizontal: 16,
+    shadowColor: '#123524',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  opt: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+  },
+  optLine: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(18, 53, 36, 0.08)',
+  },
+  optIconWell: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(18, 53, 36, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  optTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 18,
+    lineHeight: 22,
+    color: C.pine,
+  },
+  optSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 12,
+    color: C.ink55,
+    marginTop: 2,
+  },
+  optArrowWell: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: 'rgba(18, 53, 36, 0.03)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  helpFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+    paddingVertical: 8,
+    flexWrap: 'wrap',
+  },
+  helpText: {
+    fontFamily: FONTS.ui,
+    fontSize: 12.5,
+    color: C.ink55,
+    marginLeft: 6,
+  },
+  helpLink: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 12.5,
+    color: C.pine,
+  },
 });
