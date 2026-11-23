@@ -90,8 +90,6 @@ export default function Login() {
         ? `Code sent to ${shownPhone} · demo: any 6 digits`
         : 'As it appears on your CNIC or passport.';
   const cta = step === 'id' ? (method === 'phone' ? 'Send code' : 'Sign in') : step === 'code' ? 'Verify & continue' : 'Continue';
-  const dotSteps: Step[] = method === 'phone' ? ['id', 'code', 'name'] : ['id', 'name'];
-  const at = dotSteps.indexOf(step);
 
   return (
     <View style={{ flex: 1, backgroundColor: C.sand }}>
@@ -141,11 +139,6 @@ export default function Login() {
                       <Text style={styles.eyebrow}>SERENE BOOKINGS</Text>
                     </View>
                   )}
-                  <View style={{ flexDirection: 'row', gap: 6 }}>
-                    {dotSteps.map((s, i) => (
-                      <View key={s} style={[styles.dot, i <= at && styles.dotOn, i === at && { width: 22 }]} />
-                    ))}
-                  </View>
                 </View>
                 <Text style={styles.heading}>{heading}</Text>
                 <Text style={styles.lede}>{lede}</Text>
@@ -299,8 +292,6 @@ const styles = StyleSheet.create({
   eyebrow: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 10.5, letterSpacing: 2 },
   backLink: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingVertical: 4 },
   backText: { fontFamily: FONTS.uiBold, fontSize: 13, color: C.pine },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: C.lineStrong },
-  dotOn: { backgroundColor: C.pine },
   heading: { color: C.ink, fontFamily: FONTS.display, fontSize: 39, lineHeight: 43 },
   lede: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 14.5, lineHeight: 21, marginTop: 6 },
   modes: { flexDirection: 'row', gap: 10 },
