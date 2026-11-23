@@ -125,7 +125,7 @@ export default function Discover() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 0, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 36) }}
+        contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
       >
         {/* Full-Bleed Panoramic Mountain Hero Stage */}
         <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
@@ -392,7 +392,7 @@ export default function Discover() {
         </View>
 
         {/* Footer: concierge + contact */}
-        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom) + 32} />
+        <LuxuryFooter bottomSpace={tabBarSpace(insets.bottom)} />
       </ScrollView>
     </View>
   );

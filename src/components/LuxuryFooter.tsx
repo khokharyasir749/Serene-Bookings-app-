@@ -45,7 +45,7 @@ function Row({ icon, label, value, cta, href, last }: { icon: Glyph; label: stri
 export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
   const [booking, group] = CONTACT.sites;
   return (
-    <View style={[styles.wrap, { paddingBottom: bottomSpace + 40 }]}>
+    <View style={[styles.wrap, { paddingBottom: bottomSpace }]}>
       <Ornament>
         <View style={styles.crest}>
           <SereneLogoMark size={40} />

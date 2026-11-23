@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
-import SereneLogoMark from '@/components/SereneLogoMark';
+import BrandLockup from '@/components/BrandLockup';
 import { Text } from '@/components/Text';
 import { useBooking } from '@/state/booking';
 import { C, FONTS, S, shadow } from '@/theme';
@@ -27,10 +27,8 @@ export default function BrandHeader({ variant = 'light' }: { variant?: 'light' |
 
   return (
     <View style={[styles.row, isOverPhoto && styles.rowOverPhoto]}>
-      <SereneLogoMark size={isOverPhoto ? 38 : 42} color={isOverPhoto ? '#FFFFFF' : C.pine} snow={isOverPhoto ? C.gold : C.cream} />
       <View style={{ flex: 1 }}>
-        <Text style={[styles.brand, isOverPhoto && styles.brandOverPhoto]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>SERENE HEIGHTS</Text>
-        <Text style={[styles.sub, isOverPhoto && styles.subOverPhoto]} numberOfLines={1}>RESORT · NATHIA GALI</Text>
+        <BrandLockup onPhoto={isOverPhoto} />
       </View>
       <Pressable
         onPress={press}
@@ -67,10 +65,6 @@ export default function BrandHeader({ variant = 'light' }: { variant?: 'light' |
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: S.gutter, paddingBottom: 6 },
   rowOverPhoto: { paddingBottom: 0 },
-  brand: { color: C.pine, fontFamily: FONTS.display, fontSize: 20, letterSpacing: 1.4, lineHeight: 24 },
-  brandOverPhoto: { color: '#FFFFFF' },
-  sub: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 2, marginTop: 1 },
-  subOverPhoto: { color: C.gold },
   pill: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 13, height: 38, ...shadow.pill },
   off: { backgroundColor: C.pine, borderWidth: 1, borderColor: 'rgba(200, 164, 106, 0.4)' },
   offOverPhoto: { backgroundColor: 'rgba(18, 53, 36, 0.72)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.3)' },

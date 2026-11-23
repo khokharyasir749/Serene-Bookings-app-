@@ -70,7 +70,7 @@ export const F = { display: FONTS.display, sans: FONTS.ui };
 export const S = { gutter: 20, radius: 14, card: 22, photo: 20, tabBar: 64 };
 
 /** Bottom padding a tab screen needs so its last item clears the floating dock. */
-export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 10 + 36;
+export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 12; // dock height + its offset + a little air (~100 px on Android)
 
 export const shadow = {
   card: { shadowColor: '#123524', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 3 },

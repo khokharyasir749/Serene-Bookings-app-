@@ -15,7 +15,7 @@ import { Text } from '@/components/Text';
 import { Photo, PressableScale } from '@/components/ui';
 import { fmtShort, guestsLabel, money, plural } from '@/lib/stay';
 import { tabOf, useBooking, type Tab } from '@/state/booking';
-import { C, FONTS, S } from '@/theme';
+import { C, FONTS, S, tabBarSpace } from '@/theme';
 
 export default function Trips() {
   const insets = useSafeAreaInsets();
@@ -38,7 +38,7 @@ export default function Trips() {
         removeClippedSubviews={false}
         contentContainerStyle={{
           paddingTop: insets.top + 8,
-          paddingBottom: 150,
+          paddingBottom: tabBarSpace(insets.bottom),
           paddingHorizontal: S.gutter,
         }}
         showsVerticalScrollIndicator={false}
@@ -97,7 +97,7 @@ export default function Trips() {
         {list.length === 0 ? (
           <View style={styles.emptyCard}>
             <View style={styles.emptyCrestCircle}>
-              <SereneLogoMark size={40} color={C.pine} snow={C.sand} />
+              <SereneLogoMark size={40} />
             </View>
 
             <Text style={styles.emptyTitle}>

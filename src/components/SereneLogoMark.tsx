@@ -1,9 +1,13 @@
 import Svg, { ClipPath, Defs, G, Path, Polygon, Rect } from 'react-native-svg';
 
-import { C } from '@/theme';
-
-// Serene Heights crest, geometry ported verbatim from the Serene Groups app (src/core/components/SereneLogoMark.tsx):
+// Serene Heights crest, identical to the Serene Management app's SereneLogoMark (same geometry and colours):
 // a thin outer capsule, a solid inner capsule, a ridge line, a snow-capped central peak and a smaller right ridge.
+// Brand colours from the Management app: the crest's deep pine-slate and soft off-white, the header wordmark's charcoal-green and brand pine.
+export const BRAND_SLATE = '#314A43';
+export const BRAND_SNOW = '#ECEEED';
+export const BRAND_FG = '#14261C';
+export const BRAND_PINE = '#143D29';
+
 export const CREST_W = 34;
 export const CREST_H = 42;
 export const OUTER = { x: 0.75, y: 0.75, w: 32.5, h: 40.5, r: 16.25 };
@@ -15,7 +19,7 @@ export const PEAK = '18,13.5 13.2,22.2 19.2,24.6';
 type Props = { size?: number; color?: string; snow?: string };
 
 /** `size` is the crest height in px; width follows the 34 : 42 proportion. */
-export default function SereneLogoMark({ size = 42, color = C.pine, snow = C.cream }: Props) {
+export default function SereneLogoMark({ size = 42, color = BRAND_SLATE, snow = BRAND_SNOW }: Props) {
   const w = (size * CREST_W) / CREST_H;
   const id = `crest-${color.replace(/[^a-z0-9]/gi, '')}`;
   return (
