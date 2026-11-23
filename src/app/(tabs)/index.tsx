@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { ChevronRight } from '@/components/icons';
 import { memo, useCallback, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -94,25 +94,18 @@ export default function Discover() {
   const { width } = useWindowDimensions();
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
-  const [scrollEnabled, setScrollEnabled] = useState(true);
   const [darkStatus, setDarkStatus] = useState(false);
   const resW = Math.min(312, Math.round(width * 0.78));
   const reviewW = Math.min(315, Math.round(width * 0.80));
-
-  useFocusEffect(
-    useCallback(() => {
-      setScrollEnabled(true);
-    }, [])
-  );
 
   const handleScroll = useCallback(
     (e: any) => {
       onScroll(e);
       const y = e.nativeEvent?.contentOffset?.y ?? 0;
-      if (y > 140 && !darkStatus) setDarkStatus(true);
-      else if (y <= 140 && darkStatus) setDarkStatus(false);
+      const isDark = y > 140;
+      setDarkStatus((prev) => (prev !== isDark ? isDark : prev));
     },
-    [onScroll, darkStatus]
+    [onScroll]
   );
 
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
@@ -125,11 +118,12 @@ export default function Discover() {
       <ScrollView
         ref={ref}
         style={{ flex: 1 }}
-        scrollEnabled={scrollEnabled}
+        scrollEnabled={true}
+        removeClippedSubviews={false}
         nestedScrollEnabled
         keyboardShouldPersistTaps="handled"
         onScroll={handleScroll}
-        scrollEventThrottle={64}
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: 0, paddingBottom: Math.max(120, tabBarSpace(insets.bottom) + 36) }}
       >
@@ -191,6 +185,7 @@ export default function Discover() {
         <FlatList
           horizontal
           nestedScrollEnabled
+          removeClippedSubviews={false}
           data={ROOM_TYPES}
           keyExtractor={(t) => t.slug}
           renderItem={({ item }) => (
@@ -217,6 +212,7 @@ export default function Discover() {
         <FlatList
           horizontal
           nestedScrollEnabled
+          removeClippedSubviews={false}
           data={EXPERIENCES}
           keyExtractor={(e) => e.title}
           renderItem={({ item }) => (
@@ -299,74 +295,57 @@ export default function Discover() {
           </View>
         </View>
 
-        {/* Verified Guest Impressions Section */}
+        {/* Guest impressions: a calm score summary, then quiet editorial review cards */}
         <View style={styles.reviewSection}>
-          <View style={styles.reviewsHeaderRow}>
-            <View>
-              <Text style={styles.reviewsEyebrow}>GUEST IMPRESSIONS</Text>
-              <Text style={styles.reviewsTitle}>Moments at Serene Heights</Text>
-            </View>
-            <View style={styles.ratingSummaryPill}>
-              <Ionicons name="star" size={11} color={C.gold} style={{ marginRight: 4 }} />
-              <Text style={styles.ratingSummaryText}>{`${REVIEW_SCORE.average.toFixed(1)} · ${REVIEW_SCORE.count} verified stays`}</Text>
+          <View style={{ paddingHorizontal: S.gutter }}>
+            <Text style={styles.eyebrow}>GUEST IMPRESSIONS</Text>
+            <Text style={styles.sectionTitle}>Moments at Serene Heights</Text>
+          </View>
+
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreBig}>{REVIEW_SCORE.average.toFixed(1)}</Text>
+            <View style={styles.scoreDivider} />
+            <View style={{ flex: 1 }}>
+              <View style={styles.starsRow}>
+                {Array.from({ length: 5 }).map((_, k) => (
+                  <Ionicons key={k} name="star" size={13} color={C.gold} />
+                ))}
+              </View>
+              <Text style={styles.scoreLabel}>Exceptional</Text>
+              <Text style={styles.scoreSub}>{REVIEW_SCORE.count} verified stays</Text>
             </View>
           </View>
 
           <FlatList
             horizontal
             nestedScrollEnabled
+            removeClippedSubviews={false}
             data={REVIEWS}
             keyExtractor={(r) => r.id}
             renderItem={({ item }) => (
               <View style={[styles.reviewCard, { width: reviewW }]}>
-                {/* Subtle Editorial Pull-Quote Watermark */}
-                <Text style={styles.quoteWatermark}>“</Text>
-
-                {/* Header: Stars + Tiny Elegant Verified Badge */}
-                <View style={styles.reviewCardTop}>
+                <View style={styles.reviewTop}>
+                  <Text style={styles.quoteMark}>“</Text>
                   <View style={styles.starsRow}>
                     {Array.from({ length: 5 }).map((_, k) => (
-                      <Ionicons
-                        key={k}
-                        name={k < item.rating ? 'star' : 'star-outline'}
-                        size={12.5}
-                        color={C.gold}
-                      />
+                      <Ionicons key={k} name={k < item.rating ? 'star' : 'star-outline'} size={11.5} color={C.gold} />
                     ))}
                   </View>
-                  <View style={styles.verifiedBadge}>
-                    <Ionicons name="shield-checkmark" size={10.5} color={C.positive} style={{ marginRight: 3.5 }} />
-                    <Text style={styles.verifiedText}>Verified stay</Text>
-                  </View>
                 </View>
 
-                {/* Review Headline & Body with Tight 3-Line Un-truncated Copy */}
-                <View style={styles.reviewContent}>
-                  <Text style={styles.reviewTitle}>"{item.title}"</Text>
-                  <Text numberOfLines={3} style={styles.reviewBody}>{item.body}</Text>
-                </View>
+                <Text style={styles.reviewTitle} numberOfLines={2}>{item.title}</Text>
+                <Text numberOfLines={3} style={styles.reviewBody}>{item.body}</Text>
 
-                {/* Author Monogram + Info + Rating Score Badge Vertically Centered */}
+                <View style={{ flex: 1 }} />
                 <View style={styles.reviewFooter}>
-                  <View style={styles.reviewAuthorBlock}>
-                    <View style={styles.authorAvatar}>
-                      <Text style={styles.authorAvatarText}>
-                        {item.author.split(' ').map((n) => n[0]).join('')}
-                      </Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text numberOfLines={1} style={styles.reviewAuthor}>
-                        {item.author} · {item.country}
-                      </Text>
-                      <Text numberOfLines={1} style={styles.reviewRoom}>{item.roomType}</Text>
-                    </View>
+                  <View style={styles.authorAvatar}>
+                    <Text style={styles.authorAvatarText}>{item.author.split(' ').map((n) => n[0]).join('')}</Text>
                   </View>
-                  <View style={styles.scorePill}>
-                    <Ionicons name="star" size={10} color={C.gold} style={{ marginRight: 3.5 }} />
-                    <Text style={styles.scorePillText}>
-                      {item.rating.toFixed(1)}
-                    </Text>
+                  <View style={{ flex: 1 }}>
+                    <Text numberOfLines={1} style={styles.reviewAuthor}>{item.author} · {item.country}</Text>
+                    <Text numberOfLines={1} style={styles.reviewRoom}>{item.roomType}</Text>
                   </View>
+                  <Ionicons name="checkmark-circle" size={18} color={C.gold} accessibilityLabel="Verified stay" />
                 </View>
               </View>
             )}
@@ -379,99 +358,37 @@ export default function Discover() {
           />
         </View>
 
-        {/* Why Serene Heights — Curated Vertical Editorial Showcase */}
-        <SectionHead
-          title="Why Serene Heights"
-          sub="Crafted for year-round alpine luxury"
-        />
+        {/* Why Serene Heights: one lead story, then two numbered pillars */}
+        <View style={{ paddingHorizontal: S.gutter, marginTop: 40 }}>
+          <Text style={styles.eyebrow}>WHY SERENE HEIGHTS</Text>
+          <Text style={styles.sectionTitle}>Crafted for year-round alpine living</Text>
 
-        <View style={styles.editorialShowcase}>
-          {/* Flagship 16:10 Hero Feature Card on Top (Pillar 1) */}
-          <PressableScale
-            onPress={() => router.push('/amenities')}
-            scaleTo={0.985}
-            style={styles.heroFeatureCard}
-          >
-            <View style={styles.heroFeaturePhotoWrap}>
-              <Photo src={EDITORIAL_PILLARS[0].image} style={StyleSheet.absoluteFill} />
-              <LinearGradient
-                colors={['rgba(0, 0, 0, 0.25)', 'transparent', 'rgba(12, 26, 19, 0.45)']}
-                locations={[0, 0.35, 1]}
-                style={StyleSheet.absoluteFill}
-              />
-              {/* Subtle top-left frosted glass pill */}
-              <View style={styles.featureBadge}>
-                <BlurView intensity={65} tint="light" style={StyleSheet.absoluteFill} />
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.45)', 'rgba(255, 255, 255, 0.2)']}
-                  style={StyleSheet.absoluteFill}
-                />
-                <Ionicons name={EDITORIAL_PILLARS[0].icon} size={11} color={C.pine} style={{ marginRight: 4.5 }} />
-                <Text style={styles.featureBadgeText}>{EDITORIAL_PILLARS[0].badge}</Text>
-              </View>
+          <PressableScale onPress={() => router.push('/amenities')} scaleTo={0.985} style={styles.leadCard}>
+            <Photo src={EDITORIAL_PILLARS[0].image} style={StyleSheet.absoluteFill} />
+            <Scrim top={0.2} bottom={0.78} />
+            <View style={styles.leadTag}>
+              <Ionicons name={EDITORIAL_PILLARS[0].icon} size={12} color={C.gold} />
+              <Text style={styles.leadTagText}>{EDITORIAL_PILLARS[0].badge}</Text>
             </View>
-
-            {/* Crisp Ivory Card Surface Below Photo */}
-            <View style={styles.heroFeatureBody}>
-              <Text style={styles.featureKicker}>{EDITORIAL_PILLARS[0].kicker}</Text>
-              <Text style={styles.heroFeatureTitle}>{EDITORIAL_PILLARS[0].title}</Text>
-              <Text style={styles.featureDesc}>{EDITORIAL_PILLARS[0].text}</Text>
-
-              <View style={styles.featureChipsRow}>
-                {EDITORIAL_PILLARS[0].chips.map((c) => (
-                  <View key={c} style={styles.featureChip}>
-                    <Ionicons name="sparkles" size={9.5} color={C.gold} style={{ marginRight: 4 }} />
-                    <Text style={styles.featureChipText}>{c}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
+            <View style={{ flex: 1 }} />
+            <Text style={styles.leadNum}>01</Text>
+            <Text style={styles.leadTitle}>{EDITORIAL_PILLARS[0].title}</Text>
+            <Text style={styles.leadText}>{EDITORIAL_PILLARS[0].text}</Text>
+            <Text style={styles.leadMeta}>{EDITORIAL_PILLARS[0].chips.join('  ·  ')}</Text>
           </PressableScale>
 
-          {/* Secondary Editorial Cards (Pillars 2 & 3) in Stacked Layout */}
-          {EDITORIAL_PILLARS.slice(1).map((p) => (
-            <PressableScale
-              key={p.kicker}
-              onPress={() => router.push('/amenities')}
-              scaleTo={0.985}
-              style={styles.subFeatureCard}
-            >
-              <View style={styles.subFeaturePhotoWrap}>
-                <Photo src={p.image} style={StyleSheet.absoluteFill} />
-                <LinearGradient
-                  colors={['rgba(0, 0, 0, 0.22)', 'transparent', 'rgba(12, 26, 19, 0.4)']}
-                  locations={[0, 0.35, 1]}
-                  style={StyleSheet.absoluteFill}
-                />
-                {/* Subtle top-left frosted glass pill */}
-                <View style={styles.featureBadge}>
-                  <BlurView intensity={65} tint="light" style={StyleSheet.absoluteFill} />
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.45)', 'rgba(255, 255, 255, 0.2)']}
-                    style={StyleSheet.absoluteFill}
-                  />
-                  <Ionicons name={p.icon} size={11} color={C.pine} style={{ marginRight: 4.5 }} />
-                  <Text style={styles.featureBadgeText}>{p.badge}</Text>
+          <View style={styles.pillarList}>
+            {EDITORIAL_PILLARS.slice(1).map((p, i) => (
+              <PressableScale key={p.kicker} onPress={() => router.push('/amenities')} scaleTo={0.985} style={[styles.pillarRow, i > 0 && styles.pillarLine]}>
+                <Photo src={p.image} style={styles.pillarImg} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.pillarNum}>{String(i + 2).padStart(2, '0')} · {p.badge.toUpperCase()}</Text>
+                  <Text style={styles.pillarTitle}>{p.title}</Text>
+                  <Text style={styles.pillarText} numberOfLines={4}>{p.text}</Text>
                 </View>
-              </View>
-
-              {/* Crisp Ivory Card Surface Below Photo */}
-              <View style={styles.subFeatureBody}>
-                <Text style={styles.featureKicker}>{p.kicker}</Text>
-                <Text style={styles.subFeatureTitle}>{p.title}</Text>
-                <Text style={styles.featureDesc}>{p.text}</Text>
-
-                <View style={styles.featureChipsRow}>
-                  {p.chips.map((c) => (
-                    <View key={c} style={styles.featureChip}>
-                      <Ionicons name="sparkles" size={9.5} color={C.gold} style={{ marginRight: 4 }} />
-                      <Text style={styles.featureChipText}>{c}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            </PressableScale>
-          ))}
+              </PressableScale>
+            ))}
+          </View>
         </View>
 
         {/* Footer: concierge + contact */}
@@ -874,292 +791,227 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   reviewSection: {
-    marginTop: 6,
+    marginTop: 40,
   },
-  reviewCard: {
-    padding: 20,
-    backgroundColor: C.pureWhite,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.28)',
-    minHeight: 216,
-    justifyContent: 'space-between',
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
-    elevation: 3,
+  eyebrow: {
+    fontFamily: FONTS.uiBold,
+    fontSize: 10,
+    letterSpacing: 1.8,
+    color: C.gold,
   },
-  quoteWatermark: {
-    position: 'absolute',
-    top: 32,
-    right: 18,
-    fontFamily: FONTS.display,
-    fontSize: 68,
-    lineHeight: 68,
-    color: 'rgba(200, 164, 106, 0.08)',
-  },
-  reviewCardTop: {
+  scoreCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 16,
+    marginHorizontal: S.gutter,
+    marginTop: 16,
+    marginBottom: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: C.pine,
+    borderWidth: 1,
+    borderColor: C.goldLine,
+  },
+  scoreBig: {
+    fontFamily: FONTS.display,
+    fontSize: 46,
+    lineHeight: 50,
+    color: C.cream,
+    fontVariant: ['tabular-nums'],
+  },
+  scoreDivider: {
+    width: StyleSheet.hairlineWidth,
+    alignSelf: 'stretch',
+    backgroundColor: C.goldLine,
+  },
+  scoreLabel: {
+    fontFamily: FONTS.display,
+    fontSize: 20,
+    lineHeight: 24,
+    color: C.cream,
+    marginTop: 6,
+  },
+  scoreSub: {
+    fontFamily: FONTS.ui,
+    fontSize: 12.5,
+    color: C.cream70,
+    marginTop: 1,
   },
   starsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
   },
-  verifiedBadge: {
+  reviewCard: {
+    minHeight: 236,
+    padding: 20,
+    backgroundColor: C.white,
+    borderRadius: 22,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.line,
+    ...shadow.card,
+  },
+  reviewTop: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 7.5,
-    paddingVertical: 3,
-    borderRadius: 999,
-    backgroundColor: 'rgba(29, 115, 72, 0.07)',
-    borderWidth: 1,
-    borderColor: 'rgba(29, 115, 72, 0.16)',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    height: 30,
   },
-  verifiedText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 9.5,
-    letterSpacing: 0.2,
-    color: C.positive,
-  },
-  reviewContent: {
-    marginVertical: 10,
+  quoteMark: {
+    fontFamily: FONTS.display,
+    fontSize: 52,
+    lineHeight: 52,
+    color: C.gold,
+    marginTop: -6,
   },
   reviewTitle: {
-    fontFamily: FONTS.displayItalic,
-    fontSize: 17.5,
-    lineHeight: 22,
-    color: C.pine,
-    letterSpacing: -0.1,
+    fontFamily: FONTS.display,
+    fontSize: 21,
+    lineHeight: 25,
+    color: C.ink,
+    marginTop: 4,
   },
   reviewBody: {
     fontFamily: FONTS.ui,
-    fontSize: 12.5,
-    lineHeight: 18.5,
+    fontSize: 13.5,
+    lineHeight: 20.5,
     color: C.ink70,
-    marginTop: 6,
+    marginTop: 8,
   },
   reviewFooter: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 14,
-    paddingTop: 12,
+    gap: 11,
+    marginTop: 16,
+    paddingTop: 14,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.line,
   },
-  reviewAuthorBlock: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flex: 1,
-    marginRight: 10,
-  },
   authorAvatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(200, 164, 106, 0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.3)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: C.pine,
     alignItems: 'center',
     justifyContent: 'center',
   },
   authorAvatarText: {
     fontFamily: FONTS.uiBold,
-    fontSize: 11,
-    color: C.pine,
+    fontSize: 11.5,
+    letterSpacing: 0.5,
+    color: C.gold,
   },
   reviewAuthor: {
     fontFamily: FONTS.uiSemi,
-    fontSize: 12,
-    lineHeight: 16,
-    color: C.pine,
+    fontSize: 13,
+    color: C.ink,
   },
   reviewRoom: {
     fontFamily: FONTS.ui,
-    fontSize: 10.5,
-    lineHeight: 14,
+    fontSize: 11.5,
     color: C.ink55,
-    marginTop: 1.5,
+    marginTop: 1,
   },
-  scorePill: {
+  leadCard: {
+    height: 400,
+    marginTop: 16,
+    padding: 22,
+    borderRadius: 26,
+    overflow: 'hidden',
+    backgroundColor: C.pine,
+    ...shadow.card,
+  },
+  leadTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 8.5,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: C.pine,
+    alignSelf: 'flex-start',
+    gap: 6,
+    paddingHorizontal: 12,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.42)',
     borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.3)',
+    borderColor: 'rgba(200, 164, 106, 0.5)',
   },
-  scorePillText: {
+  leadTagText: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11.5,
+    letterSpacing: 0.3,
+    color: '#FFFFFF',
+  },
+  leadNum: {
     fontFamily: FONTS.uiBold,
     fontSize: 11,
-    color: C.gold,
-    fontVariant: ['tabular-nums'],
-  },
-  reviewsHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    paddingHorizontal: S.gutter,
-    marginTop: 34,
-    marginBottom: 16,
-  },
-  reviewsEyebrow: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 9.5,
-    letterSpacing: 1.6,
+    letterSpacing: 2,
     color: C.gold,
   },
-  reviewsTitle: {
+  leadTitle: {
     fontFamily: FONTS.display,
-    fontSize: 24,
-    lineHeight: 28,
-    color: C.pine,
-    marginTop: 3,
+    fontSize: 31,
+    lineHeight: 35,
+    color: '#FFFFFF',
+    marginTop: 6,
   },
-  ratingSummaryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 11,
-    paddingVertical: 5.5,
-    borderRadius: 999,
-    backgroundColor: C.pine,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.35)',
-    ...shadow.pill,
+  leadText: {
+    fontFamily: FONTS.ui,
+    fontSize: 13.5,
+    lineHeight: 20,
+    color: 'rgba(255, 255, 255, 0.88)',
+    marginTop: 8,
   },
-  ratingSummaryText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 10.5,
-    letterSpacing: 0.5,
-    color: C.cream,
+  leadMeta: {
+    fontFamily: FONTS.uiSemi,
+    fontSize: 11.5,
+    letterSpacing: 0.4,
+    color: C.gold,
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.28)',
   },
-  editorialShowcase: {
-    paddingHorizontal: S.gutter,
-    gap: 16,
-    marginBottom: 8,
-  },
-  heroFeatureCard: {
-    borderRadius: 24,
+  pillarList: {
+    marginTop: 14,
+    paddingHorizontal: 14,
+    borderRadius: 22,
     backgroundColor: C.white,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.25)',
-    overflow: 'hidden',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 18,
-    elevation: 3,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.line,
+    ...shadow.card,
   },
-  heroFeaturePhotoWrap: {
-    width: '100%',
-    height: 205,
-    backgroundColor: C.pine,
-    position: 'relative',
-  },
-  featureBadge: {
-    position: 'absolute',
-    top: 14,
-    left: 14,
+  pillarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 9.5,
-    paddingVertical: 4.5,
-    borderRadius: 999,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.55)',
+    gap: 14,
+    paddingVertical: 14,
   },
-  featureBadgeText: {
-    fontFamily: FONTS.uiBold,
-    fontSize: 9.5,
-    letterSpacing: 0.8,
-    color: C.pine,
+  pillarLine: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.line,
   },
-  heroFeatureBody: {
-    padding: 18,
+  pillarImg: {
+    width: 92,
+    height: 108,
+    borderRadius: 16,
   },
-  featureKicker: {
+  pillarNum: {
     fontFamily: FONTS.uiBold,
     fontSize: 9.5,
     letterSpacing: 1.5,
     color: C.gold,
   },
-  heroFeatureTitle: {
-    fontFamily: FONTS.display,
-    fontSize: 23,
-    lineHeight: 27,
-    letterSpacing: -0.2,
-    color: C.pine,
-    marginTop: 4,
-  },
-  subFeatureTitle: {
+  pillarTitle: {
     fontFamily: FONTS.display,
     fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: -0.1,
-    color: C.pine,
+    lineHeight: 23,
+    color: C.ink,
     marginTop: 4,
   },
-  featureDesc: {
+  pillarText: {
     fontFamily: FONTS.ui,
-    fontSize: 13,
-    lineHeight: 19.5,
+    fontSize: 12.5,
+    lineHeight: 18,
     color: C.ink70,
-    marginTop: 6,
-  },
-  featureChipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 7,
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: C.line,
-  },
-  featureChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8.5,
-    paddingVertical: 4,
-    borderRadius: 7,
-    backgroundColor: 'rgba(200, 164, 106, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.22)',
-  },
-  featureChipText: {
-    fontFamily: FONTS.uiSemi,
-    fontSize: 10.5,
-    color: C.pine,
-  },
-  subFeatureCard: {
-    borderRadius: 24,
-    backgroundColor: C.white,
-    borderWidth: 1,
-    borderColor: 'rgba(200, 164, 106, 0.22)',
-    overflow: 'hidden',
-    shadowColor: '#123524',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 14,
-    elevation: 2,
-  },
-  subFeaturePhotoWrap: {
-    width: '100%',
-    height: 155,
-    backgroundColor: C.pine,
-    position: 'relative',
-  },
-  subFeatureBody: {
-    padding: 18,
+    marginTop: 4,
   },
 });

@@ -141,6 +141,7 @@ export default function Apartments() {
         renderItem={renderItem}
         ListHeaderComponent={header}
         ItemSeparatorComponent={Gap}
+        removeClippedSubviews={false}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="options-outline" size={22} color={C.pine} />

@@ -34,7 +34,8 @@ export default function Trips() {
       <ScrollView
         ref={ref}
         onScroll={onScroll}
-        scrollEventThrottle={64}
+        scrollEventThrottle={16}
+        removeClippedSubviews={false}
         contentContainerStyle={{
           paddingTop: insets.top + 8,
           paddingBottom: 150,

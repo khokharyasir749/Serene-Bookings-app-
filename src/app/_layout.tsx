@@ -5,10 +5,14 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { enableFreeze } from 'react-native-screens';
 
 import AnimatedSplashScreen from '@/components/AnimatedSplashScreen';
 import { BookingProvider } from '@/state/booking';
 import { C, FONTS } from '@/theme';
+
+// Disable react-freeze across all screens to ensure touch & scroll responders never freeze on navigation
+enableFreeze(false);
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -39,7 +43,14 @@ export default function RootLayout() {
       <BookingProvider>
         <View style={{ flex: 1, backgroundColor: C.sand }}>
           <StatusBar style={splash ? 'light' : 'dark'} />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.sand }, animation: 'slide_from_right' }}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: C.sand },
+              animation: 'slide_from_right',
+              freezeOnBlur: false,
+            }}
+          >
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="room/[slug]" />
             <Stack.Screen name="book/[slug]" options={{ animation: 'slide_from_bottom' }} />

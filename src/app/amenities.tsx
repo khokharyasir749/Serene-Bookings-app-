@@ -1,9 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import Drawer from '@/components/Drawer';
 import { Lightbox } from '@/components/Gallery';
 import PageHeader from '@/components/PageHeader';
 import Scrim from '@/components/Scrim';
@@ -70,7 +72,7 @@ export default function Amenities() {
             <Section label="Facilities by group" title="Everything on site" sub="From heated floors to a helping hand at 3 a.m." />
             <View style={{ paddingHorizontal: S.gutter }}>
               {GROUPS.map((g, gi) => (
-                <GroupCard key={g} index={gi} group={g} items={AMENITIES.filter((a) => a.group === g)} />
+                <GroupCard key={g} index={gi} group={g} defaultOpen={gi === 0} items={AMENITIES.filter((a) => a.group === g)} />
               ))}
             </View>
           </View>
@@ -139,25 +141,46 @@ const ExperienceTile = memo(function ExperienceTile({ index, title, image, onPre
   );
 });
 
-function GroupCard({ index, group, items }: { index: number; group: string; items: Amenity[] }) {
+/** A facility group as a collapsible card: the header always shows; tapping it reveals the list beneath. */
+function GroupCard({ index, group, items, defaultOpen }: { index: number; group: string; items: Amenity[]; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(!!defaultOpen);
+  const turn = useSharedValue(defaultOpen ? 1 : 0);
+  const chevron = useAnimatedStyle(() => ({ transform: [{ rotate: `${turn.get() * 180}deg` }] }));
+  useEffect(() => {
+    turn.set(withTiming(open ? 1 : 0, { duration: 280 }));
+  }, [open, turn]);
+
   return (
-    <View style={styles.group}>
-      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
-        <Text style={styles.tileNum}>{pad(index + 1)}</Text>
-        <Text style={[T.h3, { fontSize: 22 }]}>{group}</Text>
-      </View>
-      {GROUP_BLURB[group] && <Text style={[T.small, { marginTop: 4 }]}>{GROUP_BLURB[group]}</Text>}
-      <View style={{ marginTop: 10 }}>
-        {items.map((a, i) => (
-          <View key={a.key} style={[styles.row, i > 0 && styles.rowLine]}>
-            <Ionicons name={(AMENITY_ICON[a.key] ?? 'heart-outline') as never} size={19} color={C.pine} style={{ marginTop: 1 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.rowName}>{a.name}</Text>
-              {a.description && <Text style={[T.small, { marginTop: 2 }]}>{a.description}</Text>}
+    <View style={[styles.group, open && styles.groupOpen]}>
+      <Pressable onPress={() => setOpen((o) => !o)} style={styles.groupHead} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={`${group}, ${items.length} facilities`}>
+        <Text style={styles.groupNum}>{pad(index + 1)}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.groupTitle}>{group}</Text>
+          <Text style={styles.groupSub} numberOfLines={2}>
+            {GROUP_BLURB[group] ?? ''}
+          </Text>
+          <Text style={styles.groupCount}>{items.length} {items.length === 1 ? 'FACILITY' : 'FACILITIES'}</Text>
+        </View>
+        <Animated.View style={[styles.chev, open && styles.chevOpen, chevron]}>
+          <Ionicons name="chevron-down" size={16} color={open ? C.cream : C.pine} />
+        </Animated.View>
+      </Pressable>
+
+      <Drawer open={open}>
+        <View style={styles.list}>
+          {items.map((a, i) => (
+            <View key={a.key} style={[styles.row, i > 0 && styles.rowLine]}>
+              <View style={styles.rowIcon}>
+                <Ionicons name={(AMENITY_ICON[a.key] ?? 'heart-outline') as never} size={16} color={C.pine} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.rowName}>{a.name}</Text>
+                {a.description && <Text style={styles.rowDesc}>{a.description}</Text>}
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      </Drawer>
     </View>
   );
 }
@@ -174,10 +197,21 @@ const styles = StyleSheet.create({
   tileImg: { width: '100%', aspectRatio: 1, borderRadius: 18 },
   tileNum: { color: C.ink40, fontFamily: FONTS.uiBold, fontSize: 11, letterSpacing: 1.2, fontVariant: ['tabular-nums'] },
   tileTitle: { flex: 1, fontFamily: FONTS.display, fontSize: 17, lineHeight: 20, color: C.ink },
-  group: { padding: 18, marginBottom: 12, borderRadius: S.card, backgroundColor: C.pureWhite, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  row: { flexDirection: 'row', gap: 12, paddingVertical: 11 },
+  group: { marginBottom: 10, borderRadius: S.card, backgroundColor: C.white, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  groupOpen: { borderColor: C.goldLine },
+  groupHead: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, paddingHorizontal: 18 },
+  groupNum: { width: 26, color: C.gold, fontFamily: FONTS.uiBold, fontSize: 12, letterSpacing: 1.2, fontVariant: ['tabular-nums'] },
+  groupTitle: { fontFamily: FONTS.display, fontSize: 23, lineHeight: 26, color: C.ink },
+  groupSub: { fontFamily: FONTS.ui, fontSize: 12.5, color: C.ink55, marginTop: 2 },
+  groupCount: { fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.4, color: C.gold, marginTop: 6 },
+  chev: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.goldLine, backgroundColor: C.pureWhite },
+  chevOpen: { backgroundColor: C.pine, borderColor: C.pine },
+  list: { marginHorizontal: 18, paddingBottom: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.goldLine },
+  row: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingVertical: 12 },
   rowLine: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-  rowName: { fontFamily: FONTS.uiSemi, fontSize: 14, color: C.ink },
+  rowIcon: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: C.sand, borderWidth: StyleSheet.hairlineWidth, borderColor: C.goldLine },
+  rowName: { fontFamily: FONTS.uiSemi, fontSize: 14.5, color: C.ink, marginTop: 6 },
+  rowDesc: { fontFamily: FONTS.ui, fontSize: 12.5, lineHeight: 18, color: C.ink55, marginTop: 2 },
   cta: { marginHorizontal: S.gutter, marginTop: 40, padding: 22, borderRadius: S.card, backgroundColor: C.pine },
   ctaKicker: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
   ctaTitle: { color: C.cream, fontFamily: FONTS.display, fontSize: 27, lineHeight: 31, marginTop: 8 },

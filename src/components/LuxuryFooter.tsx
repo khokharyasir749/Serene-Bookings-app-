@@ -5,73 +5,88 @@ import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import SereneLogoMark from '@/components/SereneLogoMark';
 import { Text } from '@/components/Text';
 import { CONTACT } from '@/data/contact';
-import { C, FONTS, S } from '@/theme';
+import { C, FONTS, S, shadow } from '@/theme';
 
 type Glyph = ComponentProps<typeof Ionicons>['name'];
 
 const open = (href: string) => void Linking.openURL(href).catch(() => {});
 
-function Row({ icon, label, value, href, last }: { icon: Glyph; label: string; value: string; href: string; last?: boolean }) {
+/** A thin gold rule with a centred diamond — the section's ornament. */
+function Ornament({ children }: { children?: React.ReactNode }) {
+  return (
+    <View style={styles.ornament}>
+      <View style={styles.ornLine} />
+      {children ?? <View style={styles.diamond} />}
+      <View style={styles.ornLine} />
+    </View>
+  );
+}
+
+function Row({ icon, label, value, cta, href, last }: { icon: Glyph; label: string; value: string; cta: string; href: string; last?: boolean }) {
   return (
     <Pressable onPress={() => open(href)} style={({ pressed }) => [styles.row, !last && styles.rowLine, pressed && styles.pressed]} accessibilityRole="link" accessibilityLabel={`${label}: ${value}`}>
-      <View style={styles.disc}>
-        <Ionicons name={icon} size={17} color={C.cream} />
+      <View style={styles.well}>
+        <Ionicons name={icon} size={18} color={C.pine} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.label}>{label.toUpperCase()}</Text>
-        <Text style={[styles.value, value.length > 32 && { fontSize: 12 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-          {value}
+        {/* A long email breaks once, right after the @, instead of shrinking or truncating. */}
+        <Text style={styles.value} numberOfLines={2}>
+          {value.replace('@', '@​')}
         </Text>
+        <Text style={styles.cta}>{cta}</Text>
       </View>
+      <Ionicons name="chevron-forward" size={16} color={C.gold} />
     </Pressable>
   );
 }
 
-/** A website as a button: the booking site is solid Pine with a gold arrow, the property site a Pine outline. */
-function SiteButton({ icon, label, value, href, primary }: { icon: Glyph; label: string; value: string; href: string; primary?: boolean }) {
-  const fg = primary ? C.cream : C.pine;
-  return (
-    <Pressable
-      onPress={() => open(href)}
-      accessibilityRole="link"
-      accessibilityLabel={`${label}: ${value}`}
-      style={({ pressed }) => [styles.site, primary ? styles.sitePrimary : styles.siteOutline, pressed && { opacity: 0.85, transform: [{ scale: 0.985 }] }]}>
-      <Ionicons name={icon} size={19} color={primary ? C.gold : C.pine} />
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.siteLabel, { color: primary ? C.gold : C.ink55 }]}>{label.toUpperCase()}</Text>
-        <Text style={[styles.siteValue, { color: fg }]} numberOfLines={1}>
-          {value}
-        </Text>
-      </View>
-      <View style={[styles.go, primary ? { backgroundColor: 'rgba(236, 238, 237, 0.14)' } : { backgroundColor: C.snow }]}>
-        <Ionicons name="arrow-up-outline" size={14} color={primary ? C.gold : C.pine} style={{ transform: [{ rotate: '45deg' }] }} />
-      </View>
-    </Pressable>
-  );
-}
-
-/** Discover's closing section: light, full-bleed and centred — crest, heading, contact lines, both sites as buttons, social. */
+/** Discover's closing section: crest between gold rules, an editorial heading, contact lines, both sites, social. */
 export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
+  const [booking, group] = CONTACT.sites;
   return (
-    // Extra bottom space keeps the footer and © line generously clear of the floating dock and scroll-to-top arrow.
     <View style={[styles.wrap, { paddingBottom: bottomSpace + 40 }]}>
+      <Ornament>
+        <View style={styles.crest}>
+          <SereneLogoMark size={40} />
+        </View>
+      </Ornament>
+
       <View style={styles.head}>
-        <SereneLogoMark size={44} />
-        <Text style={styles.title}>Reservations & Concierge</Text>
-        <Text style={styles.lede}>We reply on WhatsApp and by phone, seven days a week.</Text>
+        <Text style={styles.eyebrow}>CONCIERGE · SEVEN DAYS A WEEK</Text>
+        <Text style={styles.title}>Reservations{'\n'}& Concierge</Text>
+        <Text style={styles.lede}>Plan your stay with our team — we reply on WhatsApp, by phone and by email.</Text>
       </View>
 
       <View style={styles.group}>
         {CONTACT.lines.map((l, i) => (
-          <Row key={l.label} icon={l.icon as Glyph} label={l.label} value={l.value} href={l.href} last={i === CONTACT.lines.length - 1} />
+          <Row key={l.label} icon={l.icon as Glyph} label={l.label} value={l.value} cta={l.cta} href={l.href} last={i === CONTACT.lines.length - 1} />
         ))}
       </View>
 
-      <View style={styles.sites}>
-        {CONTACT.sites.map((s, i) => (
-          <SiteButton key={s.label} icon={s.icon as Glyph} label={s.label} value={s.value} href={s.href} primary={i === 0} />
-        ))}
-      </View>
+      {/* Primary: book online */}
+      <Pressable
+        onPress={() => open(booking.href)}
+        accessibilityRole="link"
+        accessibilityLabel={`${booking.label}: ${booking.value}`}
+        style={({ pressed }) => [styles.book, pressed && { opacity: 0.9, transform: [{ scale: 0.985 }] }]}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.bookLabel}>BOOK ONLINE</Text>
+          <Text style={styles.bookValue} numberOfLines={1}>{booking.value}</Text>
+        </View>
+        <View style={styles.bookGo}>
+          <Ionicons name="arrow-forward" size={17} color={C.pine} />
+        </View>
+      </Pressable>
+
+      {/* Secondary: the group site, as a quiet text link */}
+      <Pressable onPress={() => open(group.href)} accessibilityRole="link" accessibilityLabel={`${group.label}: ${group.value}`} style={({ pressed }) => [styles.groupLink, pressed && styles.pressed]}>
+        <Ionicons name="globe-outline" size={15} color={C.ink55} />
+        <Text style={styles.groupText}>
+          {group.label} · <Text style={styles.groupValue}>{group.value}</Text>
+        </Text>
+        <Ionicons name="arrow-up-outline" size={13} color={C.gold} style={{ transform: [{ rotate: '45deg' }] }} />
+      </Pressable>
 
       <View style={styles.social}>
         {CONTACT.social.map((s) => (
@@ -80,31 +95,41 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
           </Pressable>
         ))}
       </View>
+
+      <Ornament />
+      <Text style={styles.place}>NATHIA GALI · 7,906 FT</Text>
       <Text style={styles.small}>{`© ${new Date().getFullYear()} Serene Heights · DM Consortium`}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { marginTop: 48, paddingTop: 36, paddingHorizontal: S.gutter, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
-  head: { alignItems: 'center' },
-  title: { color: C.pine, fontFamily: FONTS.display, fontSize: 26, lineHeight: 30, textAlign: 'center', marginTop: 14 },
-  lede: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 13, lineHeight: 18.5, textAlign: 'center', marginTop: 6, maxWidth: 280 },
-  group: { marginTop: 22, borderRadius: 20, backgroundColor: C.pureWhite, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12 },
+  wrap: { marginTop: 52, paddingTop: 8, paddingHorizontal: S.gutter },
+  ornament: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  ornLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: C.goldLine },
+  diamond: { width: 6, height: 6, backgroundColor: C.gold, transform: [{ rotate: '45deg' }] },
+  crest: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', backgroundColor: C.white, borderWidth: 1, borderColor: C.goldLine },
+  head: { alignItems: 'center', marginTop: 18 },
+  eyebrow: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
+  title: { color: C.pine, fontFamily: FONTS.display, fontSize: 34, lineHeight: 37, textAlign: 'center', marginTop: 10 },
+  lede: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 13.5, lineHeight: 20, textAlign: 'center', marginTop: 10, maxWidth: 300 },
+  group: { marginTop: 26, borderRadius: 24, backgroundColor: C.white, paddingHorizontal: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, ...shadow.card },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 15 },
   rowLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  disc: { width: 38, height: 38, borderRadius: 19, backgroundColor: C.pine, alignItems: 'center', justifyContent: 'center' },
-  label: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.3 },
-  value: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 14, marginTop: 1, fontVariant: ['tabular-nums'] },
-  sites: { gap: 10, marginTop: 14 },
-  site: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingLeft: 16, paddingRight: 12, borderRadius: 999 },
-  sitePrimary: { backgroundColor: C.pine },
-  siteOutline: { backgroundColor: C.pureWhite, borderWidth: 1.5, borderColor: C.pine },
-  siteLabel: { fontFamily: FONTS.uiBold, fontSize: 9, letterSpacing: 1.4 },
-  siteValue: { fontFamily: FONTS.uiSemi, fontSize: 14, marginTop: 1 },
-  go: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  social: { flexDirection: 'row', justifyContent: 'center', gap: 12, marginTop: 28 },
-  socialBtn: { width: 42, height: 42, borderRadius: 21, backgroundColor: C.snow, alignItems: 'center', justifyContent: 'center' },
-  small: { color: C.ink40, fontFamily: FONTS.ui, fontSize: 11.5, textAlign: 'center', marginTop: 16 },
+  well: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: C.sand, borderWidth: 1, borderColor: C.goldLine },
+  label: { color: C.ink55, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.4 },
+  value: { color: C.ink, fontFamily: FONTS.uiSemi, fontSize: 15, marginTop: 2, fontVariant: ['tabular-nums'] },
+  cta: { color: C.gold, fontFamily: FONTS.uiSemi, fontSize: 11.5, marginTop: 2 },
+  book: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 16, paddingLeft: 22, paddingRight: 8, height: 66, borderRadius: 33, backgroundColor: C.pine, borderWidth: 1, borderColor: C.goldLine, ...shadow.card },
+  bookLabel: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 9.5, letterSpacing: 1.8 },
+  bookValue: { color: C.cream, fontFamily: FONTS.uiSemi, fontSize: 15, marginTop: 2 },
+  bookGo: { width: 50, height: 50, borderRadius: 25, backgroundColor: C.gold, alignItems: 'center', justifyContent: 'center' },
+  groupLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 16, paddingVertical: 6 },
+  groupText: { color: C.ink55, fontFamily: FONTS.ui, fontSize: 13 },
+  groupValue: { color: C.pine, fontFamily: FONTS.uiSemi, textDecorationLine: 'underline' },
+  social: { flexDirection: 'row', justifyContent: 'center', gap: 14, marginTop: 26, marginBottom: 26 },
+  socialBtn: { width: 46, height: 46, borderRadius: 23, backgroundColor: C.white, borderWidth: 1, borderColor: C.goldLine, alignItems: 'center', justifyContent: 'center' },
+  place: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2.2, textAlign: 'center', marginTop: 18 },
+  small: { color: C.ink40, fontFamily: FONTS.ui, fontSize: 11.5, textAlign: 'center', marginTop: 6 },
   pressed: { opacity: 0.7 },
 });

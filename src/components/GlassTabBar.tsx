@@ -17,7 +17,8 @@ type Glyph = ComponentProps<typeof Ionicons>['name'];
 export type DockProps = {
   state: { index: number; routes: { key: string; name: string }[] };
   descriptors: Record<string, { options: { title?: string } }>;
-  navigateToTab: (routeKey: string) => void;
+  navigation?: any;
+  navigateToTab?: (routeKey: string, routeName?: string) => void;
 };
 
 const ICON: Record<string, Glyph> = { index: 'compass-outline', apartments: 'bed-outline', trips: 'calendar-outline' };
@@ -25,18 +26,39 @@ const DOCK_RADIUS = 32;
 
 // The navigator hands over fresh props on every render; keep the newest outside React and only re-render the dock
 // when the active tab or the routes change.
-let latest: DockProps | null = null;
-let snapshot: DockProps | null = null;
+let latest: any = null;
+let snapshot: any = null;
 let signature = '';
 const listeners = new Set<() => void>();
-const sig = (p: DockProps) => `${p.state.index}|${p.state.routes.map((r) => r.key).join(',')}`;
+const sig = (p: any) => `${p?.state?.index ?? 0}|${p?.state?.routes?.map((r: any) => r.key).join(',') ?? ''}`;
 
-function publish(next: DockProps) {
+function publish(next: any) {
   latest = next;
   const s = sig(next);
   if (s === signature) return;
   signature = s;
-  snapshot = { state: next.state, descriptors: next.descriptors, navigateToTab: (key) => (latest ?? next).navigateToTab(key) };
+  snapshot = {
+    state: next.state,
+    descriptors: next.descriptors,
+    navigation: next.navigation,
+    navigateToTab: (routeKey: string, routeName?: string) => {
+      const active = latest ?? next;
+      const nav = active?.navigation;
+      if (!nav) return;
+      const targetRoute = active.state?.routes?.find((r: any) => r.key === routeKey || r.name === routeName);
+      const name = targetRoute ? targetRoute.name : routeName;
+      const key = targetRoute ? targetRoute.key : routeKey;
+
+      const event = nav.emit?.({
+        type: 'tabPress',
+        target: key,
+        canPreventDefault: true,
+      });
+      if (!event?.defaultPrevented && name) {
+        nav.navigate(name);
+      }
+    },
+  };
   listeners.forEach((l) => l());
 }
 
@@ -52,7 +74,7 @@ const useDock = () =>
   );
 
 /** Rendered as the navigator's tab bar: syncs props to the store, draws nothing itself. */
-export function DockBridge(props: DockProps) {
+export function DockBridge(props: any) {
   useEffect(() => {
     publish(props);
   });
@@ -74,7 +96,7 @@ function Item({ icon, label, focused, onPress }: { icon: Glyph; label: string; f
   );
 }
 
-/** The dock itself, rendered beside (not inside) the BlurTargetView so it can blur the page behind it. */
+/** The dock itself, rendered beside the tabs navigator with frosted glass surface. */
 export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentRef<typeof View> | null> }) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -85,19 +107,27 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
 
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { bottom: insets.bottom + 10 }]}>
-      <View style={styles.dockShadow}>
+      <View pointerEvents="box-none" style={styles.dockShadow}>
         <GlassSurface blurTarget={blurTarget} radius={DOCK_RADIUS} intensity={60} style={styles.dock}>
-          {state.routes.map((r, i) => {
+          {state.routes.map((r: any, i: number) => {
             const icon = ICON[r.name];
             if (!icon) return null;
             const focused = state.index === i;
-            return <Item key={r.key} icon={icon} label={(descriptors[r.key]?.options.title ?? r.name).toUpperCase()} focused={focused} onPress={() => !focused && navigateToTab(r.key)} />;
+            return (
+              <Item
+                key={r.key}
+                icon={icon}
+                label={(descriptors[r.key]?.options?.title ?? r.name).toUpperCase()}
+                focused={focused}
+                onPress={() => !focused && navigateToTab?.(r.key, r.name)}
+              />
+            );
           })}
           <Item icon="menu-outline" label="MENU" focused={false} onPress={() => router.push('/menu')} />
         </GlassSurface>
       </View>
       {showTop && (
-        <View style={styles.topShadow}>
+        <View pointerEvents="box-none" style={styles.topShadow}>
           <GlassSurface blurTarget={blurTarget} radius={16} intensity={60} style={styles.top}>
             <Pressable onPress={scrollActiveToTop} style={styles.topHit} accessibilityRole="button" accessibilityLabel="Scroll to top">
               <Ionicons name="chevron-up-outline" size={15} color={C.pine} />

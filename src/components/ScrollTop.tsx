@@ -50,10 +50,10 @@ export function useScrollTop() {
     }, []),
   );
 
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     y.current = e.nativeEvent.contentOffset.y;
     set({ visible: y.current > SCROLL_TOP_THRESHOLD });
-  };
+  }, []);
 
   return { ref, onScroll };
 }
