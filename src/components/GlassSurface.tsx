@@ -1,4 +1,4 @@
-import { BlurView } from 'expo-blur';
+import Frost from '@/components/Frost';
 import type { ComponentRef, ReactNode, RefObject } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -17,7 +17,7 @@ type Props = {
 export default function GlassSurface({ blurTarget, radius, intensity = 55, style, children }: Props) {
   return (
     <View style={[styles.shell, { borderRadius: radius }, style]}>
-      <BlurView blurTarget={blurTarget} tint="light" intensity={intensity} style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
+      <Frost blurTarget={blurTarget} tint="light" intensity={intensity} style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
       <View style={[StyleSheet.absoluteFill, styles.tint, { borderRadius: radius }]} />
       {children}
     </View>

@@ -1,10 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { BlurView } from 'expo-blur';
+import Frost from '@/components/Frost';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from '@/lib/nav';
 import { ChevronRight } from '@/components/icons';
-import { memo, useCallback, useState } from 'react';
+import { memo } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Text } from '@/components/Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BrandHeader from '@/components/BrandHeader';
 import LuxuryFooter from '@/components/LuxuryFooter';
 import Scrim from '@/components/Scrim';
-import { useScrollTop } from '@/components/ScrollTop';
+import { useScrollTop, useScrollTopVisible } from '@/components/ScrollTop';
 import SearchCard from '@/components/SearchCard';
 import { Photo, PressableScale } from '@/components/ui';
 import { ROOM_TYPES, type RoomType } from '@/data/catalog';
@@ -94,18 +94,9 @@ export default function Discover() {
   const { width } = useWindowDimensions();
   const { stay, setStay } = useBooking();
   const { ref, onScroll } = useScrollTop();
-  const [darkStatus, setDarkStatus] = useState(false);
+  // The dock's scroll-top store already flips at 140 px — the same threshold the status bar needs — so no extra state here.
+  const darkStatus = useScrollTopVisible();
   const resW = Math.min(312, Math.round(width * 0.78));
-
-  const handleScroll = useCallback(
-    (e: any) => {
-      onScroll(e);
-      const y = e.nativeEvent?.contentOffset?.y ?? 0;
-      const isDark = y > 140;
-      setDarkStatus((prev) => (prev !== isDark ? isDark : prev));
-    },
-    [onScroll]
-  );
 
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
 
@@ -119,7 +110,7 @@ export default function Discover() {
         removeClippedSubviews={false}
         nestedScrollEnabled
         keyboardShouldPersistTaps="handled"
-        onScroll={handleScroll}
+        onScroll={onScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
@@ -249,7 +240,7 @@ export default function Discover() {
 
           {/* Bottom Crystal Clear Glass Dock with Limited Text */}
           <View style={styles.archGlassDock}>
-            <BlurView
+            <Frost
               intensity={70}
               tint="dark"
               style={StyleSheet.absoluteFill}
@@ -340,7 +331,7 @@ const ResidenceCard = memo(function ResidenceCard({
       {/* Crystal clear glass pill */}
       <View style={styles.glassDock}>
         <View style={styles.crystalPill}>
-          <BlurView
+          <Frost
             intensity={60}
             tint="light"
             style={StyleSheet.absoluteFill}
@@ -382,7 +373,7 @@ const ExperienceCard = memo(function ExperienceCard({
       {/* Crystal clear glass pill */}
       <View style={styles.glassDock}>
         <View style={styles.crystalPill}>
-          <BlurView
+          <Frost
             intensity={60}
             tint="light"
             style={StyleSheet.absoluteFill}

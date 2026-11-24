@@ -123,7 +123,7 @@ export default function Menu() {
         >
           {/* Top Bar */}
           <View style={styles.top}>
-            <BrandLockup glass />
+            <BrandLockup onPhoto />
             <Pressable
               onPress={() => closeThen()}
               hitSlop={14}

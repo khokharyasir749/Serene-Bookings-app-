@@ -142,7 +142,7 @@ const ExperienceTile = memo(function ExperienceTile({ index, title, image, onPre
 });
 
 /** A facility group as a collapsible card: the header always shows; tapping it reveals the list beneath. */
-function GroupCard({ index, group, items, defaultOpen }: { index: number; group: string; items: Amenity[]; defaultOpen?: boolean }) {
+const GroupCard = memo(function GroupCard({ index, group, items, defaultOpen }: { index: number; group: string; items: Amenity[]; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(!!defaultOpen);
   const turn = useSharedValue(defaultOpen ? 1 : 0);
   const chevron = useAnimatedStyle(() => ({ transform: [{ rotate: `${turn.get() * 180}deg` }] }));
@@ -183,7 +183,7 @@ function GroupCard({ index, group, items, defaultOpen }: { index: number; group:
       </Drawer>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   hero: { height: 240, borderRadius: S.card, overflow: 'hidden', backgroundColor: C.snow },

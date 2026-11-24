@@ -48,6 +48,7 @@ export default function RootLayout() {
               headerShown: false,
               contentStyle: { backgroundColor: C.sand },
               animation: 'slide_from_right',
+              animationDuration: 220,
               freezeOnBlur: false,
             }}
           >

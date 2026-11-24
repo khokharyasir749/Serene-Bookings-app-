@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { BlurView } from 'expo-blur';
+import Frost from '@/components/Frost';
 import { useRouter } from '@/lib/nav';
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -40,7 +40,7 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
 
         {/* Minimalist Frosted Rating Pill (Top-Right) */}
         <View style={styles.ratingBadge}>
-          <BlurView intensity={70} tint="light" style={StyleSheet.absoluteFill} />
+          <Frost intensity={70} tint="light" style={StyleSheet.absoluteFill} />
           <Ionicons name="star" size={10.5} color={C.pine} style={{ marginRight: 3.5 }} />
           <Text style={styles.ratingText}>{REVIEW_SCORE.average.toFixed(1)}</Text>
         </View>
@@ -48,7 +48,7 @@ function RoomCard({ type, stay }: { type: RoomType; stay: Stay }) {
         {/* Scarcity Pill (Only if 3 or less remaining) */}
         {bookable && av.available <= 3 && (
           <View style={styles.scarcityBadge}>
-            <BlurView intensity={70} tint="light" style={StyleSheet.absoluteFill} />
+            <Frost intensity={70} tint="light" style={StyleSheet.absoluteFill} />
             <Text style={styles.scarcityText}>{`Only ${av.available} left`}</Text>
           </View>
         )}

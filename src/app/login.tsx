@@ -103,7 +103,7 @@ export default function Login() {
             <Scrim top={0.5} bottom={0.22} />
 
             <View style={[styles.topBar, { top: insets.top + 12 }]}>
-              <BrandLockup glass />
+              <BrandLockup onPhoto />
               <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close" style={styles.close}>
                 <Ionicons name="close-outline" size={22} color="#FFFFFF" />
               </Pressable>

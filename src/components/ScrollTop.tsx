@@ -52,7 +52,8 @@ export function useScrollTop() {
 
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     y.current = e.nativeEvent.contentOffset.y;
-    set({ visible: y.current > SCROLL_TOP_THRESHOLD });
+    const visible = y.current > SCROLL_TOP_THRESHOLD;
+    if (visible !== state.visible) set({ visible });
   }, []);
 
   return { ref, onScroll };

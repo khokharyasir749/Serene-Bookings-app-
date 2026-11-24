@@ -28,7 +28,7 @@ export default function BrandHeader({ variant = 'light' }: { variant?: 'light' |
   return (
     <View style={[styles.row, isOverPhoto && styles.rowOverPhoto]}>
       <View style={{ flex: 1 }}>
-        <BrandLockup glass={isOverPhoto} />
+        <BrandLockup onPhoto={isOverPhoto} />
       </View>
       <Pressable
         onPress={press}

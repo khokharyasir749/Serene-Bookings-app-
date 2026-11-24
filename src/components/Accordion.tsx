@@ -1,5 +1,5 @@
 import { ChevronDown } from '@/components/icons';
-import { useState, type ReactNode } from 'react';
+import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/Text';
 import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -7,7 +7,7 @@ import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withTiming } from '
 import { C, T } from '@/theme';
 
 // Single-tap collapsible section: title + short summary; the chevron turns and the body fades in.
-export default function Accordion({ title, summary, children, first }: { title: string; summary?: string; children: ReactNode; first?: boolean }) {
+function Accordion({ title, summary, children, first }: { title: string; summary?: string; children: ReactNode; first?: boolean }) {
   const [open, setOpen] = useState(false);
   const r = useSharedValue(0);
   const chevron = useAnimatedStyle(() => ({ transform: [{ rotate: `${r.get() * 180}deg` }] }));
@@ -40,6 +40,8 @@ export default function Accordion({ title, summary, children, first }: { title: 
     </View>
   );
 }
+
+export default memo(Accordion);
 
 const styles = StyleSheet.create({
   wrap: { borderBottomWidth: StyleSheet.hairlineWidth, borderColor: C.lineStrong },

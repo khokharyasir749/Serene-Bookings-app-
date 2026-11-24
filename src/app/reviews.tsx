@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { memo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -33,7 +34,17 @@ export default function Reviews() {
 
         <View style={{ gap: 14 }}>
           {REVIEWS.map((item) => (
-            <View key={item.id} style={styles.card}>
+            <ReviewCard key={item.id} item={item} />
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+const ReviewCard = memo(function ReviewCard({ item }: { item: (typeof REVIEWS)[number] }) {
+  return (
+    <View style={styles.card}>
               <View style={styles.top}>
                 <Text style={styles.quoteMark}>“</Text>
                 <View style={styles.starsRow}>
@@ -55,12 +66,8 @@ export default function Reviews() {
                 <Ionicons name="checkmark-circle" size={18} color={C.gold} accessibilityLabel="Verified stay" />
               </View>
             </View>
-          ))}
-        </View>
-      </ScrollView>
-    </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   eyebrow: { fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 1.8, color: C.gold },

@@ -151,7 +151,7 @@ export default function Apartments() {
           </View>
         }
         onScroll={onScroll}
-        scrollEventThrottle={64}
+        scrollEventThrottle={16}
         initialNumToRender={2}
         maxToRenderPerBatch={2}
         windowSize={5}
