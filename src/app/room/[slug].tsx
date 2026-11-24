@@ -1,4 +1,5 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from '@/lib/nav';
 import { Building, Car, Check, Coffee, Dumbbell, MapPin, Star, Utensils, Waves, Wifi } from '@/components/icons';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Text } from '@/components/Text';

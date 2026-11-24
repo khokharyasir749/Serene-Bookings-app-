@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from '@/lib/nav';
 import { StatusBar } from 'expo-status-bar';
 import { useRef, useState, type ComponentProps } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions, type TextInputInstance, type TextInputProps } from 'react-native';
@@ -102,7 +103,7 @@ export default function Login() {
             <Scrim top={0.5} bottom={0.22} />
 
             <View style={[styles.topBar, { top: insets.top + 12 }]}>
-              <BrandLockup onPhoto />
+              <BrandLockup glass />
               <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close" style={styles.close}>
                 <Ionicons name="close-outline" size={22} color="#FFFFFF" />
               </Pressable>

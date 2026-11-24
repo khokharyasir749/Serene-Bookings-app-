@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { BlurView } from 'expo-blur';
-import { useRouter } from 'expo-router';
+import { useRouter } from '@/lib/nav';
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 

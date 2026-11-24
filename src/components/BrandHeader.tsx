@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useRouter } from 'expo-router';
+import { useRouter } from '@/lib/nav';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import BrandLockup from '@/components/BrandLockup';
@@ -28,7 +28,7 @@ export default function BrandHeader({ variant = 'light' }: { variant?: 'light' |
   return (
     <View style={[styles.row, isOverPhoto && styles.rowOverPhoto]}>
       <View style={{ flex: 1 }}>
-        <BrandLockup onPhoto={isOverPhoto} />
+        <BrandLockup glass={isOverPhoto} />
       </View>
       <Pressable
         onPress={press}

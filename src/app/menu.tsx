@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter } from '@/lib/nav';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Keyboard, Linking, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -123,7 +123,7 @@ export default function Menu() {
         >
           {/* Top Bar */}
           <View style={styles.top}>
-            <BrandLockup onPhoto />
+            <BrandLockup glass />
             <Pressable
               onPress={() => closeThen()}
               hitSlop={14}

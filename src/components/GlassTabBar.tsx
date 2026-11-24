@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useRouter } from 'expo-router';
+import { useRouter } from '@/lib/nav';
 import { useEffect, useRef, useSyncExternalStore, type ComponentProps, type ComponentRef, type RefObject } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -129,7 +129,7 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
               />
             );
           })}
-          <Item icon="menu-outline" label="MENU" focused={false} onPress={() => router.push('/menu')} />
+          <Item icon="menu-outline" label="MENU" focused={false} onPress={() => router.navigate('/menu')} />
         </GlassSurface>
       </View>
       {showTop && (
