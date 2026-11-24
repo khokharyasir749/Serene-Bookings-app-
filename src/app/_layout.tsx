@@ -63,6 +63,7 @@ export default function RootLayout() {
             <Stack.Screen name="floor-plans" />
             <Stack.Screen name="location" />
             <Stack.Screen name="find-booking" />
+            <Stack.Screen name="reviews" />
           </Stack>
           {splash && <AnimatedSplashScreen onFinish={() => setSplash(false)} />}
         </View>

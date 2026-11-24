@@ -55,7 +55,6 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
       <View style={styles.head}>
         <Text style={styles.eyebrow}>CONCIERGE · SEVEN DAYS A WEEK</Text>
         <Text style={styles.title}>Reservations{'\n'}& Concierge</Text>
-        <Text style={styles.lede}>Plan your stay with our team — we reply on WhatsApp, by phone and by email.</Text>
       </View>
 
       <View style={styles.group}>

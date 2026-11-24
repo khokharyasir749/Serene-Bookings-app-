@@ -103,7 +103,7 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
   const dock = useDock();
   const showTop = useScrollTopVisible();
   if (!dock) return null;
-  const { state, descriptors, navigateToTab } = dock;
+  const { state, descriptors } = dock;
 
   return (
     <View pointerEvents="box-none" style={[styles.wrap, { bottom: insets.bottom + 10 }]}>
@@ -119,7 +119,13 @@ export function FloatingDock({ blurTarget }: { blurTarget?: RefObject<ComponentR
                 icon={icon}
                 label={(descriptors[r.key]?.options?.title ?? r.name).toUpperCase()}
                 focused={focused}
-                onPress={() => !focused && navigateToTab?.(r.key, r.name)}
+                onPress={() => {
+                  if (focused) return;
+                  // The router is the one reliable way to switch tabs (it resolves the route by URL, so it can't go stale
+                  // or be swallowed by a navigation prop captured earlier).
+                  const path = r.name === 'index' ? '/' : r.name === 'apartments' ? '/apartments' : '/trips';
+                  router.navigate(path);
+                }}
               />
             );
           })}

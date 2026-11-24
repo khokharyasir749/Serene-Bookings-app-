@@ -85,6 +85,7 @@ export default function Menu() {
         router.push('/find-booking');
       },
     },
+    { n: '07', label: 'Guest reviews', go: () => router.push('/reviews') },
   ];
 
   const quick = [CONTACT.lines[0], CONTACT.lines[1]];

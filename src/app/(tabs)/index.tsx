@@ -15,7 +15,7 @@ import Scrim from '@/components/Scrim';
 import { useScrollTop } from '@/components/ScrollTop';
 import SearchCard from '@/components/SearchCard';
 import { Photo, PressableScale } from '@/components/ui';
-import { areaRangeOf, PROPERTY, REASONS, REVIEWS, REVIEW_SCORE, ROOM_TYPES, type RoomType } from '@/data/catalog';
+import { ROOM_TYPES, type RoomType } from '@/data/catalog';
 import { useBooking } from '@/state/booking';
 import { C, FONTS, S, shadow, tabBarSpace } from '@/theme';
 
@@ -96,7 +96,6 @@ export default function Discover() {
   const { ref, onScroll } = useScrollTop();
   const [darkStatus, setDarkStatus] = useState(false);
   const resW = Math.min(312, Math.round(width * 0.78));
-  const reviewW = Math.min(315, Math.round(width * 0.80));
 
   const handleScroll = useCallback(
     (e: any) => {
@@ -109,8 +108,6 @@ export default function Discover() {
   );
 
   const openStay = (tab: 'dates' | 'guests') => router.push({ pathname: '/stay', params: { tab, next: 'apartments' } });
-
-  const featuredReview = REVIEWS[0];
 
   return (
     <View style={{ flex: 1, backgroundColor: C.sand }}>
@@ -140,12 +137,9 @@ export default function Discover() {
 
           {/* Clean Editorial Content Inside Hero */}
           <View style={styles.heroBottom}>
-            <Text style={styles.heroKicker}>BESPOKE ALPINE RESIDENCES · NATHIA GALI</Text>
+            <Text style={styles.heroKicker}>NATHIA GALI · 7,906 FT</Text>
             <Text style={styles.heroTitle}>
               Where clouds meet <Text style={styles.heroTitleItalic}>luxury</Text>
-            </Text>
-            <Text style={styles.heroSub}>
-              Pakistan's premier 5-star mountain sanctuary beside PAF Airbase Nathia Gali.
             </Text>
           </View>
         </View>
@@ -167,11 +161,9 @@ export default function Discover() {
         <View style={styles.glance}>
           {GLANCE.map((g, i) => (
             <View key={g.label} style={[styles.glanceItem, i > 0 && styles.glanceDiv]}>
-              <View style={styles.glanceIconRow}>
-                <Ionicons name={g.icon} size={13} color={C.gold} style={{ marginRight: 4 }} />
-                <Text style={styles.glanceNum}>{g.value}</Text>
-              </View>
-              <Text style={styles.glanceLabel}>{g.label.toUpperCase()}</Text>
+              <Ionicons name={g.icon} size={16} color={C.gold} />
+              <Text style={styles.glanceNum} numberOfLines={1}>{g.value}</Text>
+              <Text style={styles.glanceLabel} numberOfLines={1}>{g.label.toUpperCase()}</Text>
             </View>
           ))}
         </View>
@@ -179,7 +171,6 @@ export default function Discover() {
         {/* Curated Apartments Showcase */}
         <SectionHead
           title="Curated Residences"
-          sub="Five luxury one-bedroom layouts"
           onMore={() => router.navigate('/apartments')}
         />
         <FlatList
@@ -206,7 +197,6 @@ export default function Discover() {
         {/* Resort Facilities & Experiences */}
         <SectionHead
           title="Resort Experiences"
-          sub="50+ world-class facilities at 7,906 ft"
           onMore={() => router.push('/amenities')}
         />
         <FlatList
@@ -273,7 +263,6 @@ export default function Discover() {
             <View style={styles.crystalHighlight} />
 
             <Text style={styles.storyTitle}>Residences & Alpine Terraces</Text>
-            <Text style={styles.storySubtitle}>5 luxury layouts · Italian finishes · Underfloor heating</Text>
 
             {/* Luxury CTA Button */}
             <PressableScale
@@ -287,7 +276,7 @@ export default function Discover() {
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
               />
-              <Text style={styles.storyBtnText}>Explore Floor Plans & Layouts</Text>
+              <Text style={styles.storyBtnText}>Floor plans</Text>
               <View style={styles.storyBtnArrow}>
                 <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
               </View>
@@ -295,73 +284,9 @@ export default function Discover() {
           </View>
         </View>
 
-        {/* Guest impressions: a calm score summary, then quiet editorial review cards */}
-        <View style={styles.reviewSection}>
-          <View style={{ paddingHorizontal: S.gutter }}>
-            <Text style={styles.eyebrow}>GUEST IMPRESSIONS</Text>
-            <Text style={styles.sectionTitle}>Moments at Serene Heights</Text>
-          </View>
-
-          <View style={styles.scoreCard}>
-            <Text style={styles.scoreBig}>{REVIEW_SCORE.average.toFixed(1)}</Text>
-            <View style={styles.scoreDivider} />
-            <View style={{ flex: 1 }}>
-              <View style={styles.starsRow}>
-                {Array.from({ length: 5 }).map((_, k) => (
-                  <Ionicons key={k} name="star" size={13} color={C.gold} />
-                ))}
-              </View>
-              <Text style={styles.scoreLabel}>Exceptional</Text>
-              <Text style={styles.scoreSub}>{REVIEW_SCORE.count} verified stays</Text>
-            </View>
-          </View>
-
-          <FlatList
-            horizontal
-            nestedScrollEnabled
-            removeClippedSubviews={false}
-            data={REVIEWS}
-            keyExtractor={(r) => r.id}
-            renderItem={({ item }) => (
-              <View style={[styles.reviewCard, { width: reviewW }]}>
-                <View style={styles.reviewTop}>
-                  <Text style={styles.quoteMark}>“</Text>
-                  <View style={styles.starsRow}>
-                    {Array.from({ length: 5 }).map((_, k) => (
-                      <Ionicons key={k} name={k < item.rating ? 'star' : 'star-outline'} size={11.5} color={C.gold} />
-                    ))}
-                  </View>
-                </View>
-
-                <Text style={styles.reviewTitle} numberOfLines={2}>{item.title}</Text>
-                <Text numberOfLines={3} style={styles.reviewBody}>{item.body}</Text>
-
-                <View style={{ flex: 1 }} />
-                <View style={styles.reviewFooter}>
-                  <View style={styles.authorAvatar}>
-                    <Text style={styles.authorAvatarText}>{item.author.split(' ').map((n) => n[0]).join('')}</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text numberOfLines={1} style={styles.reviewAuthor}>{item.author} · {item.country}</Text>
-                    <Text numberOfLines={1} style={styles.reviewRoom}>{item.roomType}</Text>
-                  </View>
-                  <Ionicons name="checkmark-circle" size={18} color={C.gold} accessibilityLabel="Verified stay" />
-                </View>
-              </View>
-            )}
-            showsHorizontalScrollIndicator={false}
-            decelerationRate="fast"
-            snapToInterval={reviewW + 14}
-            initialNumToRender={2}
-            windowSize={3}
-            contentContainerStyle={{ paddingHorizontal: S.gutter, gap: 14 }}
-          />
-        </View>
-
         {/* Why Serene Heights: one lead story, then two numbered pillars */}
         <View style={{ paddingHorizontal: S.gutter, marginTop: 40 }}>
-          <Text style={styles.eyebrow}>WHY SERENE HEIGHTS</Text>
-          <Text style={styles.sectionTitle}>Crafted for year-round alpine living</Text>
+          <Text style={styles.sectionTitle}>Why Serene Heights</Text>
 
           <PressableScale onPress={() => router.push('/amenities')} scaleTo={0.985} style={styles.leadCard}>
             <Photo src={EDITORIAL_PILLARS[0].image} style={StyleSheet.absoluteFill} />
@@ -373,8 +298,6 @@ export default function Discover() {
             <View style={{ flex: 1 }} />
             <Text style={styles.leadNum}>01</Text>
             <Text style={styles.leadTitle}>{EDITORIAL_PILLARS[0].title}</Text>
-            <Text style={styles.leadText}>{EDITORIAL_PILLARS[0].text}</Text>
-            <Text style={styles.leadMeta}>{EDITORIAL_PILLARS[0].chips.join('  ·  ')}</Text>
           </PressableScale>
 
           <View style={styles.pillarList}>
@@ -384,7 +307,6 @@ export default function Discover() {
                 <View style={{ flex: 1 }}>
                   <Text style={styles.pillarNum}>{String(i + 2).padStart(2, '0')} · {p.badge.toUpperCase()}</Text>
                   <Text style={styles.pillarTitle}>{p.title}</Text>
-                  <Text style={styles.pillarText} numberOfLines={4}>{p.text}</Text>
                 </View>
               </PressableScale>
             ))}
@@ -565,27 +487,24 @@ const styles = StyleSheet.create({
   glanceItem: {
     flex: 1,
     alignItems: 'center',
+    gap: 5,
   },
   glanceDiv: {
     borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: C.goldLine,
-  },
-  glanceIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderLeftColor: 'rgba(200, 164, 106, 0.25)',
   },
   glanceNum: {
-    fontFamily: FONTS.display,
-    fontSize: 21,
+    fontFamily: FONTS.uiBold,
+    fontSize: 15.5,
+    lineHeight: 20,
     color: C.cream,
     fontVariant: ['tabular-nums'],
   },
   glanceLabel: {
-    color: C.gold,
     fontFamily: FONTS.uiBold,
-    fontSize: 8.5,
-    letterSpacing: 1.4,
-    marginTop: 3,
+    fontSize: 9,
+    letterSpacing: 1.3,
+    color: C.gold,
   },
   sectionHead: {
     flexDirection: 'row',
