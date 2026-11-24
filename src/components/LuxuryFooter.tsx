@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 
-import SereneLogoMark from '@/components/SereneLogoMark';
+import BrandLockup from '@/components/BrandLockup';
 import { Text } from '@/components/Text';
 import { CONTACT } from '@/data/contact';
 import { C, FONTS, S, shadow } from '@/theme';
@@ -47,9 +47,7 @@ export default function LuxuryFooter({ bottomSpace }: { bottomSpace: number }) {
   return (
     <View style={[styles.wrap, { paddingBottom: bottomSpace }]}>
       <Ornament>
-        <View style={styles.crest}>
-          <SereneLogoMark size={40} />
-        </View>
+        <BrandLockup />
       </Ornament>
 
       <View style={styles.head}>
@@ -107,7 +105,6 @@ const styles = StyleSheet.create({
   ornament: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   ornLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: C.goldLine },
   diamond: { width: 6, height: 6, backgroundColor: C.gold, transform: [{ rotate: '45deg' }] },
-  crest: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', backgroundColor: C.white, borderWidth: 1, borderColor: C.goldLine },
   head: { alignItems: 'center', marginTop: 18 },
   eyebrow: { color: C.gold, fontFamily: FONTS.uiBold, fontSize: 10, letterSpacing: 2 },
   title: { color: C.pine, fontFamily: FONTS.display, fontSize: 34, lineHeight: 37, textAlign: 'center', marginTop: 10 },

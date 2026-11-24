@@ -7,6 +7,7 @@ import { BackHandler, Keyboard, Linking, Pressable, ScrollView, StyleSheet, View
 import Animated, { Easing, FadeInDown, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import BrandLockup from '@/components/BrandLockup';
 import { Text } from '@/components/Text';
 import { Photo } from '@/components/ui';
 import { CONTACT } from '@/data/contact';
@@ -122,10 +123,7 @@ export default function Menu() {
         >
           {/* Top Bar */}
           <View style={styles.top}>
-            <View style={styles.placeRow}>
-              <View style={styles.placeDot} />
-              <Text style={styles.place}>NATHIA GALI · 7,906 FT</Text>
-            </View>
+            <BrandLockup onPhoto />
             <Pressable
               onPress={() => closeThen()}
               hitSlop={14}

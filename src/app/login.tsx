@@ -7,7 +7,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Scrim from '@/components/Scrim';
-import SereneLogoMark, { BRAND_SLATE } from '@/components/SereneLogoMark';
+import BrandLockup from '@/components/BrandLockup';
 import { Text } from '@/components/Text';
 import { EASE, Photo } from '@/components/ui';
 import { useBooking } from '@/state/booking';
@@ -102,13 +102,7 @@ export default function Login() {
             <Scrim top={0.5} bottom={0.22} />
 
             <View style={[styles.topBar, { top: insets.top + 12 }]}>
-              <View style={styles.lockup}>
-                <SereneLogoMark size={42} color="#FFFFFF" snow={BRAND_SLATE} />
-                <View>
-                  <Text style={styles.brand}>SERENE</Text>
-                  <Text style={styles.brandSub}>HEIGHTS BOOKINGS</Text>
-                </View>
-              </View>
+              <BrandLockup onPhoto />
               <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close" style={styles.close}>
                 <Ionicons name="close-outline" size={22} color="#FFFFFF" />
               </Pressable>
@@ -277,9 +271,6 @@ function Field({ icon, label, prefix, right, ...rest }: TextInputProps & { icon:
 
 const styles = StyleSheet.create({
   topBar: { position: 'absolute', left: S.gutter, right: S.gutter, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  lockup: { flexDirection: 'row', alignItems: 'center', gap: 11 },
-  brand: { color: '#FFFFFF', fontFamily: FONTS.display, fontSize: 16, lineHeight: 20, letterSpacing: 3.2 },
-  brandSub: { color: 'rgba(255,255,255,0.8)', fontFamily: FONTS.uiBold, fontSize: 8.5, letterSpacing: 2, marginTop: 1 },
   close: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.28)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.4)' },
   place: { position: 'absolute', left: S.gutter, right: S.gutter, bottom: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   glass: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 14, height: 36, borderRadius: 18, backgroundColor: 'rgba(0, 0, 0, 0.34)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.3)' },
