@@ -14,6 +14,7 @@ export default function TabsLayout() {
           headerShown: false,
           sceneStyle: { backgroundColor: C.sand },
           freezeOnBlur: false,
+          lazy: false, // build every tab up front, so the first tap on one doesn't stutter the dock
         }}
       >
         <Tabs.Screen name="index" options={{ title: 'Discover' }} />

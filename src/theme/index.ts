@@ -70,7 +70,10 @@ export const F = { display: FONTS.display, sans: FONTS.ui };
 export const S = { gutter: 20, radius: 14, card: 22, photo: 20, tabBar: 64 };
 
 /** Bottom padding a tab screen needs so its last item clears the floating dock. */
-export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 12; // dock height + its offset + a little air (~100 px on Android)
+/** Distance from the top safe-area edge to the brand lockup — the same on every screen, so the logo never shifts when you change screens. */
+export const LOGO_TOP = 10;
+
+export const tabBarSpace = (bottomInset: number) => S.tabBar + bottomInset + 34; // dock height + its offset + its raised ball, and a little air
 
 export const shadow = {
   card: { shadowColor: '#123524', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 3 },

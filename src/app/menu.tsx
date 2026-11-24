@@ -11,7 +11,7 @@ import BrandLockup from '@/components/BrandLockup';
 import { Text } from '@/components/Text';
 import { Photo } from '@/components/ui';
 import { CONTACT } from '@/data/contact';
-import { C, FONTS, S } from '@/theme';
+import { C, FONTS, S, LOGO_TOP } from '@/theme';
 
 type Item = { n: string; label: string; go: () => void };
 
@@ -117,7 +117,7 @@ export default function Menu() {
         <Animated.View
           style={[
             styles.root,
-            { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 16 },
+            { paddingTop: insets.top + LOGO_TOP, paddingBottom: insets.bottom + 16 },
             inner,
           ]}
         >
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
-    paddingHorizontal: S.gutter + 2,
+    paddingHorizontal: S.gutter,
     backgroundColor: 'transparent',
   },
   top: {

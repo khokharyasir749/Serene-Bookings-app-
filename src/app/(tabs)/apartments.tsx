@@ -14,7 +14,7 @@ import { Button, Sheet } from '@/components/ui';
 import { apartmentsOf, ROOM_TYPES, type RoomType } from '@/data/catalog';
 import { availability, fmtShort, guestsLabel, lowestQuote, nightsBetween, plural, type Stay } from '@/lib/stay';
 import { useBooking } from '@/state/booking';
-import { C, FONTS, S, T, tabBarSpace } from '@/theme';
+import { C, FONTS, S, T, tabBarSpace, LOGO_TOP } from '@/theme';
 
 type FilterKey = 'available' | 'family' | 'terrace' | 'corner' | 'value';
 type SortKey = 'recommended' | 'priceAsc' | 'priceDesc' | 'largest';
@@ -158,7 +158,7 @@ export default function Apartments() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, backgroundColor: C.sand }}
-        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 150 }}
+        contentContainerStyle={{ paddingTop: insets.top + LOGO_TOP, paddingBottom: 150 }}
       />
     <Sheet open={sortOpen} onClose={() => setSortOpen(false)} title="Sort stays">
       <View style={{ paddingHorizontal: S.gutter, paddingBottom: 8 }}>

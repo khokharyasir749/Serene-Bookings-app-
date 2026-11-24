@@ -16,10 +16,10 @@ export const RIDGE_L = 'M3 27.5 L8.8 21 L12 24.2 L18 13.5';
 export const RIDGE_R = 'M18 13.5 L22.2 22 L26 19 L31 26';
 export const PEAK = '18,13.5 13.2,22.2 19.2,24.6';
 
-type Props = { size?: number; color?: string; snow?: string };
+type Props = { size?: number; color?: string; snow?: string; ring?: string };
 
 /** `size` is the crest height in px; width follows the 34 : 42 proportion. */
-export default function SereneLogoMark({ size = 42, color = BRAND_SLATE, snow = BRAND_SNOW }: Props) {
+export default function SereneLogoMark({ size = 42, color = BRAND_SLATE, snow = BRAND_SNOW, ring = color }: Props) {
   const w = (size * CREST_W) / CREST_H;
   const id = `crest-${color.replace(/[^a-z0-9]/gi, '')}`;
   return (
@@ -29,7 +29,7 @@ export default function SereneLogoMark({ size = 42, color = BRAND_SLATE, snow = 
           <Rect x={INNER.x} y={INNER.y} width={INNER.w} height={INNER.h} rx={INNER.r} />
         </ClipPath>
       </Defs>
-      <Rect x={OUTER.x} y={OUTER.y} width={OUTER.w} height={OUTER.h} rx={OUTER.r} fill="none" stroke={color} strokeWidth={1.5} />
+      <Rect x={OUTER.x} y={OUTER.y} width={OUTER.w} height={OUTER.h} rx={OUTER.r} fill="none" stroke={ring} strokeWidth={1.5} />
       <Rect x={INNER.x} y={INNER.y} width={INNER.w} height={INNER.h} rx={INNER.r} fill={color} />
       <G clipPath={`url(#${id})`}>
         <Path d={RIDGE_L} fill="none" stroke={snow} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />

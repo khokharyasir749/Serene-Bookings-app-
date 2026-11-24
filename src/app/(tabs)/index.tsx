@@ -17,7 +17,7 @@ import SearchCard from '@/components/SearchCard';
 import { Photo, PressableScale } from '@/components/ui';
 import { ROOM_TYPES, type RoomType } from '@/data/catalog';
 import { useBooking } from '@/state/booking';
-import { C, FONTS, S, shadow, tabBarSpace } from '@/theme';
+import { C, FONTS, S, shadow, tabBarSpace, LOGO_TOP } from '@/theme';
 
 const SEASONS = {
   summer: '/images/resort/hero-tower-mist.jpg',
@@ -116,7 +116,7 @@ export default function Discover() {
         contentContainerStyle={{ paddingTop: 0, paddingBottom: 0 }}
       >
         {/* Full-Bleed Panoramic Mountain Hero Stage */}
-        <View style={[styles.hero, { paddingTop: insets.top + 10 }]}>
+        <View style={[styles.hero, { paddingTop: insets.top + LOGO_TOP }]}>
           <Photo src={SEASONS.summer} style={StyleSheet.absoluteFill} />
           {/* Dual scrim: top scrim for brand header, bottom deep pine scrim for editorial copy */}
           <Scrim top={0.35} bottom={0.92} />

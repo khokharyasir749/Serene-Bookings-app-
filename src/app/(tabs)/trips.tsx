@@ -16,7 +16,7 @@ import { Text } from '@/components/Text';
 import { Photo, PressableScale } from '@/components/ui';
 import { fmtShort, guestsLabel, money, plural } from '@/lib/stay';
 import { tabOf, useBooking, type Tab } from '@/state/booking';
-import { C, FONTS, S, tabBarSpace } from '@/theme';
+import { C, FONTS, S, tabBarSpace, LOGO_TOP } from '@/theme';
 
 export default function Trips() {
   const insets = useSafeAreaInsets();
@@ -38,7 +38,7 @@ export default function Trips() {
         scrollEventThrottle={16}
         removeClippedSubviews={false}
         contentContainerStyle={{
-          paddingTop: insets.top + 8,
+          paddingTop: insets.top + LOGO_TOP,
           paddingBottom: tabBarSpace(insets.bottom),
           paddingHorizontal: S.gutter,
         }}

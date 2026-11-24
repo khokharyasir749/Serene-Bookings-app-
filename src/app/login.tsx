@@ -12,7 +12,7 @@ import BrandLockup from '@/components/BrandLockup';
 import { Text } from '@/components/Text';
 import { EASE, Photo } from '@/components/ui';
 import { useBooking } from '@/state/booking';
-import { C, FONTS, S, shadow } from '@/theme';
+import { C, FONTS, S, shadow, LOGO_TOP } from '@/theme';
 
 type Method = 'phone' | 'email';
 type Step = 'id' | 'code' | 'name';
@@ -102,7 +102,7 @@ export default function Login() {
             <Photo src="/images/resort/tower-day.jpg" style={StyleSheet.absoluteFill} />
             <Scrim top={0.5} bottom={0.22} />
 
-            <View style={[styles.topBar, { top: insets.top + 12 }]}>
+            <View style={[styles.topBar, { top: insets.top + LOGO_TOP }]}>
               <BrandLockup onPhoto />
               <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close" style={styles.close}>
                 <Ionicons name="close-outline" size={22} color="#FFFFFF" />
